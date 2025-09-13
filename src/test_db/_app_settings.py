@@ -1,0 +1,37 @@
+import logging
+
+from sqlobject import DatabaseIndex, ForeignKey, StringCol  # type: ignore
+
+from ._test_db_sqlobject import TestDBSQLObject
+
+
+logger = logging.getLogger(__name__)
+
+
+class AppSettings(TestDBSQLObject):
+    """AppSettings SQLObject
+
+    Attributes:
+        name (StringCol): the name of the settings
+    """
+
+    _gid_prefix: str = "set"
+
+    name: StringCol = StringCol(alternateID=True)
+
+
+class PersonalAppSettings(TestDBSQLObject):
+    """PersonalAppSettings SQLObject
+
+    Attributes:
+        name (StringCol): the name of the settings, must be unique for this user
+        person (ForeignKey): the DB ID of the owner of the bank account
+        name_person_index (DatabaseIndex):
+    """
+
+    _gid_prefix: str = "pas"
+
+    name: StringCol = StringCol()
+    person: ForeignKey = ForeignKey("Person", cascade=True)
+
+    name_person_index: DatabaseIndex = DatabaseIndex(name, person, unique=True)

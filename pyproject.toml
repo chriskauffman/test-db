@@ -1,0 +1,41 @@
+[project]
+name = "test-db"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Christopher Kauffman", email = "chriskauffman@vollgas.net" }
+]
+requires-python = ">=3.9"
+dependencies = [
+    "cryptography>=45.0.7",
+    "faker>=37.6.0",
+    "nanoid>=2.0.0",
+    "pydantic>=2.11.7",
+    "pydantic-settings>=2.10.1",
+    "sqlobject>=3.13.0",
+    "typeid-python>=0.3.2",
+    "typing-extensions>=4.15.0",
+]
+
+[build-system]
+requires = ["uv_build >= 0.7.19, <0.9.0"]
+build-backend = "uv_build"
+
+[project.scripts]
+tdb = "test_db.main:main"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13.0",
+    "ruff>=0.8.2",
+    "pytest>=8.3.4",
+    "coverage>=7.6.9",
+    "pydoclint>=0.6.10",
+    "types-nanoid>=2.0.0.20240601",
+]
+
+[tool.pytest.ini_options]
+addopts = "--ignore=tmp"
+log_file = "log/pytest.log"
+log_file_level = "DEBUG"

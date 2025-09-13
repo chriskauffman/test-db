@@ -1,0 +1,20 @@
+import logging
+
+from sqlobject import StringCol  # type: ignore
+
+from ._test_db_sqlobject import BaseSQLObject
+
+
+logger = logging.getLogger(__name__)
+
+
+class Settings(BaseSQLObject):
+    """Settings SQLObject
+
+    Attributes:
+        key (StringCol):
+        value (StringCol):
+    """
+
+    key: StringCol = StringCol(alternateID=True, unique=True)
+    value: StringCol = StringCol(default=None)
