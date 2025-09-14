@@ -99,20 +99,20 @@ class PersonView(BaseView):
         self._person.social_security_number = self._get_input(
             "SSN", str, self._person.social_security_number
         )
-        self._person.default_address.street = self._get_input(
-            "Street", str, self._person.default_address.street
+        self._person.defaultAddress.street = self._get_input(
+            "Street", str, self._person.defaultAddress.street
         )
-        self._person.default_address.locality = self._get_input(
-            "Locality", str, self._person.default_address.locality
+        self._person.defaultAddress.locality = self._get_input(
+            "Locality", str, self._person.defaultAddress.locality
         )
-        self._person.default_address.region = self._get_input(
-            "Region", str, self._person.default_address.region
+        self._person.defaultAddress.region = self._get_input(
+            "Region", str, self._person.defaultAddress.region
         )
-        self._person.default_address.postal_code = self._get_input(
-            "Postal Code", str, self._person.default_address.postal_code
+        self._person.defaultAddress.postal_code = self._get_input(
+            "Postal Code", str, self._person.defaultAddress.postal_code
         )
-        self._person.default_address.country = self._get_input(
-            "Country", str, self._person.default_address.country
+        self._person.defaultAddress.country = self._get_input(
+            "Country", str, self._person.defaultAddress.country
         )
         self._person.phone_number = self._get_input(
             "Phone Number", str, self._person.phone_number

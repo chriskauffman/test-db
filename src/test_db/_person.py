@@ -125,22 +125,16 @@ class Person(TestDBSQLObject):
         }
 
     @property
-    def default_address(self) -> PersonalAddress:
-        """Return the default address for the person
+    def defaultAddress(self) -> PersonalAddress:
+        return self.getAddressByName("default")
 
-        Returns:
-            PersonalAddress: the default address or None
-        """
-        try:
-            return self.addresses_select.filter(
-                PersonalAddress.q.name == "default"
-            ).getOne()
-        except SQLObjectNotFound:
-            return PersonalAddress(
-                connection=self._connection,
-                person=self.id,
-                name="default",
-            )
+    @property
+    def defaultBankAccount(self) -> PersonalAddress:
+        return self.getBankAccountByName("default")
+
+    @property
+    def defaultDebitCard(self) -> PersonalAddress:
+        return self.getDebitCardByName("default")
 
     def _set_email(self, value=None):
         """Handle email generation when names provided"""
@@ -151,6 +145,26 @@ class Person(TestDBSQLObject):
         else:
             self._SO_set_email(
                 f"{self.first_name.lower()}.{self.last_name.lower()}@example.com"
+            )
+
+    def getAddressByName(self, name: str, **kwargs) -> PersonalAddress:
+        """Return the default address for the person
+
+        Args:
+            name (str): name of the item
+            **kwargs:
+
+        Returns:
+            PersonalAddress: the default address or None
+        """
+        try:
+            return self.addresses_select.filter(PersonalAddress.q.name == name).getOne()
+        except SQLObjectNotFound:
+            return PersonalAddress(
+                connection=self._connection,
+                person=self.id,
+                name=name,
+                **kwargs,
             )
 
     def getBankAccountByName(self, name: str, **kwargs) -> PersonalBankAccount:
