@@ -213,18 +213,15 @@ class Person(TestDBSQLObject):
                 **kwargs,
             )
 
-    def getJobByEmployerId(self, employer_id: str, **kwargs) -> "Job":
+    def getJobByEmployerId(self, employer_id: int, **kwargs) -> "Job":
         """Find and create an Job
 
         Args:
-            employer_id (str): employer_id of the job
+            employer_id (int): employer_id of the job
             **kwargs:
 
         Returns:
             Job:
-
-        Raises:
-            ValueError: when employer not found
         """
         try:
             return self.jobs_select.filter(Job.q.employer == employer_id).getOne()
@@ -232,7 +229,7 @@ class Person(TestDBSQLObject):
             try:
                 employer = Employer.get(employer_id, connection=self._connection)
             except SQLObjectNotFound:
-                raise ValueError(f"Employer {employer_id} not found")
+                employer = Employer(connection=self._connection, id=employer_id)
             return Job(
                 connection=self._connection,
                 person=self.id,
@@ -251,9 +248,6 @@ class Person(TestDBSQLObject):
 
         Returns:
             Job:
-
-        Raises:
-            ValueError: when employer not found
         """
         try:
             return self.jobs_select.throughTo.employer.filter(
@@ -266,7 +260,9 @@ class Person(TestDBSQLObject):
                     connection=self._connection,
                 ).getOne()
             except SQLObjectNotFound:
-                raise ValueError(f"Employer {employer_alternate_id} not found")
+                employer = Employer(
+                    connection=self._connection, alternate_id=employer_alternate_id
+                )
             return Job(
                 connection=self._connection,
                 person=self.id,

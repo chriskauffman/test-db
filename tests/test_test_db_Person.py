@@ -103,6 +103,41 @@ def test_getDebitCardByName(temporary_db):
     assert test_debit_card.cvv == "123"
 
 
+def test_getJobByEmployerId(temporary_db):
+    test_person = Person(connection=temporary_db.connection)
+
+    # Test automatic creation of employer
+    test_job = test_person.getJobByEmployerId(22771)
+    assert isinstance(test_job, db.Job)
+    assert isinstance(
+        db.Employer.get(22771, connection=temporary_db.connection), db.Employer
+    )
+
+    # Test Creating an employer and using that for the job
+    test_employer = db.Employer(connection=temporary_db.connection, name="TestEmployer")
+    test_job = test_person.getJobByEmployerId(test_employer.id)
+    assert isinstance(test_job, db.Job)
+    assert test_job.employer.name == "TestEmployer"
+
+
+def test_getJobByEmployerAlternateId(temporary_db):
+    test_person = Person(connection=temporary_db.connection)
+
+    # Test automatic creation of employer
+    test_job = test_person.getJobByEmployerAlternateId("employer22771")
+    assert isinstance(test_job, db.Job)
+    assert isinstance(
+        db.Employer.byAlternate_id("employer22771", connection=temporary_db.connection),
+        db.Employer,
+    )
+
+    # Test Creating an employer and using that for the job
+    db.Employer(connection=temporary_db.connection, alternate_id="employer22772")
+    test_job = test_person.getJobByEmployerAlternateId("employer22772")
+    assert isinstance(test_job, db.Job)
+    assert test_job.employer.alternate_id == "employer22772"
+
+
 def test_getOAuth2TokenByClientId(temporary_db):
     test_person = Person(connection=temporary_db.connection)
     db.database_encryption_key = "a really good key"
