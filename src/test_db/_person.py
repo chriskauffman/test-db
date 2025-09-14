@@ -16,6 +16,8 @@ from typing_extensions import Any, Self, Union
 from test_db._address import PersonalAddress
 from test_db._bank_account import PersonalBankAccount
 from test_db._debit_card import PersonalDebitCard
+from test_db._employer import Employer
+from test_db._job import Job
 from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._app_settings import PersonalAppSettings
 from test_db._test_db_sqlobject import TestDBSQLObject
@@ -208,6 +210,67 @@ class Person(TestDBSQLObject):
                 connection=self._connection,
                 person=self.id,
                 name=name,
+                **kwargs,
+            )
+
+    def getJobByEmployerId(self, employer_id: str, **kwargs) -> "Job":
+        """Find and create an Job
+
+        Args:
+            employer_id (str): employer_id of the job
+            **kwargs:
+
+        Returns:
+            Job:
+
+        Raises:
+            ValueError: when employer not found
+        """
+        try:
+            return self.jobs_select.filter(Job.q.employer == employer_id).getOne()
+        except SQLObjectNotFound:
+            try:
+                employer = Employer.get(employer_id, connection=self._connection)
+            except SQLObjectNotFound:
+                raise ValueError(f"Employer {employer_id} not found")
+            return Job(
+                connection=self._connection,
+                person=self.id,
+                employer=employer.id,
+                **kwargs,
+            )
+
+    def getJobByEmployerAlternateId(
+        self, employer_alternate_id: str, **kwargs
+    ) -> "Job":
+        """Find and create an Job
+
+        Args:
+            employer_alternate_id (str): employer alternate_id of the job
+            **kwargs:
+
+        Returns:
+            Job:
+
+        Raises:
+            ValueError: when employer not found
+        """
+        try:
+            return self.jobs_select.throughTo.employer.filter(
+                Employer.q.alternate_id == employer_alternate_id
+            ).getOne()
+        except SQLObjectNotFound:
+            try:
+                employer = Employer.select(
+                    Employer.q.alternate_id == employer_alternate_id,
+                    connection=self._connection,
+                ).getOne()
+            except SQLObjectNotFound:
+                raise ValueError(f"Employer {employer_alternate_id} not found")
+            return Job(
+                connection=self._connection,
+                person=self.id,
+                employer=employer.id,
                 **kwargs,
             )
 
