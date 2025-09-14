@@ -1,10 +1,12 @@
 import logging
 
+import faker
 from sqlobject import StringCol  # type: ignore
 
 from ._test_db_sqlobject import TestDBSQLObject
 
 
+fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
@@ -18,5 +20,5 @@ class Employer(TestDBSQLObject):
 
     _gid_prefix: str = "e"
 
-    name: StringCol = StringCol(alternateID=True)
+    name: StringCol = StringCol(alternateID=True, default=fake.company)
     alternate_id: StringCol = StringCol(default=None)
