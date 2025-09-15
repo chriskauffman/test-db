@@ -27,6 +27,9 @@ from test_db._views._person import PersonView as PersonView
 
 # Global database options
 databaseEncryptionKey: Optional[str] = None
+# Django recommendation from 2025
+# https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet
+fernetIterations: int = 1_200_000
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +38,10 @@ class _GlobalDatabaseOptions:
     @property
     def databaseEncryptionKey(self):
         return databaseEncryptionKey
+
+    @property
+    def fernetIterations(self):
+        return fernetIterations
 
 
 def validConnection(connection: sqlobject.connectionForURI = None) -> bool:

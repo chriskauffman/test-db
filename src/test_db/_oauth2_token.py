@@ -31,6 +31,10 @@ class _GlobalDatabaseEncryptionOptions:
     def databaseEncryptionKey(self):
         return test_db.databaseEncryptionKey
 
+    @property
+    def fernetIterations(self):
+        return test_db.fernetIterations
+
 
 class PersonalOAuth2Token(TestDBSQLObject):
     """PersonalOAuth2Token SQLObject
@@ -47,6 +51,7 @@ class PersonalOAuth2Token(TestDBSQLObject):
     _key = None
     _globalDatabaseEncryptionOptions = None
     __fernet = None
+    __fernetIterations = None
     __password = None
     __salt = None
 
@@ -64,6 +69,7 @@ class PersonalOAuth2Token(TestDBSQLObject):
         self._kdf = None
         self._key = None
         self.__fernet = None
+        self.__fernetIterations = None
         self.__password = None
         self.__salt = None
 
@@ -75,17 +81,35 @@ class PersonalOAuth2Token(TestDBSQLObject):
                 algorithm=hashes.SHA256(),
                 length=32,
                 salt=self._salt,
-                iterations=1_000_000,
+                iterations=self._fernetIterations,
             )
             self._key = base64.urlsafe_b64encode(self._kdf.derive(self._password))
             self.__fernet = Fernet(self._key)
         return self.__fernet
 
     @property
+    def _fernetIterations(self):
+        """Fernet iterations"""
+        if not self.__fernetIterations:
+            if not self._globalDatabaseEncryptionOptions:
+                self._globalDatabaseEncryptionOptions = (
+                    _GlobalDatabaseEncryptionOptions()
+                )
+            if not self._globalDatabaseEncryptionOptions.fernetIterations:
+                raise ValueError("fernetIterations not set")
+            self.__fernetIterations = (
+                self._globalDatabaseEncryptionOptions.fernetIterations
+            )
+        return self.__fernetIterations
+
+    @property
     def _password(self):
         """Encryption password"""
         if not self.__password:
-            self._globalDatabaseEncryptionOptions = _GlobalDatabaseEncryptionOptions()
+            if not self._globalDatabaseEncryptionOptions:
+                self._globalDatabaseEncryptionOptions = (
+                    _GlobalDatabaseEncryptionOptions()
+                )
             if not self._globalDatabaseEncryptionOptions.databaseEncryptionKey:
                 raise ValueError("databaseEncryptionKey not set")
             self.__password = (

@@ -99,6 +99,9 @@ class DBMaintenanceSettings(pydantic_settings.BaseSettings):
         default=SecretStr(""),
         description="key to be used for encrypting sensitive database contents",
     )
+    database_fernet_iterations: int = Field(
+        1_200_000, description="number of iterations for fernet key generation"
+    )
     db_file_path: pathlib.Path = Field(
         default=pathlib.Path(DEFAULT_CONFIG_PATH, "test_db.sqlite"),
         description="database file",
@@ -164,6 +167,7 @@ def main() -> None:
         sys.exit(1)
 
     db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
+    db.fernetIterations = settings.database_fernet_iterations
 
     # backup_file(
     #     settings.db_file_path, settings.backup_path, file_timestamp=START_TIMESTAMP
