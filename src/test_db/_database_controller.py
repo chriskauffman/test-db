@@ -12,7 +12,7 @@ from test_db._bank_account import PersonalBankAccount
 from test_db._debit_card import PersonalDebitCard
 from test_db._employer import Employer
 from test_db._job import Job
-from test_db._listeners import update_listener
+from test_db._listeners import updateListener
 from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._person import Person
 from test_db._settings import Settings
@@ -50,130 +50,125 @@ class DatabaseController:
     Connect SQLite Database for SQLObject Access
 
     Args:
-        file_path (Union[pathlib.Path, str]): path to sqlite file
+        filePath (Union[pathlib.Path, str]): path to sqlite file
         create (bool, optional): creates the database file when True
-        default_connection (bool, optional): sets DB as default sqlobject connection
+        defaultConnection (bool, optional): sets DB as default sqlobject connection
         upgrade (bool, optional): upgrade the database if it is out of date
 
     Raises:
         ValueError: invalid database
 
     Instance Attributes:
-        application_id (int): database application ID unique to test_db
-        application_schema_version (int): test_db schema version number
+        applicationID (int): database application ID unique to test_db
+        applicationSchemaVersion (int): test_db schema version number
         connection (sqlobject.connectionForURI)
-        db_schema_version (int): database schema version
-        file_path (pathlib.Path): location of DB file
-        valid_schema (bool): True if schema passes checks
+        dbSchemaVersion (int): database schema version
+        filePath (pathlib.Path): location of DB file
+        validSchema (bool): True if schema passes checks
     """
 
-    _global_database_options = _GlobalDatabaseOptions()
+    _globalDatabaseOptions = _GlobalDatabaseOptions()
 
     def __init__(
         self,
-        file_path: Union[pathlib.Path, str],
+        filePath: Union[pathlib.Path, str],
         create: bool = False,
-        default_connection: bool = False,
+        defaultConnection: bool = False,
         upgrade: bool = False,
     ) -> None:
-        self.file_path = pathlib.Path(os.path.abspath(file_path))
+        self.filePath = pathlib.Path(os.path.abspath(filePath))
 
         # In-memory DB can be opened with 'sqlite:/:memory:'
-        if not self.file_path.is_file() and not create:
-            raise ValueError(f"DB file {self.file_path} does not exist")
+        if not self.filePath.is_file() and not create:
+            raise ValueError(f"DB file {self.filePath} does not exist")
 
-        self.connection = sqlobject.connectionForURI(f"sqlite:{self.file_path}")
+        self.connection = sqlobject.connectionForURI(f"sqlite:{self.filePath}")
         self._raw = self.connection.getConnection()
-        self._raw_cursor = self._raw.cursor()
+        self._rawCursor = self._raw.cursor()
 
-        logger.debug("sqlite3_application_id=%s", self.application_id)
-        logger.debug("sqlite3_schema_version=%s", self.db_schema_version)
-        logger.debug("sqlite3_user_version=%s", self.application_schema_version)
+        logger.debug("sqlite3_application_id=%s", self.applicationID)
+        logger.debug("sqlite3_schema_version=%s", self.dbSchemaVersion)
+        logger.debug("sqlite3_user_version=%s", self.applicationSchemaVersion)
 
-        if self._is_test_db:
-            if self.valid_schema:
+        if self._isTestDB:
+            if self.validSchema:
                 pass
             else:
                 if upgrade:
                     self._upgrade()
                 else:
                     raise ValueError("test_db file needs upgrade")
-        elif self._is_empty_db:
+        elif self._isEmptyDB:
             self._new()
         else:
             logger.error("not a test_db file")
             raise ValueError("not a test_db file")
 
-        self._raw_cursor.execute("PRAGMA foreign_keys = ON")
+        self._rawCursor.execute("PRAGMA foreign_keys = ON")
 
         for table in TABLES:
             sqlobject.events.listen(
-                update_listener, table, sqlobject.events.RowUpdateSignal
+                updateListener, table, sqlobject.events.RowUpdateSignal
             )
 
-        if default_connection:
+        if defaultConnection:
             sqlobject.sqlhub.processConnection = self.connection
 
     @property
-    def application_id(self) -> int:
-        """Property application_id"""
-        return int(self._raw_cursor.execute("PRAGMA application_id").fetchone()[0])
+    def applicationID(self) -> int:
+        return int(self._rawCursor.execute("PRAGMA application_id").fetchone()[0])
 
-    @application_id.setter
-    def application_id(self, application_id: int) -> None:
-        """Property application_id setter"""
-        self._raw_cursor.execute(f"PRAGMA application_id = {application_id}")
+    @applicationID.setter
+    def applicationID(self, applicationID: int) -> None:
+        self._rawCursor.execute(f"PRAGMA application_id = {applicationID}")
 
     @property
-    def application_schema_version(self) -> int:
-        """Property application_schema_version"""
-        return int(self._raw_cursor.execute("PRAGMA user_version").fetchone()[0])
+    def applicationSchemaVersion(self) -> int:
+        return int(self._rawCursor.execute("PRAGMA user_version").fetchone()[0])
 
-    @application_schema_version.setter
-    def application_schema_version(self, application_schema_version: int) -> None:
-        """Property application_schema_version setter"""
-        self._raw_cursor.execute(f"PRAGMA user_version = {application_schema_version}")
+    @applicationSchemaVersion.setter
+    def applicationSchemaVersion(self, applicationSchemaVersion: int) -> None:
+        self._rawCursor.execute(f"PRAGMA user_version = {applicationSchemaVersion}")
 
     @property
-    def db_schema_version(self) -> int:
-        """Property db_schema_version"""
-        return int(self._raw_cursor.execute("PRAGMA schema_version").fetchone()[0])
+    def dbSchemaVersion(self) -> int:
+        return int(self._rawCursor.execute("PRAGMA schema_version").fetchone()[0])
 
     @property
-    def _is_empty_db(self) -> bool:
+    def _isEmptyDB(self) -> bool:
         return (
-            self.application_id == 0
-            and self.db_schema_version == 0
-            and self.application_schema_version == 0
+            self.applicationID == 0
+            and self.dbSchemaVersion == 0
+            and self.applicationSchemaVersion == 0
         )
 
     @property
-    def _is_test_db(self) -> bool:
-        if self.application_id == APPLICATION_ID:
+    def _isTestDB(self) -> bool:
+        if self.applicationID == APPLICATION_ID:
             return True
         return False
 
     @property
-    def valid_schema(self) -> bool:
+    def validSchema(self) -> bool:
         """Validate current schema"""
-        if not self._is_test_db:
+        if not self._isTestDB:
             logger.debug("DB does not appear to be any version of a TestDB")
             return False
-        if not self._schema_version(CURRENT_APPLICATION_SCHEMA_VERSION):
+        if not self._schemaVersion(CURRENT_APPLICATION_SCHEMA_VERSION):
             logger.debug(
                 "DB invalid: app ID %s, db schema version %s, app schema version %s",
-                self.application_id,
-                self.db_schema_version,
-                self.application_schema_version,
+                self.applicationID,
+                self.dbSchemaVersion,
+                self.applicationSchemaVersion,
             )
             return False
         for table in TABLES:
-            if not self._table_exists(table.sqlmeta.table):
+            if not self._tableExists(table.sqlmeta.table):
                 logger.debug("Table %s missing", table)
                 return False
         return True
 
-    def _column_exists(self, table_name: str, column_name: str) -> bool:
+    def _columnExists(self, table_name: str, column_name: str) -> bool:
         """Determine if table exists in DB
 
         Args:
@@ -185,12 +180,12 @@ class DatabaseController:
         """
         return column_name in (
             x[1]
-            for x in self._raw_cursor.execute(
+            for x in self._rawCursor.execute(
                 f"PRAGMA table_info('{table_name}')"
             ).fetchall()
         )
 
-    def _index_exists(self, index_name: str) -> bool:
+    def _indexExists(self, index_name: str) -> bool:
         """Determine if an index exists in DB
 
         Args:
@@ -201,14 +196,12 @@ class DatabaseController:
         """
         return (
             len(
-                self._raw_cursor.execute(
-                    f"PRAGMA index_list('{index_name}')"
-                ).fetchall()
+                self._rawCursor.execute(f"PRAGMA index_list('{index_name}')").fetchall()
             )
             > 0
         )
 
-    def _table_exists(self, table_name: str) -> bool:
+    def _tableExists(self, table_name: str) -> bool:
         """Determine if table exists in DB
 
         Args:
@@ -219,9 +212,7 @@ class DatabaseController:
         """
         return (
             len(
-                self._raw_cursor.execute(
-                    f"PRAGMA table_list('{table_name}')"
-                ).fetchall()
+                self._rawCursor.execute(f"PRAGMA table_list('{table_name}')").fetchall()
             )
             > 0
         )
@@ -232,22 +223,22 @@ class DatabaseController:
         for table in TABLES:
             table.createTable(connection=self.connection)
 
-        self.application_id = APPLICATION_ID
-        self.application_schema_version = CURRENT_APPLICATION_SCHEMA_VERSION
+        self.applicationID = APPLICATION_ID
+        self.applicationSchemaVersion = CURRENT_APPLICATION_SCHEMA_VERSION
 
-    def _schema_version(self, version: int) -> bool:
+    def _schemaVersion(self, version: int) -> bool:
         return (
-            self.application_id == APPLICATION_ID
-            and self.db_schema_version > 0
-            and self.application_schema_version == version
+            self.applicationID == APPLICATION_ID
+            and self.dbSchemaVersion > 0
+            and self.applicationSchemaVersion == version
         )
 
     def _upgrade(self):
         """Upgrade existing database
 
         Attempts to upgrade database based on expected values of SQLite's
-        application_id, db_schema_version and user_version. application_id and
-        user_version are set by this class. db_schema_version is automatically
+        applicationID, dbSchemaVersion and user_version. applicationID and
+        user_version are set by this class. dbSchemaVersion is automatically
         incremented by SQLite.
 
         Raises:
@@ -257,7 +248,7 @@ class DatabaseController:
 
         # self._upgrade_to_schema_2()
 
-        if not self.valid_schema:
+        if not self.validSchema:
             # upgrade has failed for some reason
             logger.error("unable to upgrade")
             raise ValueError("unable to upgrade")

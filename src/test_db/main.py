@@ -42,7 +42,7 @@ SCRIPT_NAME = "tdb"
 START_TIMESTAMP = datetime.datetime.now()
 
 
-def locate_toml_file() -> Optional[pathlib.Path]:
+def locateTomlFile() -> Optional[pathlib.Path]:
     for toml_file_path in (
         pathlib.Path(TOML_FILE_NAME),
         pathlib.Path(DEFAULT_CONFIG_PATH, TOML_FILE_NAME),
@@ -63,7 +63,7 @@ class DBMaintenanceSettings(pydantic_settings.BaseSettings):
         cli_parse_args=True,
         env_file=".env",
         extra="ignore",
-        toml_file=locate_toml_file(),
+        toml_file=locateTomlFile(),
     )
 
     create: bool = Field(
@@ -163,7 +163,7 @@ def main() -> None:
         print(f"DB file {settings.db_file_path} does not exist")
         sys.exit(1)
 
-    db.database_encryption_key = settings.database_encryption_key.get_secret_value()
+    db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
 
     # backup_file(
     #     settings.db_file_path, settings.backup_path, file_timestamp=START_TIMESTAMP
@@ -171,7 +171,7 @@ def main() -> None:
     db.DatabaseController(
         settings.db_file_path,
         create=settings.create,
-        default_connection=True,
+        defaultConnection=True,
         upgrade=settings.upgrade,
     )
 
@@ -214,7 +214,7 @@ def main() -> None:
                 working_person.getJobByProviderId(settings.add_job)
 
             if settings.view_person:
-                db.PersonView(working_person).view_details()
+                db.PersonView(working_person).viewDetails()
 
     if settings.list_people:
         db.PersonView.list()

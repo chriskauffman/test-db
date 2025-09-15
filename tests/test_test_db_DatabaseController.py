@@ -16,18 +16,18 @@ from test_db._person import Person
 
 def db_schema_is_valid(test_db):
     assert (
-        test_db._raw_cursor.execute("PRAGMA application_id").fetchone()[0]
+        test_db._rawCursor.execute("PRAGMA application_id").fetchone()[0]
         == APPLICATION_ID
     )
-    assert test_db._raw_cursor.execute("PRAGMA schema_version").fetchone()[0] > 0
+    assert test_db._rawCursor.execute("PRAGMA schema_version").fetchone()[0] > 0
     assert (
-        test_db._raw_cursor.execute("PRAGMA user_version").fetchone()[0]
+        test_db._rawCursor.execute("PRAGMA user_version").fetchone()[0]
         == CURRENT_APPLICATION_SCHEMA_VERSION
     )
 
     assert (
         len(
-            test_db._raw_cursor.execute(
+            test_db._rawCursor.execute(
                 f"PRAGMA index_list({db.PersonalBankAccount.sqlmeta.table})"
             ).fetchall()
         )
@@ -35,7 +35,7 @@ def db_schema_is_valid(test_db):
     )
     assert (
         len(
-            test_db._raw_cursor.execute(
+            test_db._rawCursor.execute(
                 f"PRAGMA index_list({db.PersonalDebitCard.sqlmeta.table})"
             ).fetchall()
         )
@@ -43,7 +43,7 @@ def db_schema_is_valid(test_db):
     )
     assert (
         len(
-            test_db._raw_cursor.execute(
+            test_db._rawCursor.execute(
                 f"PRAGMA index_list({db.Job.sqlmeta.table})"
             ).fetchall()
         )
@@ -51,14 +51,14 @@ def db_schema_is_valid(test_db):
     )
     assert (
         len(
-            test_db._raw_cursor.execute(
+            test_db._rawCursor.execute(
                 f"PRAGMA index_list({db.PersonalOAuth2Token.sqlmeta.table})"
             ).fetchall()
         )
         == 2
     )
 
-    assert test_db.valid_schema
+    assert test_db.validSchema
 
     return True
 
@@ -66,7 +66,7 @@ def db_schema_is_valid(test_db):
 def test_init():
     test_db = DatabaseController(db.IN_MEMORY_DB_FILE, create=True)
 
-    assert isinstance(test_db.file_path, pathlib.Path)
+    assert isinstance(test_db.filePath, pathlib.Path)
     assert test_db.connection
     assert db_schema_is_valid(test_db)
 
@@ -105,7 +105,7 @@ def test_multiple_file_connections(tmp_path_factory):
 
 
 # def test_file_0_upgrade(tmp_path_factory):
-#     db.database_encryption_key = "a test key"
+#     db.databaseEncryptionKey = "a test key"
 #     db_file = tmp_path_factory.mktemp("data") / "upgrade_0.sqlite"
 #     shutil.copy2("tests/data/test.0.sqlite", db_file)
 
@@ -115,13 +115,13 @@ def test_multiple_file_connections(tmp_path_factory):
 #     assert raw_cursor.execute("PRAGMA application_id").fetchone()[0] == 0
 #     assert raw_cursor.execute("PRAGMA user_version").fetchone()[0] == 0
 
-#     test_db = DatabaseController(db_file, default_connection=True)
+#     test_db = DatabaseController(db_file, defaultConnection=True)
 
 #     assert db_schema_is_valid(test_db)
 
 
 # def test_file_3_upgrade(tmp_path_factory):
-#     db.database_encryption_key = "a test key"
+#     db.databaseEncryptionKey = "a test key"
 #     db_file = tmp_path_factory.mktemp("data") / "upgrade_3.sqlite"
 #     shutil.copy2("tests/data/test.3.sqlite", db_file)
 
@@ -131,17 +131,17 @@ def test_multiple_file_connections(tmp_path_factory):
 #     assert raw_cursor.execute("PRAGMA application_id").fetchone()[0] == APPLICATION_ID
 #     assert raw_cursor.execute("PRAGMA user_version").fetchone()[0] == 3
 
-#     test_db = DatabaseController(db_file, default_connection=True)
+#     test_db = DatabaseController(db_file, defaultConnection=True)
 
 #     assert db_schema_is_valid(test_db)
 
 
 def test_file_version_1(tmp_path_factory):
-    db.database_encryption_key = "a test key"
+    db.databaseEncryptionKey = "a test key"
     db_file = tmp_path_factory.mktemp("data") / "test_1.sqlite"
     # shutil.copy2("tests/data/test.9.sqlite", db_file)
 
-    test_db = DatabaseController(db_file, create=True, default_connection=True)
+    test_db = DatabaseController(db_file, create=True, defaultConnection=True)
 
     assert db_schema_is_valid(test_db)
 

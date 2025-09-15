@@ -2,7 +2,7 @@ CREATE TABLE app_settings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     name TEXT NOT NULL UNIQUE
 );
@@ -11,16 +11,16 @@ CREATE TABLE employer (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     name TEXT NOT NULL UNIQUE,
-    alternate_id TEXT
+    alternate_id TEXT NOT NULL UNIQUE
 );
 CREATE TABLE job (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     employee_id TEXT,
     location TEXT,
@@ -32,7 +32,7 @@ CREATE TABLE person (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     first_name TEXT,
     last_name TEXT,
@@ -45,7 +45,7 @@ CREATE TABLE personal_address (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     name TEXT,
     street TEXT,
@@ -55,34 +55,34 @@ CREATE TABLE personal_address (
     country VARCHAR(2),
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
 );
-CREATE UNIQUE INDEX personal_address_name_person_index ON personal_address (name, person_id);
+CREATE UNIQUE INDEX personal_address_namePersonIndex ON personal_address (name, person_id);
 CREATE TABLE personal_app_settings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     name TEXT,
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
 );
-CREATE UNIQUE INDEX personal_app_settings_name_person_index ON personal_app_settings (name, person_id);
+CREATE UNIQUE INDEX personal_app_settings_namePersonIndex ON personal_app_settings (name, person_id);
 CREATE TABLE personal_bank_account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     name TEXT,
     routing_number TEXT,
     account_number TEXT,
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
 );
-CREATE UNIQUE INDEX personal_bank_account_name_person_index ON personal_bank_account (name, person_id);
+CREATE UNIQUE INDEX personal_bank_account_namePersonIndex ON personal_bank_account (name, person_id);
 CREATE TABLE personal_debit_card (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     name TEXT,
     card_number VARCHAR(16),
@@ -91,18 +91,18 @@ CREATE TABLE personal_debit_card (
     expiration_year VARCHAR(4),
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
 );
-CREATE UNIQUE INDEX personal_debit_card_name_person_index ON personal_debit_card (name, person_id);
+CREATE UNIQUE INDEX personal_debit_card_namePersonIndex ON personal_debit_card (name, person_id);
 CREATE TABLE personal_o_auth2_token (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    gid TEXT NOT NULL UNIQUE,
+    g_id TEXT NOT NULL UNIQUE,
     attributes TEXT,
     client_id TEXT,
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
     encrypted_token TEXT
 );
-CREATE UNIQUE INDEX personal_o_auth2_token_client_id_person_index ON personal_o_auth2_token (client_id, person_id);
+CREATE UNIQUE INDEX personal_o_auth2_token_clientIDPersonIndex ON personal_o_auth2_token (client_id, person_id);
 CREATE TABLE settings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,

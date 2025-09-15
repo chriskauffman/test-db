@@ -41,19 +41,19 @@ class PersonalBankAccount(TestDBSQLObject):
 
     Attributes:
         name (StringCol): the name of the bank account, must be unique for this user
-        routing_number (StringCol): bank routing number (generated when not provided)
-        account_number (StringCol): bank account (generated when not provided)
+        routingNumber (StringCol): bank routing number (generated when not provided)
+        accountNumber (StringCol): bank account (generated when not provided)
         person (ForeignKey): the DB ID of the owner of the bank account
-        name_person_index (DatabaseIndex):
+        namePersonIndex (DatabaseIndex):
     """
 
-    _gid_prefix: str = "pb"
+    _gIDPrefix: str = "pb"
 
     name: StringCol = StringCol()
-    routing_number: StringCol = StringCol(
+    routingNumber: StringCol = StringCol(
         default=fake.bank_account_routing_number
     )  # fake.aba
-    account_number: StringCol = StringCol(default=fake.bank_account_number)
+    accountNumber: StringCol = StringCol(default=fake.bank_account_number)
     person: ForeignKey = ForeignKey("Person", cascade=True)
 
-    name_person_index: DatabaseIndex = DatabaseIndex(name, person, unique=True)
+    namePersonIndex: DatabaseIndex = DatabaseIndex(name, person, unique=True)

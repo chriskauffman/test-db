@@ -26,18 +26,18 @@ from test_db._debit_card import FakeDebitCard as FakeDebitCard
 from test_db._views._person import PersonView as PersonView
 
 # Global database options
-database_encryption_key: Optional[str] = None
+databaseEncryptionKey: Optional[str] = None
 
 logger = logging.getLogger(__name__)
 
 
 class _GlobalDatabaseOptions:
     @property
-    def database_encryption_key(self):
-        return database_encryption_key
+    def databaseEncryptionKey(self):
+        return databaseEncryptionKey
 
 
-def valid_connection(connection: sqlobject.connectionForURI = None) -> bool:
+def validConnection(connection: sqlobject.connectionForURI = None) -> bool:
     """Checks for valid caonnection to DatabaseController, if connection not supplied checks
     default connection
 

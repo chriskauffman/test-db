@@ -62,25 +62,25 @@ class PersonalDebitCard(TestDBSQLObject):
 
     Attributes:
         name (StringCol): the name of the debit card, must be unique for this user
-        card_number (StringCol): debit card number (generated when not provided)
+        cardNumber (StringCol): debit card number (generated when not provided)
         cvv (StringCol): debit card security code (generated when not provided)
-        expiration_month (StringCol): two digit month (generated when not provided)
-        expiration_year (StringCol): four digit year (generated when not provided)
+        expirationMonth (StringCol): two digit month (generated when not provided)
+        expirationYear (StringCol): four digit year (generated when not provided)
         person (ForeignKey): the DB ID of the owner of the bank account
-        name_person_index (DatabaseIndex):
+        namePersonIndex (DatabaseIndex):
     """
 
-    _gid_prefix: str = "pdc"
+    _gIDPrefix: str = "pdc"
 
     name: StringCol = StringCol()
-    card_number: StringCol = StringCol(length=16, default=fake.debit_card_number)
+    cardNumber: StringCol = StringCol(length=16, default=fake.debit_card_number)
     cvv: StringCol = StringCol(length=3, default=fake.debit_card_cvv)
-    expiration_month: StringCol = StringCol(
+    expirationMonth: StringCol = StringCol(
         length=2, default=fake.debit_card_expiration_month
     )
-    expiration_year: StringCol = StringCol(
+    expirationYear: StringCol = StringCol(
         length=4, default=fake.debit_card_expiration_year
     )
     person: ForeignKey = ForeignKey("Person", cascade=True)
 
-    name_person_index: DatabaseIndex = DatabaseIndex(name, person, unique=True)
+    namePersonIndex: DatabaseIndex = DatabaseIndex(name, person, unique=True)

@@ -84,10 +84,10 @@ def test_getBankAccountByName(temporary_db):
     assert test_bank_account.name == "test1"
 
     test_bank_account = test_person.getBankAccountByName(
-        "test2", routing_number="987897897"
+        "test2", routingNumber="987897897"
     )
 
-    assert test_bank_account.routing_number == "987897897"
+    assert test_bank_account.routingNumber == "987897897"
 
 
 def test_getDebitCardByName(temporary_db):
@@ -127,25 +127,25 @@ def test_getJobByEmployerAlternateId(temporary_db):
     test_job = test_person.getJobByEmployerAlternateId("employer22771")
     assert isinstance(test_job, db.Job)
     assert isinstance(
-        db.Employer.byAlternate_id("employer22771", connection=temporary_db.connection),
+        db.Employer.byAlternateID("employer22771", connection=temporary_db.connection),
         db.Employer,
     )
 
     # Test Creating an employer and using that for the job
-    db.Employer(connection=temporary_db.connection, alternate_id="employer22772")
+    db.Employer(connection=temporary_db.connection, alternateID="employer22772")
     test_job = test_person.getJobByEmployerAlternateId("employer22772")
     assert isinstance(test_job, db.Job)
-    assert test_job.employer.alternate_id == "employer22772"
+    assert test_job.employer.alternateID == "employer22772"
 
 
 def test_getOAuth2TokenByClientId(temporary_db):
     test_person = Person(connection=temporary_db.connection)
-    db.database_encryption_key = "a really good key"
+    db.databaseEncryptionKey = "a really good key"
 
     test_oauth2_token = test_person.getOAuth2TokenByClientId("testClientId1")
 
     assert isinstance(test_oauth2_token, PersonalOAuth2Token)
-    assert test_oauth2_token.client_id == "testClientId1"
+    assert test_oauth2_token.clientID == "testClientId1"
 
     test_oauth2_token = test_person.getOAuth2TokenByClientId(
         "testClientId2", token={"access_token": "testAccessToken"}
@@ -174,26 +174,26 @@ def test_getPersonAppSettingsByName(temporary_db):
 def test_resetAuth(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
-    assert len(test_person.oauth2_tokens) == 0
+    assert len(test_person.oauth2Tokens) == 0
 
     test_person.getOAuth2TokenByClientId("testClientId1")
 
-    assert len(test_person.oauth2_tokens) == 1
+    assert len(test_person.oauth2Tokens) == 1
 
     test_person.resetAuth()
 
-    assert len(test_person.oauth2_tokens) == 0
+    assert len(test_person.oauth2Tokens) == 0
 
 
 def test_resetPersonAppSettings(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
-    assert len(test_person.person_app_settings) == 0
+    assert len(test_person.personAppSettings) == 0
 
     test_person.getPersonAppSettingsByName("test1")
 
-    assert len(test_person.person_app_settings) == 1
+    assert len(test_person.personAppSettings) == 1
 
     test_person.resetPersonAppSettings()
 
-    assert len(test_person.person_app_settings) == 0
+    assert len(test_person.personAppSettings) == 0

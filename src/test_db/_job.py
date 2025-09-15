@@ -29,17 +29,17 @@ def generate_job_gid() -> str:
     return str(TypeID("j"))
 
 
-def valid_job_gid(gid: str) -> bool:
+def valid_job_gid(gID: str) -> bool:
     """Determines if a string is a valid global ID
 
     Args:
-        gid (str):
+        gID (str):
 
     Returns:
         bool: True when valid
     """
     try:
-        global_type_id = TypeID.from_string(gid)
+        global_type_id = TypeID.from_string(gID)
     except InvalidTypeIDStringException:
         return False
     except PrefixValidationException:
@@ -54,7 +54,7 @@ def valid_job_gid(gid: str) -> bool:
 class FakeEmployment(BaseProvider):
     """Faker Employement Info for Testing"""
 
-    def employee_id(self) -> str:
+    def employeeID(self) -> str:
         """Generates fake employee ID"""
         return nanoid.generate(size=20)
 
@@ -67,18 +67,18 @@ class Job(TestDBSQLObject):
     """Job SQLObject
 
     Attributes:
-        employee_id (StringCol): the person's employee ID
+        employeeID (StringCol): the person's employee ID
         location (StringCol): the job's location
-        pay_group (StringCol): the job's pay group
+        payGroup (StringCol): the job's pay group
         employer (ForeignKey): the DB ID of the employer
         person (ForeignKey): the DB ID of the employee
     """
 
-    _gid_prefix: str = "j"
+    _gIDPrefix: str = "j"
 
-    employee_id: StringCol = StringCol(default=fake.employee_id)
+    employeeID: StringCol = StringCol(default=fake.employeeID)
     location: StringCol = StringCol(default=None)
-    pay_group: StringCol = StringCol(default=None)
+    payGroup: StringCol = StringCol(default=None)
 
     employer: ForeignKey = ForeignKey("Employer", cascade=True)
     person: ForeignKey = ForeignKey("Person", cascade=True)

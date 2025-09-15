@@ -6,7 +6,7 @@ def test_init(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
     assert PersonalOAuth2Token(
-        client_id="testClientId", person=test_person, connection=temporary_db.connection
+        clientID="testClientId", person=test_person, connection=temporary_db.connection
     )
 
 
@@ -14,7 +14,7 @@ def test_init_set_token(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
     test_token = PersonalOAuth2Token(
-        client_id="testClientId",
+        clientID="testClientId",
         person=test_person,
         token={},
         connection=temporary_db.connection,
@@ -28,7 +28,7 @@ def test_set_token(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
     test_token = PersonalOAuth2Token(
-        client_id="testClientId", person=test_person, connection=temporary_db.connection
+        clientID="testClientId", person=test_person, connection=temporary_db.connection
     )
 
     test_token.token = {"access_token": "abc123", "refresh_token": "xyz123"}

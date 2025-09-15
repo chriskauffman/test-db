@@ -32,53 +32,53 @@ class Person(TestDBSQLObject):
     Note: All attributes are generated when not provided
 
     Attributes:
-        first_name (StringCol): the person's first name
-        last_name (StringCol): the person's last name
-        date_of_birth (DateCol): the person's birth date
-        social_security_number (StringCol): the person's SSN
+        firstName (StringCol): the person's first name
+        lastName (StringCol): the person's last name
+        dateOfBirth (DateCol): the person's birth date
+        socialSecurityNumber (StringCol): the person's SSN
         email (StringCol): the person's email
-        phone_number (StringCol): the person's phone number
+        phoneNumber (StringCol): the person's phone number
         addresses (MultipleJoin): list of addresses
-        addresses_select (SQLMultipleJoin):
-        bank_accounts (MultipleJoin): list of bank accounts
-        bank_accounts_select (SQLMultipleJoin):
-        debit_cards (MultipleJoin): list of debit cards
-        debit_cards_select (SQLMultipleJoin):
+        addressesSelect (SQLMultipleJoin):
+        bankAccounts (MultipleJoin): list of bank accounts
+        bankAccountsSelect (SQLMultipleJoin):
+        debitCards (MultipleJoin): list of debit cards
+        debitCardsSelect (SQLMultipleJoin):
         jobs (MultipleJoin): list of employments
-        jobs_select (SQLMultipleJoin):
-        oauth2_tokens (MultipleJoin):
-        oauth2_tokens_select (SQLMultipleJoin):
-        person_app_settings (MultipleJoin):
-        person_app_settings_select (SQLMultipleJoin):
+        jobsSelect (SQLMultipleJoin):
+        oauth2Tokens (MultipleJoin):
+        oauth2TokensSelect (SQLMultipleJoin):
+        personAppSettings (MultipleJoin):
+        personAppSettingsSelect (SQLMultipleJoin):
     """
 
-    _gid_prefix: str = "p"
+    _gIDPrefix: str = "p"
 
-    first_name: StringCol = StringCol(default=fake.first_name)
-    last_name: StringCol = StringCol(default=fake.last_name)
-    date_of_birth: DateCol = DateCol(
+    firstName: StringCol = StringCol(default=fake.first_name)
+    lastName: StringCol = StringCol(default=fake.last_name)
+    dateOfBirth: DateCol = DateCol(
         default=fake.date_of_birth(minimum_age=18, maximum_age=70)
     )
-    social_security_number: StringCol = StringCol(
+    socialSecurityNumber: StringCol = StringCol(
         alternateID=True, length=9, default=fake.ssn, unique=True
     )
     email: StringCol = StringCol(alternateID=True, default=None, unique=True)
-    phone_number: StringCol = StringCol(
+    phoneNumber: StringCol = StringCol(
         alternateID=True, default=fake.basic_phone_number, unique=True
     )
 
     addresses: MultipleJoin = MultipleJoin("PersonalAddress")
-    addresses_select: SQLMultipleJoin = SQLMultipleJoin("PersonalAddress")
-    bank_accounts: MultipleJoin = MultipleJoin("PersonalBankAccount")
-    bank_accounts_select: SQLMultipleJoin = SQLMultipleJoin("PersonalBankAccount")
-    debit_cards: MultipleJoin = MultipleJoin("PersonalDebitCard")
-    debit_cards_select: SQLMultipleJoin = SQLMultipleJoin("PersonalDebitCard")
+    addressesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalAddress")
+    bankAccounts: MultipleJoin = MultipleJoin("PersonalBankAccount")
+    bankAccountsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalBankAccount")
+    debitCards: MultipleJoin = MultipleJoin("PersonalDebitCard")
+    debitCardsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalDebitCard")
     jobs: MultipleJoin = MultipleJoin("Job")
-    jobs_select: SQLMultipleJoin = SQLMultipleJoin("Job")
-    oauth2_tokens: MultipleJoin = MultipleJoin("PersonalOAuth2Token")
-    oauth2_tokens_select: SQLMultipleJoin = SQLMultipleJoin("PersonalOAuth2Token")
-    person_app_settings: MultipleJoin = MultipleJoin("PersonalAppSettings")
-    person_app_settings_select: SQLMultipleJoin = SQLMultipleJoin("PersonalAppSettings")
+    jobsSelect: SQLMultipleJoin = SQLMultipleJoin("Job")
+    oauth2Tokens: MultipleJoin = MultipleJoin("PersonalOAuth2Token")
+    oauth2TokensSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalOAuth2Token")
+    personAppSettings: MultipleJoin = MultipleJoin("PersonalAppSettings")
+    personAppSettingsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalAppSettings")
 
     @classmethod
     def deleteByEmail(cls, email: str, **kwargs):
@@ -119,11 +119,11 @@ class Person(TestDBSQLObject):
         """Return object as dict"""
         return {
             "email": self.email,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "date_of_birth": self.date_of_birth,
-            "social_security_number": self.social_security_number,
-            "phone_number": self.phone_number,
+            "firstName": self.firstName,
+            "lastName": self.lastName,
+            "dateOfBirth": self.dateOfBirth,
+            "socialSecurityNumber": self.socialSecurityNumber,
+            "phoneNumber": self.phoneNumber,
         }
 
     @property
@@ -140,13 +140,13 @@ class Person(TestDBSQLObject):
 
     def _set_email(self, value=None):
         """Handle email generation when names provided"""
-        self.first_name = self.first_name or self.fake.first_name()
-        self.last_name = self.last_name or self.fake.last_name()
+        self.firstName = self.firstName or self.fake.first_name()
+        self.lastName = self.lastName or self.fake.last_name()
         if value:
             self._SO_set_email(value)
         else:
             self._SO_set_email(
-                f"{self.first_name.lower()}.{self.last_name.lower()}@example.com"
+                f"{self.firstName.lower()}.{self.lastName.lower()}@example.com"
             )
 
     def getAddressByName(self, name: str, **kwargs) -> PersonalAddress:
@@ -160,7 +160,7 @@ class Person(TestDBSQLObject):
             PersonalAddress: the default address or None
         """
         try:
-            return self.addresses_select.filter(PersonalAddress.q.name == name).getOne()
+            return self.addressesSelect.filter(PersonalAddress.q.name == name).getOne()
         except SQLObjectNotFound:
             return PersonalAddress(
                 connection=self._connection,
@@ -180,7 +180,7 @@ class Person(TestDBSQLObject):
             PersonalBankAccount:
         """
         try:
-            return self.bank_accounts_select.filter(
+            return self.bankAccountsSelect.filter(
                 PersonalBankAccount.q.name == name
             ).getOne()
         except SQLObjectNotFound:
@@ -202,7 +202,7 @@ class Person(TestDBSQLObject):
             PersonalDebitCard:
         """
         try:
-            return self.debit_cards_select.filter(
+            return self.debitCardsSelect.filter(
                 PersonalDebitCard.q.name == name
             ).getOne()
         except SQLObjectNotFound:
@@ -224,7 +224,7 @@ class Person(TestDBSQLObject):
             Job:
         """
         try:
-            return self.jobs_select.filter(Job.q.employer == employer_id).getOne()
+            return self.jobsSelect.filter(Job.q.employer == employer_id).getOne()
         except SQLObjectNotFound:
             try:
                 employer = Employer.get(employer_id, connection=self._connection)
@@ -237,31 +237,29 @@ class Person(TestDBSQLObject):
                 **kwargs,
             )
 
-    def getJobByEmployerAlternateId(
-        self, employer_alternate_id: str, **kwargs
-    ) -> "Job":
+    def getJobByEmployerAlternateId(self, employerAlternateID: str, **kwargs) -> "Job":
         """Find and create an Job
 
         Args:
-            employer_alternate_id (str): employer alternate_id of the job
+            employerAlternateID (str): employer alternateID of the job
             **kwargs:
 
         Returns:
             Job:
         """
         try:
-            return self.jobs_select.throughTo.employer.filter(
-                Employer.q.alternate_id == employer_alternate_id
+            return self.jobsSelect.throughTo.employer.filter(
+                Employer.q.alternateID == employerAlternateID
             ).getOne()
         except SQLObjectNotFound:
             try:
                 employer = Employer.select(
-                    Employer.q.alternate_id == employer_alternate_id,
+                    Employer.q.alternateID == employerAlternateID,
                     connection=self._connection,
                 ).getOne()
             except SQLObjectNotFound:
                 employer = Employer(
-                    connection=self._connection, alternate_id=employer_alternate_id
+                    connection=self._connection, alternateID=employerAlternateID
                 )
             return Job(
                 connection=self._connection,
@@ -270,24 +268,24 @@ class Person(TestDBSQLObject):
                 **kwargs,
             )
 
-    def getOAuth2TokenByClientId(self, client_id: str, **kwargs) -> PersonalOAuth2Token:
+    def getOAuth2TokenByClientId(self, clientID: str, **kwargs) -> PersonalOAuth2Token:
         """Find and create an PersonalOAuth2Token
 
         Args:
-            client_id (str): client ID used to generate token
+            clientID (str): client ID used to generate token
             **kwargs:
 
         Returns:
             PersonalOAuth2Token:
         """
         try:
-            return self.oauth2_tokens_select.filter(
-                PersonalOAuth2Token.q.client_id == client_id
+            return self.oauth2TokensSelect.filter(
+                PersonalOAuth2Token.q.clientID == clientID
             ).getOne()
         except SQLObjectNotFound:
             return PersonalOAuth2Token(
                 connection=self._connection,
-                client_id=client_id,
+                clientID=clientID,
                 person=self.id,
                 **kwargs,
             )
@@ -303,7 +301,7 @@ class Person(TestDBSQLObject):
             PersonalAppSettings:
         """
         try:
-            return self.person_app_settings_select.filter(
+            return self.personAppSettingsSelect.filter(
                 PersonalAppSettings.q.name == name
             ).getOne()
         except SQLObjectNotFound:

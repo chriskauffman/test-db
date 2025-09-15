@@ -21,21 +21,21 @@ class PersonalAddress(TestDBSQLObject):
         street (StringCol): the person's residence street
         locality (StringCol): the person's residence city
         region (StringCol): the person's residence state
-        postal_code (StringCol): the person's residence zip
+        postalCode (StringCol): the person's residence zip
         country (StringCol): the person's residence country
         person (ForeignKey): the DB ID of the owner of the bank account
-        name_person_index (DatabaseIndex):
+        namePersonIndex (DatabaseIndex):
     """
 
-    _gid_prefix: str = "pa"
+    _gIDPrefix: str = "pa"
 
     name: StringCol = StringCol()
     street: StringCol = StringCol(default=fake.street_address)
     locality: StringCol = StringCol(default=fake.city)
     region: StringCol = StringCol(length=2, default=fake.state_abbr)
-    postal_code: StringCol = StringCol(length=5, default=fake.postcode)
+    postalCode: StringCol = StringCol(length=5, default=fake.postcode)
     country: StringCol = StringCol(length=2, default="US")
 
     person: ForeignKey = ForeignKey("Person", cascade=True)
 
-    name_person_index: DatabaseIndex = DatabaseIndex(name, person, unique=True)
+    namePersonIndex: DatabaseIndex = DatabaseIndex(name, person, unique=True)

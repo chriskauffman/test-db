@@ -28,41 +28,39 @@ logger = logging.getLogger(__name__)
 
 class _GlobalDatabaseEncryptionOptions:
     @property
-    def database_encryption_key(self):
-        return test_db.database_encryption_key
+    def databaseEncryptionKey(self):
+        return test_db.databaseEncryptionKey
 
 
 class PersonalOAuth2Token(TestDBSQLObject):
     """PersonalOAuth2Token SQLObject
 
     Attributes:
-        client_id (StringCol): OAUth client ID
+        clientID (StringCol): OAUth client ID
         person (ForeignKey): the DB ID of the owner of the bank account
-        encrypted_token (BLOBCol): the token
-        client_id_person_index (DatabaseIndex):
+        encryptedToken (BLOBCol): the token
+        clientIDPersonIndex (DatabaseIndex):
     """
 
     # Class seems to need a base definitions
     _kdf = None
     _key = None
-    _global_database_encryption_options = None
+    _globalDatabaseEncryptionOptions = None
     __fernet = None
     __password = None
     __salt = None
 
-    _gid_prefix: str = "pot"
+    _gIDPrefix: str = "pot"
 
-    client_id: StringCol = StringCol()
+    clientID: StringCol = StringCol()
     person: ForeignKey = ForeignKey("Person", cascade=True)
-    encrypted_token: BLOBCol = BLOBCol(default=None)
+    encryptedToken: BLOBCol = BLOBCol(default=None)
 
-    client_id_person_index: DatabaseIndex = DatabaseIndex(
-        client_id, person, unique=True
-    )
+    clientIDPersonIndex: DatabaseIndex = DatabaseIndex(clientID, person, unique=True)
 
     def _init(self, *args, **kw):
         SQLObject._init(self, *args, **kw)
-        self._global_database_encryption_options = None
+        self._globalDatabaseEncryptionOptions = None
         self._kdf = None
         self._key = None
         self.__fernet = None
@@ -87,13 +85,11 @@ class PersonalOAuth2Token(TestDBSQLObject):
     def _password(self):
         """Encryption password"""
         if not self.__password:
-            self._global_database_encryption_options = (
-                _GlobalDatabaseEncryptionOptions()
-            )
-            if not self._global_database_encryption_options.database_encryption_key:
-                raise ValueError("database_encryption_key not set")
+            self._globalDatabaseEncryptionOptions = _GlobalDatabaseEncryptionOptions()
+            if not self._globalDatabaseEncryptionOptions.databaseEncryptionKey:
+                raise ValueError("databaseEncryptionKey not set")
             self.__password = (
-                self._global_database_encryption_options.database_encryption_key.encode(
+                self._globalDatabaseEncryptionOptions.databaseEncryptionKey.encode(
                     ENCODING
                 )
             )
@@ -117,16 +113,16 @@ class PersonalOAuth2Token(TestDBSQLObject):
     @property
     def token(self) -> Optional[dict]:
         """Returns OAuth 2 token - converts encrypted blob to dict"""
-        if self.encrypted_token is None:
+        if self.encryptedToken is None:
             return None
-        json_string = self._fernet.decrypt(self.encrypted_token).decode(ENCODING)
+        json_string = self._fernet.decrypt(self.encryptedToken).decode(ENCODING)
         return json.loads(json_string)
 
     @token.setter
-    def token(self, new_token: Optional[dict]):
+    def token(self, newToken: Optional[dict]):
         """Sets OAuth 2 token - converts dict to encrypted blob"""
-        if new_token is None:
-            self.encrypted_token = None
+        if newToken is None:
+            self.encryptedToken = None
         else:
-            json_string = json.dumps(new_token)
-            self.encrypted_token = self._fernet.encrypt(json_string.encode(ENCODING))
+            json_string = json.dumps(newToken)
+            self.encryptedToken = self._fernet.encrypt(json_string.encode(ENCODING))
