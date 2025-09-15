@@ -7,48 +7,11 @@ from sqlobject import (  # type: ignore
     ForeignKey,
     StringCol,
 )
-from typeid import TypeID
-from typeid.errors import (
-    InvalidTypeIDStringException,
-    PrefixValidationException,
-    SuffixValidationException,
-)
 
 from ._test_db_sqlobject import TestDBSQLObject
 
 
 logger = logging.getLogger(__name__)
-
-
-def generate_job_gid() -> str:
-    """Generate a TypeID
-
-    Returns:
-        str: new TypeID
-    """
-    return str(TypeID("j"))
-
-
-def valid_job_gid(gID: str) -> bool:
-    """Determines if a string is a valid global ID
-
-    Args:
-        gID (str):
-
-    Returns:
-        bool: True when valid
-    """
-    try:
-        global_type_id = TypeID.from_string(gID)
-    except InvalidTypeIDStringException:
-        return False
-    except PrefixValidationException:
-        return False
-    except SuffixValidationException:
-        return False
-    if global_type_id.prefix != "j":
-        return False
-    return True
 
 
 class FakeEmployment(BaseProvider):
