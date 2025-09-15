@@ -54,7 +54,7 @@ def valid_job_gid(gID: str) -> bool:
 class FakeEmployment(BaseProvider):
     """Faker Employement Info for Testing"""
 
-    def employeeID(self) -> str:
+    def employee_id(self) -> str:
         """Generates fake employee ID"""
         return nanoid.generate(size=20)
 
@@ -76,7 +76,7 @@ class Job(TestDBSQLObject):
 
     _gIDPrefix: str = "j"
 
-    employeeID: StringCol = StringCol(default=fake.employeeID)
+    employeeID: StringCol = StringCol(default=fake.employee_id)
     location: StringCol = StringCol(default=None)
     payGroup: StringCol = StringCol(default=None)
 
