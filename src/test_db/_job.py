@@ -8,7 +8,7 @@ from sqlobject import (  # type: ignore
     StringCol,
 )
 
-from ._test_db_sqlobject import FullSQLObject
+from test_db._full_sqlobject import FullSQLObject
 
 
 logger = logging.getLogger(__name__)

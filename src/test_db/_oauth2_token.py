@@ -19,7 +19,7 @@ from sqlobject import (  # type: ignore
 
 from test_db._database_options import _GlobalDatabaseOptions
 from test_db._settings import Settings
-from test_db._test_db_sqlobject import FullSQLObject
+from test_db._full_sqlobject import FullSQLObject
 
 ENCODING = "utf-8"
 

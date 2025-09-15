@@ -2,7 +2,7 @@ import logging
 
 from sqlobject import DatabaseIndex, ForeignKey, StringCol  # type: ignore
 
-from ._test_db_sqlobject import FullSQLObject
+from test_db._full_sqlobject import FullSQLObject
 
 
 logger = logging.getLogger(__name__)

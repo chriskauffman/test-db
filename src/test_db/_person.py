@@ -20,7 +20,7 @@ from test_db._employer import Employer
 from test_db._job import Job
 from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._app_settings import PersonalAppSettings
-from test_db._test_db_sqlobject import FullSQLObject
+from test_db._full_sqlobject import FullSQLObject
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)

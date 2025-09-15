@@ -4,7 +4,7 @@ import faker
 import nanoid
 from sqlobject import MultipleJoin, SQLMultipleJoin, StringCol  # type: ignore
 
-from ._test_db_sqlobject import FullSQLObject
+from test_db._full_sqlobject import FullSQLObject
 
 
 fake = faker.Faker()
