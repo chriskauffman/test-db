@@ -1,7 +1,6 @@
 import logging
 
-from sqlobject import DateTimeCol, JSONCol, SQLObject, StringCol  # type: ignore
-import sqlobject.sqlbuilder  # type: ignore
+from sqlobject import JSONCol, StringCol  # type: ignore
 
 from typeid import TypeID
 from typeid.errors import (
@@ -10,28 +9,13 @@ from typeid.errors import (
     SuffixValidationException,
 )
 
+from test_db._base_sqlobject import BaseSQLObject
 
 logger = logging.getLogger(__name__)
 
 
-class BaseSQLObject(SQLObject):
-    """TestDBSQLObject SQLObject
-
-    Attributes:
-        createdAt (DateTimeCol): creation date
-        updatedAt (DateTimeCol): last updated date
-    """
-
-    createdAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
-    updatedAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
-
-
-class TestDBSQLObject(BaseSQLObject):
-    """TestDBSQLObject SQLObject
+class FullSQLObject(BaseSQLObject):
+    """FullSQLObject SQLObject
 
     Attributes:
         gID (StringCol): global ID for the object

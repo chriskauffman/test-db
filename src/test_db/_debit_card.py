@@ -7,7 +7,7 @@ from faker.providers import BaseProvider
 
 from sqlobject import DatabaseIndex, ForeignKey, StringCol  # type: ignore
 
-from ._test_db_sqlobject import TestDBSQLObject
+from ._test_db_sqlobject import FullSQLObject
 
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,7 @@ fake = faker.Faker()
 fake.add_provider(FakeDebitCard)
 
 
-class PersonalDebitCard(TestDBSQLObject):
+class PersonalDebitCard(FullSQLObject):
     """PersonalDebitCard SQLObject
 
     Attributes:

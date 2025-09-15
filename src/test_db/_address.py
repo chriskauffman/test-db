@@ -4,7 +4,7 @@ import faker
 
 from sqlobject import DatabaseIndex, ForeignKey, StringCol  # type: ignore
 
-from ._test_db_sqlobject import TestDBSQLObject
+from ._test_db_sqlobject import FullSQLObject
 
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 fake = faker.Faker()
 
 
-class PersonalAddress(TestDBSQLObject):
+class PersonalAddress(FullSQLObject):
     """PersonalBankAccount SQLObject
 
     Attributes:

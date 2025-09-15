@@ -2,7 +2,7 @@ import logging
 
 from sqlobject import StringCol  # type: ignore
 
-from ._test_db_sqlobject import BaseSQLObject
+from test_db._base_sqlobject import BaseSQLObject
 
 
 logger = logging.getLogger(__name__)

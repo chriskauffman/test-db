@@ -2,13 +2,13 @@ import logging
 
 from sqlobject import DatabaseIndex, ForeignKey, StringCol  # type: ignore
 
-from ._test_db_sqlobject import TestDBSQLObject
+from ._test_db_sqlobject import FullSQLObject
 
 
 logger = logging.getLogger(__name__)
 
 
-class AppSettings(TestDBSQLObject):
+class AppSettings(FullSQLObject):
     """AppSettings SQLObject
 
     Attributes:
@@ -20,7 +20,7 @@ class AppSettings(TestDBSQLObject):
     name: StringCol = StringCol(alternateID=True)
 
 
-class PersonalAppSettings(TestDBSQLObject):
+class PersonalAppSettings(FullSQLObject):
     """PersonalAppSettings SQLObject
 
     Attributes:

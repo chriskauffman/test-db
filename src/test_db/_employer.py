@@ -4,14 +4,14 @@ import faker
 import nanoid
 from sqlobject import MultipleJoin, SQLMultipleJoin, StringCol  # type: ignore
 
-from ._test_db_sqlobject import TestDBSQLObject
+from ._test_db_sqlobject import FullSQLObject
 
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
-class Employer(TestDBSQLObject):
+class Employer(FullSQLObject):
     """AppSettings SQLObject
 
     Attributes:

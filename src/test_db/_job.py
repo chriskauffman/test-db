@@ -8,7 +8,7 @@ from sqlobject import (  # type: ignore
     StringCol,
 )
 
-from ._test_db_sqlobject import TestDBSQLObject
+from ._test_db_sqlobject import FullSQLObject
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ fake = faker.Faker()
 fake.add_provider(FakeEmployment)
 
 
-class Job(TestDBSQLObject):
+class Job(FullSQLObject):
     """Job SQLObject
 
     Attributes:

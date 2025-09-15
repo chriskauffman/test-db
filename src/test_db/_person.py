@@ -20,13 +20,13 @@ from test_db._employer import Employer
 from test_db._job import Job
 from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._app_settings import PersonalAppSettings
-from test_db._test_db_sqlobject import TestDBSQLObject
+from test_db._test_db_sqlobject import FullSQLObject
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
-class Person(TestDBSQLObject):
+class Person(FullSQLObject):
     """Person SQLObject
 
     Note: All attributes are generated when not provided
