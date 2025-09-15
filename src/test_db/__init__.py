@@ -34,16 +34,6 @@ fernetIterations: int = 1_200_000
 logger = logging.getLogger(__name__)
 
 
-class _GlobalDatabaseOptions:
-    @property
-    def databaseEncryptionKey(self):
-        return databaseEncryptionKey
-
-    @property
-    def fernetIterations(self):
-        return fernetIterations
-
-
 def validConnection(connection: sqlobject.connectionForURI = None) -> bool:
     """Checks for valid caonnection to DatabaseController, if connection not supplied checks
     default connection

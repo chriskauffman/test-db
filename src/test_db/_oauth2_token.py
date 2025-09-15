@@ -17,23 +17,13 @@ from sqlobject import (  # type: ignore
     StringCol,
 )
 
-import test_db as test_db
-from ._settings import Settings
-from ._test_db_sqlobject import TestDBSQLObject
+from test_db._database_options import _GlobalDatabaseOptions
+from test_db._settings import Settings
+from test_db._test_db_sqlobject import TestDBSQLObject
 
 ENCODING = "utf-8"
 
 logger = logging.getLogger(__name__)
-
-
-class _GlobalDatabaseEncryptionOptions:
-    @property
-    def databaseEncryptionKey(self):
-        return test_db.databaseEncryptionKey
-
-    @property
-    def fernetIterations(self):
-        return test_db.fernetIterations
 
 
 class PersonalOAuth2Token(TestDBSQLObject):
@@ -49,7 +39,7 @@ class PersonalOAuth2Token(TestDBSQLObject):
     # Class seems to need a base definitions
     _kdf = None
     _key = None
-    _globalDatabaseEncryptionOptions = None
+    _globalDatabaseOptions = None
     __fernet = None
     __fernetIterations = None
     __password = None
@@ -65,7 +55,7 @@ class PersonalOAuth2Token(TestDBSQLObject):
 
     def _init(self, *args, **kw):
         SQLObject._init(self, *args, **kw)
-        self._globalDatabaseEncryptionOptions = None
+        self._globalDatabaseOptions = None
         self._kdf = None
         self._key = None
         self.__fernet = None
@@ -91,31 +81,23 @@ class PersonalOAuth2Token(TestDBSQLObject):
     def _fernetIterations(self):
         """Fernet iterations"""
         if not self.__fernetIterations:
-            if not self._globalDatabaseEncryptionOptions:
-                self._globalDatabaseEncryptionOptions = (
-                    _GlobalDatabaseEncryptionOptions()
-                )
-            if not self._globalDatabaseEncryptionOptions.fernetIterations:
+            if not self._globalDatabaseOptions:
+                self._globalDatabaseOptions = _GlobalDatabaseOptions()
+            if not self._globalDatabaseOptions.fernetIterations:
                 raise ValueError("fernetIterations not set")
-            self.__fernetIterations = (
-                self._globalDatabaseEncryptionOptions.fernetIterations
-            )
+            self.__fernetIterations = self._globalDatabaseOptions.fernetIterations
         return self.__fernetIterations
 
     @property
     def _password(self):
         """Encryption password"""
         if not self.__password:
-            if not self._globalDatabaseEncryptionOptions:
-                self._globalDatabaseEncryptionOptions = (
-                    _GlobalDatabaseEncryptionOptions()
-                )
-            if not self._globalDatabaseEncryptionOptions.databaseEncryptionKey:
+            if not self._globalDatabaseOptions:
+                self._globalDatabaseOptions = _GlobalDatabaseOptions()
+            if not self._globalDatabaseOptions.databaseEncryptionKey:
                 raise ValueError("databaseEncryptionKey not set")
-            self.__password = (
-                self._globalDatabaseEncryptionOptions.databaseEncryptionKey.encode(
-                    ENCODING
-                )
+            self.__password = self._globalDatabaseOptions.databaseEncryptionKey.encode(
+                ENCODING
             )
         return self.__password
 
