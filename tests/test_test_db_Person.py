@@ -5,12 +5,12 @@ import pytest
 import sqlobject  # type: ignore
 
 import test_db as db
-from test_db._app_settings import PersonalAppSettings
 from test_db._bank_account import PersonalBankAccount
 from test_db._database_controller import DatabaseController
 from test_db._debit_card import PersonalDebitCard
 from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._person import Person
+from test_db._settings import PersonalKeyJson
 
 
 fake = faker.Faker()
@@ -154,21 +154,26 @@ def test_getOAuth2TokenByClientId(temporary_db):
     assert test_oauth2_token.token == {"access_token": "testAccessToken"}
 
 
-def test_getPersonAppSettingsByName(temporary_db):
+def test_getPersonalKeyJsonsByKey(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
-    test_person_app_settings = test_person.getPersonAppSettingsByName("test1")
-
-    assert isinstance(test_person_app_settings, PersonalAppSettings)
-    assert test_person_app_settings.name == "test1"
-
-    test_person_app_settings = test_person.getPersonAppSettingsByName(
-        "test2", attributes={"default_bank_account_id": "testUUID"}
+    test_person_app_settings = test_person.getPersonalKeyJsonsByKey(
+        "test_getPersonalKeyJsonsByKey"
     )
 
-    test_person_app_settings = test_person.getPersonAppSettingsByName("test2")
+    assert isinstance(test_person_app_settings, PersonalKeyJson)
+    assert test_person_app_settings.key == "test_getPersonalKeyJsonsByKey"
 
-    assert test_person_app_settings.attributes["default_bank_account_id"] == "testUUID"
+    test_person_app_settings = test_person.getPersonalKeyJsonsByKey(
+        "test_getPersonalKeyJsonsByKey_2",
+        value={"default_bank_account_id": "testUUID"},
+    )
+
+    test_person_app_settings = test_person.getPersonalKeyJsonsByKey(
+        "test_getPersonalKeyJsonsByKey_2"
+    )
+
+    assert test_person_app_settings.value["default_bank_account_id"] == "testUUID"
 
 
 def test_resetAuth(temporary_db):
@@ -185,15 +190,29 @@ def test_resetAuth(temporary_db):
     assert len(test_person.oauth2Tokens) == 0
 
 
-def test_resetPersonAppSettings(temporary_db):
+def test_resetPersonalKeyValues(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
-    assert len(test_person.personAppSettings) == 0
+    assert len(test_person.PersonalKeyValues) == 0
 
-    test_person.getPersonAppSettingsByName("test1")
+    test_person.getPersonalKeyValuesByKey("test_resetPersonalKeyValues")
 
-    assert len(test_person.personAppSettings) == 1
+    assert len(test_person.PersonalKeyValues) == 1
 
-    test_person.resetPersonAppSettings()
+    test_person.resetPersonalKeyValues()
 
-    assert len(test_person.personAppSettings) == 0
+    assert len(test_person.PersonalKeyValues) == 0
+
+
+def test_resetPersonalKeyJsons(temporary_db):
+    test_person = Person(connection=temporary_db.connection)
+
+    assert len(test_person.PersonalKeyJsons) == 0
+
+    test_person.getPersonalKeyJsonsByKey("test_resetPersonalKeyJsons")
+
+    assert len(test_person.PersonalKeyJsons) == 1
+
+    test_person.resetPersonalKeyJsons()
+
+    assert len(test_person.PersonalKeyJsons) == 0
