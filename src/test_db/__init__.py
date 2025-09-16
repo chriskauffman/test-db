@@ -4,8 +4,6 @@ import sqlobject  # type: ignore
 from typing_extensions import Optional
 
 from test_db._address import PersonalAddress as PersonalAddress
-from test_db._app_settings import AppSettings as AppSettings
-from test_db._app_settings import PersonalAppSettings as PersonalAppSettings
 from test_db._bank_account import PersonalBankAccount as PersonalBankAccount
 from test_db._database_controller import (
     DatabaseController as DatabaseController,
@@ -18,11 +16,12 @@ from test_db._employer import Employer as Employer
 from test_db._job import Job as Job
 from test_db._person import Person as Person
 from test_db._oauth2_token import PersonalOAuth2Token as PersonalOAuth2Token
-from test_db._settings import Settings as Settings
-
-from test_db._bank_account import FakeBankAccount as FakeBankAccount
-from test_db._debit_card import FakeDebitCard as FakeDebitCard
-
+from test_db._settings import (
+    KeyValue as KeyValue,
+    KeyJson as KeyJson,
+    PersonalKeyValue as PersonalKeyValue,
+    PersonalKeyJson as PersonalKeyJson,
+)
 from test_db._views._person import PersonView as PersonView
 
 # Global database options

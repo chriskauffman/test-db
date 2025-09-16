@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class Employer(FullSQLObject):
-    """AppSettings SQLObject
+    """Employer SQLObject
 
     Attributes:
         name (StringCol): the name of the settings

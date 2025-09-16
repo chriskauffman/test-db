@@ -6,8 +6,6 @@ import sqlobject  # type: ignore
 from typing_extensions import Union
 
 from test_db._address import PersonalAddress
-from test_db._app_settings import AppSettings
-from test_db._app_settings import PersonalAppSettings
 from test_db._bank_account import PersonalBankAccount
 from test_db._debit_card import PersonalDebitCard
 from test_db._employer import Employer
@@ -15,21 +13,27 @@ from test_db._job import Job
 from test_db._listeners import updateListener
 from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._person import Person
-from test_db._settings import Settings
+from test_db._settings import (
+    KeyJson,
+    KeyValue,
+    PersonalKeyJson,
+    PersonalKeyValue,
+)
 
 IN_MEMORY_DB_FILE = "/:memory:"
 
 TABLES = (
-    AppSettings,
     Employer,
     Job,
+    KeyJson,
+    KeyValue,
     Person,
     PersonalAddress,
-    PersonalAppSettings,
     PersonalBankAccount,
     PersonalDebitCard,
+    PersonalKeyJson,
+    PersonalKeyValue,
     PersonalOAuth2Token,
-    Settings,
 )
 
 APPLICATION_ID = 990001

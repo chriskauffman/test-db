@@ -18,8 +18,8 @@ from sqlobject import (  # type: ignore
 )
 
 from test_db._database_options import _GlobalDatabaseOptions
-from test_db._settings import Settings
 from test_db._full_sqlobject import FullSQLObject
+from test_db._settings import KeyValue
 
 ENCODING = "utf-8"
 
@@ -105,11 +105,11 @@ class PersonalOAuth2Token(FullSQLObject):
     def _salt(self):
         """Encryption salt"""
         try:
-            self.__salt = Settings.byKey(
+            self.__salt = KeyValue.byKey(
                 "oauth2_token_encryption_salt", connection=self._connection
             ).value.encode(ENCODING)
         except SQLObjectNotFound:
-            self.__salt = Settings(
+            self.__salt = KeyValue(
                 key="oauth2_token_encryption_salt",
                 value=secrets.token_hex(16),
                 connection=self._connection,

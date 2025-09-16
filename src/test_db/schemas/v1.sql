@@ -1,12 +1,3 @@
-CREATE TABLE app_settings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    g_id TEXT NOT NULL UNIQUE,
-    attributes TEXT,
-    name TEXT NOT NULL UNIQUE
-);
-CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE employer (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
@@ -16,6 +7,7 @@ CREATE TABLE employer (
     name TEXT NOT NULL UNIQUE,
     alternate_id TEXT NOT NULL UNIQUE
 );
+CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE job (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
@@ -27,6 +19,20 @@ CREATE TABLE job (
     pay_group TEXT,
     employer_id INT CONSTRAINT employer_id_exists REFERENCES employer(id) ON DELETE CASCADE,
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
+);
+CREATE TABLE key_json (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    key TEXT NOT NULL UNIQUE,
+    value TEXT
+);
+CREATE TABLE key_value (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    key TEXT NOT NULL UNIQUE,
+    value TEXT
 );
 CREATE TABLE person (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,16 +62,6 @@ CREATE TABLE personal_address (
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX personal_address_namePersonIndex ON personal_address (name, person_id);
-CREATE TABLE personal_app_settings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    g_id TEXT NOT NULL UNIQUE,
-    attributes TEXT,
-    name TEXT,
-    person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
-);
-CREATE UNIQUE INDEX personal_app_settings_namePersonIndex ON personal_app_settings (name, person_id);
 CREATE TABLE personal_bank_account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
@@ -92,6 +88,24 @@ CREATE TABLE personal_debit_card (
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX personal_debit_card_namePersonIndex ON personal_debit_card (name, person_id);
+CREATE TABLE personal_key_json (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    key TEXT NOT NULL UNIQUE,
+    value TEXT,
+    person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
+);
+CREATE UNIQUE INDEX personal_key_json_keyPersonIndex ON personal_key_json (key, person_id);
+CREATE TABLE personal_key_value (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    key TEXT NOT NULL UNIQUE,
+    value TEXT,
+    person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
+);
+CREATE UNIQUE INDEX personal_key_value_keyPersonIndex ON personal_key_value (key, person_id);
 CREATE TABLE personal_o_auth2_token (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created_at TIMESTAMP,
@@ -103,10 +117,3 @@ CREATE TABLE personal_o_auth2_token (
     encrypted_token TEXT
 );
 CREATE UNIQUE INDEX personal_o_auth2_token_clientIDPersonIndex ON personal_o_auth2_token (client_id, person_id);
-CREATE TABLE settings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    key TEXT NOT NULL UNIQUE,
-    value TEXT
-);

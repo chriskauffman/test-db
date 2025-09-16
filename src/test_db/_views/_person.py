@@ -149,8 +149,11 @@ class PersonView(BaseView):
         print("\nOAuth2 Tokens:")
         for item in self._person.oauth2Tokens:
             print(f"\t{item.clientID}")
-        print("\nPerson App Settings:")
-        for item in self._person.personAppSettings:
+        print("\nPerson App KeyValue:")
+        for item in self._person.PersonalKeyValues:
+            print(f"\t{item.name} = {item.value}")
+        print("\nPerson App KeyValue:")
+        for item in self._person.PersonalKeyJsons:
             print(f"\t{item.name}")
             print("\t\tAttributes:")
             print(json.dumps(item.attributes, indent=4))

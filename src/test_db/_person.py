@@ -19,8 +19,8 @@ from test_db._debit_card import PersonalDebitCard
 from test_db._employer import Employer
 from test_db._job import Job
 from test_db._oauth2_token import PersonalOAuth2Token
-from test_db._app_settings import PersonalAppSettings
 from test_db._full_sqlobject import FullSQLObject
+from test_db._settings import PersonalKeyJson, PersonalKeyValue
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
@@ -48,8 +48,10 @@ class Person(FullSQLObject):
         jobsSelect (SQLMultipleJoin):
         oauth2Tokens (MultipleJoin):
         oauth2TokensSelect (SQLMultipleJoin):
-        personAppSettings (MultipleJoin):
-        personAppSettingsSelect (SQLMultipleJoin):
+        PersonalKeyValues (MultipleJoin):
+        PersonalKeyValuesSelect (SQLMultipleJoin):
+        PersonalKeyJsons (MultipleJoin):
+        PersonalKeyJsonsSelect (SQLMultipleJoin):
     """
 
     _gIDPrefix: str = "p"
@@ -77,8 +79,10 @@ class Person(FullSQLObject):
     jobsSelect: SQLMultipleJoin = SQLMultipleJoin("Job")
     oauth2Tokens: MultipleJoin = MultipleJoin("PersonalOAuth2Token")
     oauth2TokensSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalOAuth2Token")
-    personAppSettings: MultipleJoin = MultipleJoin("PersonalAppSettings")
-    personAppSettingsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalAppSettings")
+    PersonalKeyValues: MultipleJoin = MultipleJoin("PersonalKeyValue")
+    PersonalKeyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyValue")
+    PersonalKeyJsons: MultipleJoin = MultipleJoin("PersonalKeyJson")
+    PersonalKeyJsonsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyJson")
 
     @classmethod
     def deleteByEmail(cls, email: str, **kwargs):
@@ -290,23 +294,42 @@ class Person(FullSQLObject):
                 **kwargs,
             )
 
-    def getPersonAppSettingsByName(self, name: str, **kwargs) -> PersonalAppSettings:
-        """Find and create an PersonalAppSettings
+    def getPersonalKeyValuesByKey(self, key: str, **kwargs) -> PersonalKeyValue:
+        """Find and create an PersonalKeyValue
 
         Args:
-            name (str): name of the PersonalAppSettings
+            key (str): name of the PersonalKeyValue
             **kwargs:
 
         Returns:
-            PersonalAppSettings:
+            PersonalKeyValue:
         """
         try:
-            return self.personAppSettingsSelect.filter(
-                PersonalAppSettings.q.name == name
+            return self.PersonalKeyValuesSelect.filter(
+                PersonalKeyValue.q.key == key
             ).getOne()
         except SQLObjectNotFound:
-            return PersonalAppSettings(
-                connection=self._connection, name=name, person=self.id, **kwargs
+            return PersonalKeyValue(
+                connection=self._connection, key=key, person=self.id, **kwargs
+            )
+
+    def getPersonalKeyJsonsByKey(self, key: str, **kwargs) -> PersonalKeyJson:
+        """Find and create an PersonalKeyJson
+
+        Args:
+            key (str): name of the PersonalKeyJson
+            **kwargs:
+
+        Returns:
+            PersonalKeyJson:
+        """
+        try:
+            return self.PersonalKeyJsonsSelect.filter(
+                PersonalKeyJson.q.key == key
+            ).getOne()
+        except SQLObjectNotFound:
+            return PersonalKeyJson(
+                connection=self._connection, key=key, person=self.id, **kwargs
             )
 
     def resetAuth(self) -> None:
@@ -315,8 +338,14 @@ class Person(FullSQLObject):
             PersonalOAuth2Token.q.person == self.id, connection=self._connection
         )
 
-    def resetPersonAppSettings(self) -> None:
-        """Reset all PersonalAppSettings for the person"""
-        PersonalAppSettings.deleteMany(
-            PersonalAppSettings.q.person == self.id, connection=self._connection
+    def resetPersonalKeyValues(self) -> None:
+        """Reset all PersonalKeyJson for the person"""
+        PersonalKeyValue.deleteMany(
+            PersonalKeyValue.q.person == self.id, connection=self._connection
+        )
+
+    def resetPersonalKeyJsons(self) -> None:
+        """Reset all PersonalKeyJson for the person"""
+        PersonalKeyJson.deleteMany(
+            PersonalKeyJson.q.person == self.id, connection=self._connection
         )
