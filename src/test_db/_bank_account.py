@@ -14,22 +14,13 @@ logger = logging.getLogger(__name__)
 class FakeBankAccount(BaseProvider):
     """Faker Bank Account Provider for Testing"""
 
-    account_number_range = (10**7, 10**12 - 1)
-    routing_number_range = (10**8, 10**9 - 1)
+    _account_number_range = (10**7, 10**12 - 1)
 
-    def bank_account_routing_number(self) -> str:
-        """Generates fake bank account routing number"""
-        # routing numbers are 9 digits long
-        return str(
-            random.randint(self.routing_number_range[0], self.routing_number_range[1])
-        ).zfill(9)
-
+    # python faker doesn't seem to provide a bank account number
     def bank_account_number(self) -> str:
         """Generates fake bank account number"""
         # account numbers usually 8 - 12 digits
-        return str(
-            random.randint(self.account_number_range[0], self.account_number_range[1])
-        )
+        return str(random.randint(*self._account_number_range))
 
 
 fake = faker.Faker()
@@ -50,9 +41,7 @@ class PersonalBankAccount(FullSQLObject):
     _gIDPrefix: str = "pb"
 
     name: StringCol = StringCol()
-    routingNumber: StringCol = StringCol(
-        default=fake.bank_account_routing_number
-    )  # fake.aba
+    routingNumber: StringCol = StringCol(default=fake.aba)
     accountNumber: StringCol = StringCol(default=fake.bank_account_number)
     person: ForeignKey = ForeignKey("Person", cascade=True)
 

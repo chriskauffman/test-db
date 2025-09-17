@@ -83,8 +83,7 @@ CREATE TABLE personal_debit_card (
     name TEXT,
     card_number VARCHAR(16),
     cvv VARCHAR(3),
-    expiration_month VARCHAR(2),
-    expiration_year VARCHAR(4),
+    expiration_date DATE,
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX personal_debit_card_namePersonIndex ON personal_debit_card (name, person_id);
