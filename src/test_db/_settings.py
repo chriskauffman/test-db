@@ -30,7 +30,7 @@ class PersonalKeyValue(BaseSQLObject):
         keyPersonIndex (DatabaseIndex):
     """
 
-    key: StringCol = StringCol(alternateID=True, unique=True)
+    key: StringCol = StringCol()
     value: StringCol = StringCol(default=None)
     person: ForeignKey = ForeignKey("Person", cascade=True)
 
@@ -59,7 +59,7 @@ class PersonalKeyJson(BaseSQLObject):
         keyPersonIndex (DatabaseIndex):
     """
 
-    key: StringCol = StringCol(alternateID=True, unique=True)
+    key: StringCol = StringCol()
     value: JSONCol = JSONCol(default=None)
     person: ForeignKey = ForeignKey("Person", cascade=True)
 
