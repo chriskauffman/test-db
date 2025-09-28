@@ -1,6 +1,5 @@
 import os
 import pathlib
-# import shutil
 
 # import sqlite3
 
@@ -104,7 +103,7 @@ def test_multiple_file_connections(tmp_path_factory):
     assert test_db_2.connection == Person(connection=test_db_2.connection)._connection
 
 
-# def test_file_0_upgrade(tmp_path_factory):
+# def test_schema_X_upgrade(tmp_path_factory):
 #     db.databaseEncryptionKey = "a test key"
 #     db_file = tmp_path_factory.mktemp("data") / "upgrade_0.sqlite"
 #     shutil.copy2("tests/data/test.0.sqlite", db_file)
@@ -114,22 +113,6 @@ def test_multiple_file_connections(tmp_path_factory):
 
 #     assert raw_cursor.execute("PRAGMA application_id").fetchone()[0] == 0
 #     assert raw_cursor.execute("PRAGMA user_version").fetchone()[0] == 0
-
-#     test_db = DatabaseController(db_file, defaultConnection=True)
-
-#     assert db_schema_is_valid(test_db)
-
-
-# def test_file_3_upgrade(tmp_path_factory):
-#     db.databaseEncryptionKey = "a test key"
-#     db_file = tmp_path_factory.mktemp("data") / "upgrade_3.sqlite"
-#     shutil.copy2("tests/data/test.3.sqlite", db_file)
-
-#     raw_connection = sqlite3.connect(db_file)
-#     raw_cursor = raw_connection.cursor()
-
-#     assert raw_cursor.execute("PRAGMA application_id").fetchone()[0] == APPLICATION_ID
-#     assert raw_cursor.execute("PRAGMA user_version").fetchone()[0] == 3
 
 #     test_db = DatabaseController(db_file, defaultConnection=True)
 

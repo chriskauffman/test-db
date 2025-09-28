@@ -90,9 +90,10 @@ class DatabaseController:
         self._raw = self.connection.getConnection()
         self._rawCursor = self._raw.cursor()
 
-        logger.debug("sqlite3_application_id=%s", self.applicationID)
-        logger.debug("sqlite3_schema_version=%s", self.dbSchemaVersion)
-        logger.debug("sqlite3_user_version=%s", self.applicationSchemaVersion)
+        logger.debug("sqlite3 filePath=%s", self.filePath)
+        logger.debug("sqlite3 application_id=%s", self.applicationID)
+        logger.debug("sqlite3 schema_version=%s", self.dbSchemaVersion)
+        logger.debug("sqlite3 user_version=%s", self.applicationSchemaVersion)
 
         if self._isTestDB:
             if self.validSchema:
@@ -102,11 +103,11 @@ class DatabaseController:
                     self._upgrade()
                 else:
                     raise ValueError("test_db file needs upgrade")
-        elif self._isEmptyDB:
-            self._new()
         else:
-            logger.error("not a test_db file")
-            raise ValueError("not a test_db file")
+            if self._isEmptyDB:
+                self._new()
+            else:
+                raise ValueError("not a test_db file")
 
         self._rawCursor.execute("PRAGMA foreign_keys = ON")
 
@@ -250,7 +251,7 @@ class DatabaseController:
         """
         logger.debug("DatabaseController: Upgrading if possible")
 
-        # self._upgrade_to_schema_2()
+        # self._upgrade_to_schema_vX()
 
         if not self.validSchema:
             # upgrade has failed for some reason
@@ -258,6 +259,24 @@ class DatabaseController:
             raise ValueError("unable to upgrade")
 
         logger.debug("DatabaseController: Upgrade successful")
+
+    # def _upgrade_to_schema_vX(self):
+    #     # Upgrade to application schema X
+    #     if (
+    #         self.applicationID == APPLICATION_ID
+    #         and self.dbSchemaVersion > 0
+    #         and self.applicationSchemaVersion == 1
+    #     ):
+    #         logger.info("Upgrading DB schema to vX")
+
+    #         # (sqlite doesn't allow alter on table with unique column)
+    #         self._rawCursor.execute("PRAGMA foreign_keys = OFF")
+
+    #         # Update tables here
+
+    #         self._rawCursor.execute("PRAGMA foreign_keys = ON")
+    #         self.applicationID = APPLICATION_ID
+    #         self.applicationSchemaVersion = CURRENT_APPLICATION_SCHEMA_VERSION
 
     def close(self):
         """Close the database"""
