@@ -1,7 +1,6 @@
 import os
 import pathlib
-
-# import sqlite3
+import shutil
 
 import test_db as db
 
@@ -121,7 +120,7 @@ def test_multiple_file_connections(tmp_path_factory):
 
 def test_file_version_1(tmp_path_factory):
     db.databaseEncryptionKey = "a test key"
-    db_file = tmp_path_factory.mktemp("data") / "test_1.sqlite"
+    db_file = tmp_path_factory.mktemp("data") / "test_file_version_1.sqlite"
     # shutil.copy2("tests/data/test.9.sqlite", db_file)
 
     test_db = DatabaseController(db_file, create=True, defaultConnection=True)
@@ -130,9 +129,22 @@ def test_file_version_1(tmp_path_factory):
 
 
 def test_open_empty(tmp_path_factory):
-    db_file = tmp_path_factory.mktemp("data") / "empty.sqlite"
+    db_file = tmp_path_factory.mktemp("data") / "test_open_empty.sqlite"
     if os.path.isfile(db_file):
         os.remove(db_file)
+    test_db = DatabaseController(db_file, create=True)
+
+    assert db_schema_is_valid(test_db)
+
+    test_users = Person.select(connection=test_db.connection)
+
+    assert not test_users.count()
+
+
+def test_open_empty_existing_file(tmp_path_factory):
+    db_file = tmp_path_factory.mktemp("data") / "test_open_empty_existing_file.sqlite"
+    shutil.copy2("tests/data/test_empty.sqlite", db_file)
+
     test_db = DatabaseController(db_file, create=True)
 
     assert db_schema_is_valid(test_db)
