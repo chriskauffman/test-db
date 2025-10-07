@@ -28,7 +28,7 @@ class EncryptedPickleValidator(BinaryValidator):
         if dbFernet:
             return pickle.loads(dbFernet.decrypt(value))
         else:
-            raise ValueError("invalid fernet")
+            raise ValueError("Invalid Fernet config, check dbFernet value")
 
     def from_python(self, value, state) -> Optional[Any]:
         if value is None:
@@ -37,7 +37,7 @@ class EncryptedPickleValidator(BinaryValidator):
         if dbFernet:
             return dbFernet.encrypt(pickle.dumps(value, protocol=self.pickleProtocol))
         else:
-            raise ValueError("invalid fernet")
+            raise ValueError("Invalid Fernet config, check dbFernet value")
 
 
 class SOEncryptedPickleCol(SOBLOBCol):
@@ -72,7 +72,7 @@ class SOEncryptedPickleCol(SOBLOBCol):
         else:
             dbFernet = getattr(connection, "dbFernet", None)
         if not dbFernet:
-            raise ValueError("invalid encryption config")
+            raise ValueError("Invalid Fernet config, check dbFernet value")
         return dbFernet
 
 

@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 import sqlobject  # type: ignore
-from typing_extensions import Union
+from typing_extensions import Optional, Union
 
 from test_db._address import Address
 from test_db._bank_account import BankAccount
@@ -66,6 +66,7 @@ class DatabaseController:
         create (bool, optional): creates the database file when True
         defaultConnection (bool, optional): sets DB as default sqlobject connection
         upgrade (bool, optional): upgrade the database if it is out of date
+        databaseEncryptionKey (Optional[str]):
 
     Raises:
         ValueError: invalid database
@@ -87,6 +88,7 @@ class DatabaseController:
         create: bool = False,
         defaultConnection: bool = False,
         upgrade: bool = False,
+        databaseEncryptionKey: Optional[str] = None,
     ) -> None:
         self._globalDatabaseOptions = _GlobalDatabaseOptions()
 
@@ -127,29 +129,34 @@ class DatabaseController:
                 updateListener, table, sqlobject.events.RowUpdateSignal
             )
 
-        try:
-            fernet_salt = KeyValue.byKey(
-                "oauth2_token_encryption_salt", connection=self.connection
-            ).value.encode(ENCODING)
-        except sqlobject.SQLObjectNotFound:
-            fernet_salt = KeyValue(
-                key="oauth2_token_encryption_salt",
-                value=secrets.token_hex(16),
-                connection=self.connection,
-            ).value.encode(ENCODING)
-        fernet_kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=fernet_salt,
-            iterations=self._globalDatabaseOptions.fernetIterations,
+        databaseEncryptionKey = (
+            databaseEncryptionKey or self._globalDatabaseOptions.databaseEncryptionKey
         )
-        if not self._globalDatabaseOptions.databaseEncryptionKey:
-            raise ValueError("databaseEncryptionKey not set")
-        fernet_key_material = self._globalDatabaseOptions.databaseEncryptionKey.encode(
-            ENCODING
-        )
-        key = base64.urlsafe_b64encode(fernet_kdf.derive(fernet_key_material))
-        self.connection.dbFernet = Fernet(key)
+        if databaseEncryptionKey:
+            try:
+                fernet_salt = KeyValue.byKey(
+                    "oauth2_token_encryption_salt", connection=self.connection
+                ).value.encode(ENCODING)
+            except sqlobject.SQLObjectNotFound:
+                fernet_salt = KeyValue(
+                    key="oauth2_token_encryption_salt",
+                    value=secrets.token_hex(16),
+                    connection=self.connection,
+                ).value.encode(ENCODING)
+            fernet_kdf = PBKDF2HMAC(
+                algorithm=hashes.SHA256(),
+                length=32,
+                salt=fernet_salt,
+                iterations=self._globalDatabaseOptions.fernetIterations,
+            )
+            fernet_key_material = databaseEncryptionKey.encode(ENCODING)
+            key = base64.urlsafe_b64encode(fernet_kdf.derive(fernet_key_material))
+            self.connection.dbFernet = Fernet(key)
+        else:
+            logger.warning(
+                "databaseEncryptionKey not set, encrypted storage not available"
+            )
+            self.connection.dbFernet = None
 
         if defaultConnection:
             sqlobject.sqlhub.processConnection = self.connection
@@ -315,6 +322,9 @@ class DatabaseController:
 
     def close(self):
         """Close the database"""
-        if sqlobject.sqlhub.processConnection == self.connection:
-            sqlobject.sqlhub.processConnection = None
+        try:
+            if sqlobject.sqlhub.processConnection == self.connection:
+                sqlobject.sqlhub.processConnection = None
+        except AttributeError:
+            pass
         self.connection.close()
