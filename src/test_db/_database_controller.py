@@ -1,38 +1,50 @@
+import base64
 import logging
 import os
 import pathlib
+import secrets
+
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 import sqlobject  # type: ignore
 from typing_extensions import Union
 
-from test_db._address import PersonalAddress
-from test_db._bank_account import PersonalBankAccount
-from test_db._debit_card import PersonalDebitCard
+from test_db._address import Address
+from test_db._bank_account import BankAccount
+from test_db._database_options import _GlobalDatabaseOptions
+from test_db._debit_card import DebitCard
 from test_db._employer import Employer
 from test_db._job import Job
+from test_db._key_value_secure import KeyValueSecure
+from test_db._key_json import KeyJson
+from test_db._key_value import KeyValue
 from test_db._listeners import updateListener
 from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._person import Person
+from test_db._personal_key_value_secure import PersonalKeyValueSecure
 from test_db._settings import (
-    KeyJson,
-    KeyValue,
     PersonalKeyJson,
     PersonalKeyValue,
 )
 
+ENCODING = "utf-8"
 IN_MEMORY_DB_FILE = "/:memory:"
 
 TABLES = (
+    Address,
+    BankAccount,
+    DebitCard,
     Employer,
     Job,
     KeyJson,
+    KeyValueSecure,
     KeyValue,
     Person,
-    PersonalAddress,
-    PersonalBankAccount,
-    PersonalDebitCard,
     PersonalKeyJson,
     PersonalKeyValue,
+    PersonalKeyValueSecure,
     PersonalOAuth2Token,
 )
 
@@ -41,10 +53,6 @@ BACKUP_PATH = "backups"
 CURRENT_APPLICATION_SCHEMA_VERSION = 1
 
 logger = logging.getLogger(__name__)
-
-
-class _GlobalDatabaseOptions:
-    pass
 
 
 class DatabaseController:
@@ -71,7 +79,7 @@ class DatabaseController:
         validSchema (bool): True if schema passes checks
     """
 
-    _globalDatabaseOptions = _GlobalDatabaseOptions()
+    _globalDatabaseOptions = None
 
     def __init__(
         self,
@@ -80,6 +88,8 @@ class DatabaseController:
         defaultConnection: bool = False,
         upgrade: bool = False,
     ) -> None:
+        self._globalDatabaseOptions = _GlobalDatabaseOptions()
+
         self.filePath = pathlib.Path(os.path.abspath(filePath))
 
         # In-memory DB can be opened with 'sqlite:/:memory:'
@@ -87,6 +97,7 @@ class DatabaseController:
             raise ValueError(f"DB file {self.filePath} does not exist")
 
         self.connection = sqlobject.connectionForURI(f"sqlite:{self.filePath}")
+
         self._raw = self.connection.getConnection()
         self._rawCursor = self._raw.cursor()
 
@@ -115,6 +126,30 @@ class DatabaseController:
             sqlobject.events.listen(
                 updateListener, table, sqlobject.events.RowUpdateSignal
             )
+
+        try:
+            fernet_salt = KeyValue.byKey(
+                "oauth2_token_encryption_salt", connection=self.connection
+            ).value.encode(ENCODING)
+        except sqlobject.SQLObjectNotFound:
+            fernet_salt = KeyValue(
+                key="oauth2_token_encryption_salt",
+                value=secrets.token_hex(16),
+                connection=self.connection,
+            ).value.encode(ENCODING)
+        fernet_kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=fernet_salt,
+            iterations=self._globalDatabaseOptions.fernetIterations,
+        )
+        if not self._globalDatabaseOptions.databaseEncryptionKey:
+            raise ValueError("databaseEncryptionKey not set")
+        fernet_key_material = self._globalDatabaseOptions.databaseEncryptionKey.encode(
+            ENCODING
+        )
+        key = base64.urlsafe_b64encode(fernet_kdf.derive(fernet_key_material))
+        self.connection.dbFernet = Fernet(key)
 
         if defaultConnection:
             sqlobject.sqlhub.processConnection = self.connection
