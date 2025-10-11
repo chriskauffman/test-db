@@ -9,7 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class KeyValue(BaseSQLObject):
-    """KeyValue SQLObject
+    """Basic key value storage
+
+    Designed for simple data storage needs such as database or app configuration
 
     Attributes:
         key (StringCol):
