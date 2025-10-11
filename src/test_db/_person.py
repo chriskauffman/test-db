@@ -4,7 +4,9 @@ import faker
 from sqlobject import (  # type: ignore
     DateCol,
     MultipleJoin,
+    RelatedJoin,
     SQLMultipleJoin,
+    SQLObject,
     SQLObjectNotFound,
     StringCol,
 )
@@ -13,14 +15,15 @@ from sqlobject import (  # type: ignore
 # from sqlobject.main import SQLObjectNotFound
 from typing_extensions import Any, Self, Union
 
-from test_db._address import PersonalAddress
-from test_db._bank_account import PersonalBankAccount
-from test_db._debit_card import PersonalDebitCard
-from test_db._employer import Employer
+from test_db._address import Address
+from test_db._bank_account import BankAccount
+from test_db._debit_card import DebitCard
+from test_db._organization import Organization
 from test_db._job import Job
-from test_db._oauth2_token import PersonalOAuth2Token
+from test_db._personal_key_json import PersonalKeyJson
+from test_db._personal_key_value import PersonalKeyValue
+from test_db._personal_key_value_secure import PersonalKeyValueSecure
 from test_db._full_sqlobject import FullSQLObject
-from test_db._settings import PersonalKeyJson, PersonalKeyValue
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
@@ -38,20 +41,17 @@ class Person(FullSQLObject):
         socialSecurityNumber (StringCol): the person's SSN
         email (StringCol): the person's email
         phoneNumber (StringCol): the person's phone number
-        addresses (MultipleJoin): list of addresses
-        addressesSelect (SQLMultipleJoin):
-        bankAccounts (MultipleJoin): list of bank accounts
-        bankAccountsSelect (SQLMultipleJoin):
-        debitCards (MultipleJoin): list of debit cards
-        debitCardsSelect (SQLMultipleJoin):
         jobs (MultipleJoin): list of employments
         jobsSelect (SQLMultipleJoin):
-        oauth2Tokens (MultipleJoin):
-        oauth2TokensSelect (SQLMultipleJoin):
         PersonalKeyValues (MultipleJoin):
         PersonalKeyValuesSelect (SQLMultipleJoin):
         PersonalKeyJsons (MultipleJoin):
         PersonalKeyJsonsSelect (SQLMultipleJoin):
+        addresses (RelatedJoin): list of addresses related to the person
+        bankAccounts (RelatedJoin): list of bank accounts related to the person
+        debitCards (RelatedJoin): list of debit cards related to the person
+        secureKeyValues (MultipleJoin): list of key/value pairs related to the person
+        secureKeyValuesSelect (SQLMultipleJoin):
     """
 
     _gIDPrefix: str = "p"
@@ -69,20 +69,18 @@ class Person(FullSQLObject):
         alternateID=True, default=fake.basic_phone_number, unique=True
     )
 
-    addresses: MultipleJoin = MultipleJoin("PersonalAddress")
-    addressesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalAddress")
-    bankAccounts: MultipleJoin = MultipleJoin("PersonalBankAccount")
-    bankAccountsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalBankAccount")
-    debitCards: MultipleJoin = MultipleJoin("PersonalDebitCard")
-    debitCardsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalDebitCard")
     jobs: MultipleJoin = MultipleJoin("Job")
     jobsSelect: SQLMultipleJoin = SQLMultipleJoin("Job")
-    oauth2Tokens: MultipleJoin = MultipleJoin("PersonalOAuth2Token")
-    oauth2TokensSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalOAuth2Token")
     PersonalKeyValues: MultipleJoin = MultipleJoin("PersonalKeyValue")
     PersonalKeyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyValue")
     PersonalKeyJsons: MultipleJoin = MultipleJoin("PersonalKeyJson")
     PersonalKeyJsonsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyJson")
+
+    addresses: RelatedJoin = RelatedJoin("Address")
+    bankAccounts: RelatedJoin = RelatedJoin("BankAccount")
+    debitCards: RelatedJoin = RelatedJoin("DebitCard")
+    secureKeyValues: MultipleJoin = MultipleJoin("PersonalKeyValueSecure")
+    secureKeyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyValueSecure")
 
     @classmethod
     def deleteByEmail(cls, email: str, **kwargs):
@@ -131,15 +129,15 @@ class Person(FullSQLObject):
         }
 
     @property
-    def defaultAddress(self) -> PersonalAddress:
+    def defaultAddress(self) -> Address:
         return self.getAddressByName("default")
 
     @property
-    def defaultBankAccount(self) -> PersonalAddress:
+    def defaultBankAccount(self) -> BankAccount:
         return self.getBankAccountByName("default")
 
     @property
-    def defaultDebitCard(self) -> PersonalAddress:
+    def defaultDebitCard(self) -> DebitCard:
         return self.getDebitCardByName("default")
 
     def _set_email(self, value=None):
@@ -153,7 +151,7 @@ class Person(FullSQLObject):
                 f"{self.firstName.lower()}.{self.lastName.lower()}@example.com"
             )
 
-    def getAddressByName(self, name: str, **kwargs) -> PersonalAddress:
+    def getAddressByName(self, name: str, **kwargs) -> Address:
         """Return the default address for the person
 
         Args:
@@ -161,19 +159,24 @@ class Person(FullSQLObject):
             **kwargs:
 
         Returns:
-            PersonalAddress: the default address or None
+            Address: the default address or None
         """
-        try:
-            return self.addressesSelect.filter(PersonalAddress.q.name == name).getOne()
-        except SQLObjectNotFound:
-            return PersonalAddress(
+        address = next(
+            (address for address in self.addresses if address.description == name),
+            None,
+        )
+        if address:
+            return address
+        else:
+            address = Address(
                 connection=self._connection,
-                person=self.id,
-                name=name,
+                description=name,
                 **kwargs,
             )
+            self.addAddress(address)
+            return address
 
-    def getBankAccountByName(self, name: str, **kwargs) -> PersonalBankAccount:
+    def getBankAccountByName(self, name: str, **kwargs) -> BankAccount:
         """Find and create bank account
 
         Args:
@@ -181,21 +184,28 @@ class Person(FullSQLObject):
             **kwargs:
 
         Returns:
-            PersonalBankAccount:
+            BankAccount:
         """
-        try:
-            return self.bankAccountsSelect.filter(
-                PersonalBankAccount.q.name == name
-            ).getOne()
-        except SQLObjectNotFound:
-            return PersonalBankAccount(
+        bank_account = next(
+            (
+                bank_account
+                for bank_account in self.bankAccounts
+                if bank_account.description == name
+            ),
+            None,
+        )
+        if bank_account:
+            return bank_account
+        else:
+            bank_account = BankAccount(
                 connection=self._connection,
-                person=self.id,
-                name=name,
+                description=name,
                 **kwargs,
             )
+            self.addBankAccount(bank_account)
+            return bank_account
 
-    def getDebitCardByName(self, name: str, **kwargs) -> PersonalDebitCard:
+    def getDebitCardByName(self, name: str, **kwargs) -> DebitCard:
         """Find and create debit card
 
         Args:
@@ -203,21 +213,28 @@ class Person(FullSQLObject):
             **kwargs:
 
         Returns:
-            PersonalDebitCard:
+            DebitCard:
         """
-        try:
-            return self.debitCardsSelect.filter(
-                PersonalDebitCard.q.name == name
-            ).getOne()
-        except SQLObjectNotFound:
-            return PersonalDebitCard(
+        debit_card = next(
+            (
+                debit_card
+                for debit_card in self.debitCards
+                if debit_card.description == name
+            ),
+            None,
+        )
+        if debit_card:
+            return debit_card
+        else:
+            debit_card = DebitCard(
                 connection=self._connection,
-                person=self.id,
-                name=name,
+                description=name,
                 **kwargs,
             )
+            self.addDebitCard(debit_card)
+            return debit_card
 
-    def getJobByEmployerId(self, employer_id: int, **kwargs) -> "Job":
+    def getJobByOrganizationId(self, employer_id: int, **kwargs) -> "Job":
         """Find and create an Job
 
         Args:
@@ -231,9 +248,9 @@ class Person(FullSQLObject):
             return self.jobsSelect.filter(Job.q.employer == employer_id).getOne()
         except SQLObjectNotFound:
             try:
-                employer = Employer.get(employer_id, connection=self._connection)
+                employer = Organization.get(employer_id, connection=self._connection)
             except SQLObjectNotFound:
-                employer = Employer(connection=self._connection, id=employer_id)
+                employer = Organization(connection=self._connection, id=employer_id)
             return Job(
                 connection=self._connection,
                 person=self.id,
@@ -241,7 +258,9 @@ class Person(FullSQLObject):
                 **kwargs,
             )
 
-    def getJobByEmployerAlternateId(self, employerAlternateID: str, **kwargs) -> "Job":
+    def getJobByOrganizationAlternateId(
+        self, employerAlternateID: str, **kwargs
+    ) -> "Job":
         """Find and create an Job
 
         Args:
@@ -253,16 +272,16 @@ class Person(FullSQLObject):
         """
         try:
             return self.jobsSelect.throughTo.employer.filter(
-                Employer.q.alternateID == employerAlternateID
+                Organization.q.alternateID == employerAlternateID
             ).getOne()
         except SQLObjectNotFound:
             try:
-                employer = Employer.select(
-                    Employer.q.alternateID == employerAlternateID,
+                employer = Organization.select(
+                    Organization.q.alternateID == employerAlternateID,
                     connection=self._connection,
                 ).getOne()
             except SQLObjectNotFound:
-                employer = Employer(
+                employer = Organization(
                     connection=self._connection, alternateID=employerAlternateID
                 )
             return Job(
@@ -272,7 +291,9 @@ class Person(FullSQLObject):
                 **kwargs,
             )
 
-    def getOAuth2TokenByClientId(self, clientID: str, **kwargs) -> PersonalOAuth2Token:
+    def getOAuth2TokenByClientId(
+        self, clientID: str, **kwargs
+    ) -> PersonalKeyValueSecure:
         """Find and create an PersonalOAuth2Token
 
         Args:
@@ -280,19 +301,25 @@ class Person(FullSQLObject):
             **kwargs:
 
         Returns:
-            PersonalOAuth2Token:
+            PersonalKeyValueSecure:
         """
-        try:
-            return self.oauth2TokensSelect.filter(
-                PersonalOAuth2Token.q.clientID == clientID
-            ).getOne()
-        except SQLObjectNotFound:
-            return PersonalOAuth2Token(
-                connection=self._connection,
-                clientID=clientID,
-                person=self.id,
-                **kwargs,
-            )
+        return self.getPersonalKeyValueSecureByKey(clientID, **kwargs)
+
+    def getPersonalKeyValueSecureByKey(
+        self, key: str, **kwargs
+    ) -> PersonalKeyValueSecure:
+        """Find and create an PersonalOAuth2Token
+
+        Args:
+            key (str): name of the PersonalKeyValue
+            **kwargs:
+
+        Returns:
+            PersonalKeyValueSecure:
+        """
+        return self.getByKey(
+            self.secureKeyValuesSelect, PersonalKeyValueSecure, key, **kwargs
+        )
 
     def getPersonalKeyValuesByKey(self, key: str, **kwargs) -> PersonalKeyValue:
         """Find and create an PersonalKeyValue
@@ -304,14 +331,9 @@ class Person(FullSQLObject):
         Returns:
             PersonalKeyValue:
         """
-        try:
-            return self.PersonalKeyValuesSelect.filter(
-                PersonalKeyValue.q.key == key
-            ).getOne()
-        except SQLObjectNotFound:
-            return PersonalKeyValue(
-                connection=self._connection, key=key, person=self.id, **kwargs
-            )
+        return self.getByKey(
+            self.PersonalKeyValuesSelect, PersonalKeyValue, key, **kwargs
+        )
 
     def getPersonalKeyJsonsByKey(self, key: str, **kwargs) -> PersonalKeyJson:
         """Find and create an PersonalKeyJson
@@ -323,29 +345,27 @@ class Person(FullSQLObject):
         Returns:
             PersonalKeyJson:
         """
+        return self.getByKey(
+            self.PersonalKeyJsonsSelect, PersonalKeyJson, key, **kwargs
+        )
+
+    def getByKey(
+        self, collection: SQLMultipleJoin, object: SQLObject, key: str, **kwargs
+    ) -> SQLObject:
+        """Find and create an PersonalKeyJson
+
+        Args:
+            collection (SQLMultipleJoin):
+            object (SQLObject):
+            key (str): name of the PersonalKeyJson
+            **kwargs:
+
+        Returns:
+            SQLObject:
+        """
         try:
-            return self.PersonalKeyJsonsSelect.filter(
-                PersonalKeyJson.q.key == key
-            ).getOne()
+            return collection.filter(object.q.key == key).getOne()
         except SQLObjectNotFound:
-            return PersonalKeyJson(
+            return object(
                 connection=self._connection, key=key, person=self.id, **kwargs
             )
-
-    def resetAuth(self) -> None:
-        """Reset all Auth values for the person"""
-        PersonalOAuth2Token.deleteMany(
-            PersonalOAuth2Token.q.person == self.id, connection=self._connection
-        )
-
-    def resetPersonalKeyValues(self) -> None:
-        """Reset all PersonalKeyJson for the person"""
-        PersonalKeyValue.deleteMany(
-            PersonalKeyValue.q.person == self.id, connection=self._connection
-        )
-
-    def resetPersonalKeyJsons(self) -> None:
-        """Reset all PersonalKeyJson for the person"""
-        PersonalKeyJson.deleteMany(
-            PersonalKeyJson.q.person == self.id, connection=self._connection
-        )

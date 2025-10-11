@@ -3,7 +3,7 @@ import random
 
 import faker
 from faker.providers import BaseProvider
-from sqlobject import DatabaseIndex, ForeignKey, StringCol  # type: ignore
+from sqlobject import RelatedJoin, StringCol  # type: ignore
 
 from test_db._full_sqlobject import FullSQLObject
 
@@ -27,22 +27,24 @@ fake = faker.Faker()
 fake.add_provider(FakeBankAccount)
 
 
-class PersonalBankAccount(FullSQLObject):
-    """PersonalBankAccount SQLObject
+class BankAccount(FullSQLObject):
+    """BankAccount SQLObject
 
     Attributes:
-        name (StringCol): the name of the bank account, must be unique for this user
         routingNumber (StringCol): bank routing number (generated when not provided)
         accountNumber (StringCol): bank account (generated when not provided)
-        person (ForeignKey): the DB ID of the owner of the bank account
-        namePersonIndex (DatabaseIndex):
+        organizations (RelatedJoin): list of employers related to the bank account
+        people (RelatedJoin): list of people related to the bank account
     """
 
-    _gIDPrefix: str = "pb"
+    _gIDPrefix: str = "ba"
 
-    name: StringCol = StringCol()
     routingNumber: StringCol = StringCol(default=fake.aba)
     accountNumber: StringCol = StringCol(default=fake.bank_account_number)
-    person: ForeignKey = ForeignKey("Person", cascade=True)
 
-    namePersonIndex: DatabaseIndex = DatabaseIndex(name, person, unique=True)
+    organizations: RelatedJoin = RelatedJoin("Organization")
+    people: RelatedJoin = RelatedJoin("Person")
+
+    # Note: A unique index on routingNumber and accountNumber is not used because
+    # many test environments have a limited set of accounts that may be used,
+    # requiring duplicate entries

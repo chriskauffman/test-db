@@ -43,5 +43,5 @@ class Job(FullSQLObject):
     location: StringCol = StringCol(default=None)
     payGroup: StringCol = StringCol(default=None)
 
-    employer: ForeignKey = ForeignKey("Employer", cascade=True)
+    employer: ForeignKey = ForeignKey("Organization", cascade=True)
     person: ForeignKey = ForeignKey("Person", cascade=True)

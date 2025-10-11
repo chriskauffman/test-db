@@ -15,19 +15,16 @@ from test_db._address import Address
 from test_db._bank_account import BankAccount
 from test_db._database_options import _GlobalDatabaseOptions
 from test_db._debit_card import DebitCard
-from test_db._employer import Employer
+from test_db._organization import Organization
 from test_db._job import Job
 from test_db._key_value_secure import KeyValueSecure
 from test_db._key_json import KeyJson
 from test_db._key_value import KeyValue
 from test_db._listeners import updateListener
-from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._person import Person
+from test_db._personal_key_json import PersonalKeyJson
+from test_db._personal_key_value import PersonalKeyValue
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
-from test_db._settings import (
-    PersonalKeyJson,
-    PersonalKeyValue,
-)
 
 ENCODING = "utf-8"
 IN_MEMORY_DB_FILE = "/:memory:"
@@ -36,16 +33,15 @@ TABLES = (
     Address,
     BankAccount,
     DebitCard,
-    Employer,
     Job,
     KeyJson,
     KeyValueSecure,
     KeyValue,
+    Organization,
     Person,
     PersonalKeyJson,
     PersonalKeyValue,
     PersonalKeyValueSecure,
-    PersonalOAuth2Token,
 )
 
 APPLICATION_ID = 990001

@@ -22,6 +22,7 @@ class FullSQLObject(BaseSQLObject):
         attributes (JSONCol): JSON attributes for the object
                               Note: the DB isn't updated until the object is saved
                                     (no DB updates when individual fields are changed)
+        description (StringCol): description of the object
     """
 
     _gIDPrefix: str = "tdb"
@@ -59,6 +60,7 @@ class FullSQLObject(BaseSQLObject):
 
     gID: StringCol = StringCol(alternateID=True, default=None)
     attributes: JSONCol = JSONCol(default=None)
+    description: StringCol = StringCol(default=None)
 
     def _set_gID(self, value):
         if value:

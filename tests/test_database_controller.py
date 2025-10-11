@@ -26,18 +26,18 @@ def db_schema_is_valid(test_db):
     assert (
         len(
             test_db._rawCursor.execute(
-                f"PRAGMA index_list({db.PersonalBankAccount.sqlmeta.table})"
+                f"PRAGMA index_list({db.BankAccount.sqlmeta.table})"
             ).fetchall()
         )
-        == 2
+        == 1
     )
     assert (
         len(
             test_db._rawCursor.execute(
-                f"PRAGMA index_list({db.PersonalDebitCard.sqlmeta.table})"
+                f"PRAGMA index_list({db.DebitCard.sqlmeta.table})"
             ).fetchall()
         )
-        == 2
+        == 1
     )
     assert (
         len(
@@ -46,14 +46,6 @@ def db_schema_is_valid(test_db):
             ).fetchall()
         )
         == 1
-    )
-    assert (
-        len(
-            test_db._rawCursor.execute(
-                f"PRAGMA index_list({db.PersonalOAuth2Token.sqlmeta.table})"
-            ).fetchall()
-        )
-        == 2
     )
 
     assert test_db.validSchema

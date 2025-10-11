@@ -5,12 +5,14 @@ import pytest
 import sqlobject  # type: ignore
 
 import test_db as db
-from test_db._bank_account import PersonalBankAccount
+from test_db._bank_account import BankAccount
 from test_db._database_controller import DatabaseController
-from test_db._debit_card import PersonalDebitCard
-from test_db._oauth2_token import PersonalOAuth2Token
+from test_db._debit_card import DebitCard
+
+# from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._person import Person
-from test_db._settings import PersonalKeyJson
+from test_db._personal_key_value_secure import PersonalKeyValueSecure
+from test_db._personal_key_json import PersonalKeyJson
 
 
 fake = faker.Faker()
@@ -80,8 +82,8 @@ def test_getBankAccountByName(temporary_db):
 
     test_bank_account = test_person.getBankAccountByName("test1")
 
-    assert isinstance(test_bank_account, PersonalBankAccount)
-    assert test_bank_account.name == "test1"
+    assert isinstance(test_bank_account, BankAccount)
+    assert test_bank_account.description == "test1"
 
     test_bank_account = test_person.getBankAccountByName(
         "test2", routingNumber="987897897"
@@ -95,45 +97,49 @@ def test_getDebitCardByName(temporary_db):
 
     test_debit_card = test_person.getDebitCardByName("test1")
 
-    assert isinstance(test_debit_card, PersonalDebitCard)
-    assert test_debit_card.name == "test1"
+    assert isinstance(test_debit_card, DebitCard)
+    assert test_debit_card.description == "test1"
 
     test_debit_card = test_person.getDebitCardByName("test2", cvv="123")
 
     assert test_debit_card.cvv == "123"
 
 
-def test_getJobByEmployerId(temporary_db):
+def test_getJobByOrganizationId(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
     # Test automatic creation of employer
-    test_job = test_person.getJobByEmployerId(22771)
+    test_job = test_person.getJobByOrganizationId(22771)
     assert isinstance(test_job, db.Job)
     assert isinstance(
-        db.Employer.get(22771, connection=temporary_db.connection), db.Employer
+        db.Organization.get(22771, connection=temporary_db.connection), db.Organization
     )
 
     # Test Creating an employer and using that for the job
-    test_employer = db.Employer(connection=temporary_db.connection, name="TestEmployer")
-    test_job = test_person.getJobByEmployerId(test_employer.id)
+    test_organization = db.Organization(
+        connection=temporary_db.connection, name="TestOrganization"
+    )
+    test_job = test_person.getJobByOrganizationId(test_organization.id)
     assert isinstance(test_job, db.Job)
-    assert test_job.employer.name == "TestEmployer"
+    assert test_job.employer.name == "TestOrganization"
 
 
-def test_getJobByEmployerAlternateId(temporary_db):
+def test_getJobByOrganizationAlternateId(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
     # Test automatic creation of employer
-    test_job = test_person.getJobByEmployerAlternateId("employer22771")
+    test_job = test_person.getJobByOrganizationAlternateId("employer22771")
     assert isinstance(test_job, db.Job)
     assert isinstance(
-        db.Employer.byAlternateID("employer22771", connection=temporary_db.connection),
-        db.Employer,
+        db.Organization.byAlternateID(
+            "employer22771", connection=temporary_db.connection
+        ),
+        db.Organization,
     )
 
     # Test Creating an employer and using that for the job
-    db.Employer(connection=temporary_db.connection, alternateID="employer22772")
-    test_job = test_person.getJobByEmployerAlternateId("employer22772")
+    db.Organization(connection=temporary_db.connection, alternateID="employer22772")
+    test_job = test_person.getJobByOrganizationAlternateId("employer22772")
     assert isinstance(test_job, db.Job)
     assert test_job.employer.alternateID == "employer22772"
 
@@ -144,14 +150,14 @@ def test_getOAuth2TokenByClientId(temporary_db):
 
     test_oauth2_token = test_person.getOAuth2TokenByClientId("testClientId1")
 
-    assert isinstance(test_oauth2_token, PersonalOAuth2Token)
-    assert test_oauth2_token.clientID == "testClientId1"
+    assert isinstance(test_oauth2_token, PersonalKeyValueSecure)
+    assert test_oauth2_token.key == "testClientId1"
 
     test_oauth2_token = test_person.getOAuth2TokenByClientId(
-        "testClientId2", token={"access_token": "testAccessToken"}
+        "testClientId2", value={"access_token": "testAccessToken"}
     )
 
-    assert test_oauth2_token.token == {"access_token": "testAccessToken"}
+    assert test_oauth2_token.value == {"access_token": "testAccessToken"}
 
 
 def test_getPersonalKeyJsonsByKey(temporary_db):
@@ -174,45 +180,3 @@ def test_getPersonalKeyJsonsByKey(temporary_db):
     )
 
     assert test_person_app_settings.value["default_bank_account_id"] == "testUUID"
-
-
-def test_resetAuth(temporary_db):
-    test_person = Person(connection=temporary_db.connection)
-
-    assert len(test_person.oauth2Tokens) == 0
-
-    test_person.getOAuth2TokenByClientId("testClientId1")
-
-    assert len(test_person.oauth2Tokens) == 1
-
-    test_person.resetAuth()
-
-    assert len(test_person.oauth2Tokens) == 0
-
-
-def test_resetPersonalKeyValues(temporary_db):
-    test_person = Person(connection=temporary_db.connection)
-
-    assert len(test_person.PersonalKeyValues) == 0
-
-    test_person.getPersonalKeyValuesByKey("test_resetPersonalKeyValues")
-
-    assert len(test_person.PersonalKeyValues) == 1
-
-    test_person.resetPersonalKeyValues()
-
-    assert len(test_person.PersonalKeyValues) == 0
-
-
-def test_resetPersonalKeyJsons(temporary_db):
-    test_person = Person(connection=temporary_db.connection)
-
-    assert len(test_person.PersonalKeyJsons) == 0
-
-    test_person.getPersonalKeyJsonsByKey("test_resetPersonalKeyJsons")
-
-    assert len(test_person.PersonalKeyJsons) == 1
-
-    test_person.resetPersonalKeyJsons()
-
-    assert len(test_person.PersonalKeyJsons) == 0

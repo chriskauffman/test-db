@@ -4,7 +4,7 @@ import logging
 
 import faker
 
-from sqlobject import DatabaseIndex, DateCol, ForeignKey, StringCol  # type: ignore
+from sqlobject import DateCol, RelatedJoin, StringCol  # type: ignore
 
 from test_db._full_sqlobject import FullSQLObject
 
@@ -23,24 +23,24 @@ def fake_credit_card_expire_to_date() -> date:
     return expire_date.replace(day=num_days)
 
 
-class PersonalDebitCard(FullSQLObject):
-    """PersonalDebitCard SQLObject
+class DebitCard(FullSQLObject):
+    """DebitCard SQLObject
 
     Attributes:
-        name (StringCol): the name of the debit card, must be unique for this user
         cardNumber (StringCol): debit card number (generated when not provided)
         cvv (StringCol): debit card security code (generated when not provided)
         expirationDate (DateCol): four digit year (generated when not provided)
-        person (ForeignKey): the DB ID of the owner of the bank account
-        namePersonIndex (DatabaseIndex):
+        organizations (RelatedJoin): list of employers related to the debit card
+        people (RelatedJoin): list of people related to the debit card
     """
 
-    _gIDPrefix: str = "pdc"
+    _gIDPrefix: str = "dc"
 
-    name: StringCol = StringCol()
+    # Note: cardNumber cannot be an alternateId because many test environments
+    # have a limited set of card numbers that may be used, requiring duplicate entries
     cardNumber: StringCol = StringCol(length=16, default=fake.credit_card_number)
     cvv: StringCol = StringCol(length=3, default=fake.credit_card_security_code)
     expirationDate: DateCol = DateCol(default=fake_credit_card_expire_to_date)
-    person: ForeignKey = ForeignKey("Person", cascade=True)
 
-    namePersonIndex: DatabaseIndex = DatabaseIndex(name, person, unique=True)
+    organizations: RelatedJoin = RelatedJoin("Organization")
+    people: RelatedJoin = RelatedJoin("Person")
