@@ -2,7 +2,7 @@ import logging
 import random
 
 import faker
-from faker.providers import BaseProvider
+from faker.providers.bank import Provider as BankProvider
 from sqlobject import RelatedJoin, StringCol  # type: ignore
 
 from test_db._full_sqlobject import FullSQLObject
@@ -11,20 +11,20 @@ from test_db._full_sqlobject import FullSQLObject
 logger = logging.getLogger(__name__)
 
 
-class FakeBankAccount(BaseProvider):
+class TestDBBankAccount(BankProvider):
     """Faker Bank Account Provider for Testing"""
 
+    # account numbers usually 8 - 12 digits
     _account_number_range = (10**7, 10**12 - 1)
 
     # python faker doesn't seem to provide a bank account number
     def bank_account_number(self) -> str:
-        """Generates fake bank account number"""
-        # account numbers usually 8 - 12 digits
+        """Generates fake integers-only bank account number"""
         return str(random.randint(*self._account_number_range))
 
 
 fake = faker.Faker()
-fake.add_provider(FakeBankAccount)
+fake.add_provider(TestDBBankAccount)
 
 
 class BankAccount(FullSQLObject):
