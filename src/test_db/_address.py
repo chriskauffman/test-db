@@ -14,7 +14,7 @@ fake = faker.Faker()
 
 
 class Address(FullSQLObject):
-    """Address SQLObject
+    """Basic address for use with other objects
 
     Attributes:
         street (StringCol): the person's residence street
@@ -30,9 +30,9 @@ class Address(FullSQLObject):
 
     street: StringCol = StringCol(default=fake.street_address)
     locality: StringCol = StringCol(default=fake.city)
-    region: StringCol = StringCol(length=2, default=fake.state_abbr)
-    postalCode: StringCol = StringCol(length=5, default=fake.postcode)
-    country: StringCol = StringCol(length=2, default="US")
+    region: StringCol = StringCol(default=fake.state_abbr)
+    postalCode: StringCol = StringCol(default=fake.postcode)
+    country: StringCol = StringCol(default=fake.country_code)
 
     organizations: RelatedJoin = RelatedJoin("Organization")
     people: RelatedJoin = RelatedJoin("Person")
