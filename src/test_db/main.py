@@ -8,10 +8,15 @@ from importlib.metadata import version as get_version
 import logging
 import os
 import pathlib
+import shutil
 import sys
 
 from pydantic import Field, SecretStr, ValidationError
-import pydantic_settings
+from pydantic_settings import (
+    BaseSettings,
+    CliSuppress,
+    SettingsConfigDict,
+)
 
 # Using typing_extensions vs typing:
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
@@ -41,6 +46,8 @@ pathlib.Path(DEFAULT_CONFIG_PATH, TOML_FILE_NAME).touch()
 SCRIPT_NAME = "tdb"
 START_TIMESTAMP = datetime.datetime.now()
 
+logger = logging.getLogger(__name__)
+
 
 def locateTomlFile() -> Optional[pathlib.Path]:
     for toml_file_path in (
@@ -52,13 +59,13 @@ def locateTomlFile() -> Optional[pathlib.Path]:
     return None
 
 
-class DBMaintenanceSettings(pydantic_settings.BaseSettings):
+class DBMaintenanceSettings(BaseSettings):
     """Test DB DB Maintenance Script
 
     Provides basic create and upgrade capability for the database
     """
 
-    model_config = pydantic_settings.SettingsConfigDict(
+    model_config = SettingsConfigDict(
         cli_implicit_flags=True,
         cli_parse_args=True,
         env_file=".env",
@@ -95,17 +102,14 @@ class DBMaintenanceSettings(pydantic_settings.BaseSettings):
     backup_path: pathlib.Path = Field(
         default=DEFAULT_BACKUP_PATH, description="directory for file backups"
     )
-    database_encryption_key: pydantic_settings.CliSuppress[SecretStr] = Field(
+    database_encryption_key: CliSuppress[SecretStr] = Field(
         default=SecretStr(""),
         description="key to be used for encrypting sensitive database contents",
     )
     database_fernet_iterations: int = Field(
         1_200_000, description="number of iterations for fernet key generation"
     )
-    db_file_path: pathlib.Path = Field(
-        default=pathlib.Path(DEFAULT_CONFIG_PATH, "test_db.sqlite"),
-        description="database file",
-    )
+    db_file_path: Optional[pathlib.Path] = Field(None, description="database file")
     log_level_file: Union[
         int, Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
     ] = Field(default="INFO", description="log level for file storage of log messages")
@@ -119,23 +123,10 @@ class DBMaintenanceSettings(pydantic_settings.BaseSettings):
     )
 
 
-class VersionSettings(pydantic_settings.BaseSettings):
-    model_config = pydantic_settings.SettingsConfigDict(
-        cli_implicit_flags=True,
-        cli_parse_args=True,
-    )
-
-    version: bool = Field(default=False, description="show the current version")
-
-
 def main() -> None:
     try:
         settings = DBMaintenanceSettings()  # type: ignore
     except ValidationError as e:
-        # if version has been requested supply that
-        if VersionSettings().version:
-            print(get_version(__package__))
-            return
         print("error: incorrect settings - check toml, env and command options")
         for error in e.errors():
             print(f"{error.get('msg')}: {error.get('loc')}")
@@ -145,33 +136,71 @@ def main() -> None:
         print(get_version(__package__))
         return
 
-    # log_file = logger_setup(
-    #     SCRIPT_NAME,
-    #     settings.log_path,
-    #     file_timestamp=START_TIMESTAMP,
-    #     log_level_screen=settings.log_level_screen,
-    #     log_level_file=settings.log_level_file,
-    # )
-    # print(f"Log: {log_file}")
-    logger = logging.getLogger(SCRIPT_NAME)
-    logger.debug("settings=%s", settings)
-
-    if (
-        settings.db_file_path != db.IN_MEMORY_DB_FILE
-        and not os.path.isfile(settings.db_file_path)
-        and not settings.create
-    ):
-        # ToDo: Any way to do this with pydantic?
-        # parser.print_usage()
-        print(f"DB file {settings.db_file_path} does not exist")
+    if settings.db_file_path:
+        if settings.db_file_path.is_file():
+            if settings.backup_path.is_dir():
+                backup_file_path = pathlib.Path(
+                    settings.backup_path,
+                    settings.db_file_path.with_suffix(
+                        f".{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+                        f"{settings.db_file_path.suffix}"
+                    ).name,
+                )
+                shutil.copy2(
+                    settings.db_file_path,
+                    backup_file_path,
+                )
+            else:
+                print(
+                    f"error: incorrect backup_path {settings.backup_path}, "
+                    "must be existing directory"
+                )
+                sys.exit(1)
+        else:
+            if settings.db_file_path != db.IN_MEMORY_DB_FILE and not settings.create:
+                print(
+                    f"error: DB file {settings.db_file_path} does not exist: "
+                    "check db_file_path in toml, env and command options or use --create"
+                )
+                sys.exit(1)
+    else:
+        print(
+            "error: DB file path not set: check db_file_path in toml, "
+            "env and command options"
+        )
         sys.exit(1)
+
+    if not settings.log_path.is_dir():
+        print(
+            f"error: incorrect log_path {settings.log_path}, must be existing directory"
+        )
+        sys.exit(1)
+
+    root_logger = logging.getLogger("")
+    root_logger.setLevel(logging.DEBUG)
+
+    logging_file_handler = logging.FileHandler(
+        pathlib.Path(settings.log_path, "test_db.log"),
+        mode="w",
+        encoding="utf-8",
+    )
+    logging_file_handler.setLevel(settings.log_level_file)
+    logging_file_handler.setFormatter(
+        logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+    )
+    root_logger.addHandler(logging_file_handler)
+
+    logging_stream_handler = logging.StreamHandler(sys.stdout)
+    logging_stream_handler.setLevel(settings.log_level_screen)
+    logging_stream_handler.setFormatter(
+        logging.Formatter("%(levelname)s - %(message)s")
+    )
+    root_logger.addHandler(logging_stream_handler)
+    logger.debug("settings=%s", settings)
 
     db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
     db.fernetIterations = settings.database_fernet_iterations
 
-    # backup_file(
-    #     settings.db_file_path, settings.backup_path, file_timestamp=START_TIMESTAMP
-    # )
     db.DatabaseController(
         settings.db_file_path,
         create=settings.create,
