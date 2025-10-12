@@ -11,8 +11,15 @@ import pathlib
 import shutil
 import sys
 
-from pydantic import BaseModel, Field, SecretStr, ValidationError
-from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, CliSuppress, SettingsConfigDict
+from pydantic import Field, SecretStr
+from pydantic_settings import (
+    BaseSettings,
+    CliApp,
+    CliPositionalArg,
+    CliSubCommand,
+    CliSuppress,
+    SettingsConfigDict,
+)
 
 # Using typing_extensions vs typing:
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
@@ -20,8 +27,6 @@ from typing_extensions import Literal, Optional, Union
 
 
 import test_db as db
-# from ._backup_file import backup_file
-# from ._logger_setup import logger_setup
 
 # OK to make dirs as default directory is "owned" by project
 DEFAULT_CONFIG_PATH = pathlib.Path(pathlib.Path.home(), ".test_db")
@@ -114,7 +119,6 @@ def main() -> None:
                 # working_person.getBankAccountByName(self.add_bank_account)
                 pass
             else:
-                breakpoint()
                 pass
 
     class DebitCard(BaseSettings):
@@ -143,38 +147,11 @@ def main() -> None:
         def cli_cmd(self) -> None:
             CliApp.run_subcommand(self)
 
-    class PersonAdd(BaseSettings):
-        random: bool = False
-
-        def cli_cmd(self) -> None:
-            if self.random:
-                add_person = db.Person()
-                logger.warning(
-                    "Overriding user %s with randomly generated user %s",
-                    self.select_person,
-                    add_person.email,
-                )
-            else:
-                print(f"adding people random={self.random}")
-                add_person = db.PersonView.add()
-                if not add_person:
-                    logger.error("user add failed")
-                    sys.exit(1)
-                logger.warning(
-                    "Overriding user %s with user %s",
-                    self.select_person,
-                    add_person.email,
-                )
-            # As email is generated, argument must be set to new email
-            self.select_person = add_person.email
-
     class PersonDelete(Person):
-
         def cli_cmd(self) -> None:
             pass
 
     class PersonEdit(Person):
-
         def cli_cmd(self) -> None:
             person = db.Person.findByEmail(self.email)
             if person:
@@ -183,7 +160,6 @@ def main() -> None:
                 print("error: email not found")
 
     class PersonView(Person):
-
         def cli_cmd(self) -> None:
             person = db.Person.findByEmail(self.email)
             if person:
@@ -199,31 +175,17 @@ def main() -> None:
 
         def cli_cmd(self) -> None:
             if self.random:
-                add_person = db.Person()
-                logger.warning(
-                    "Overriding user %s with randomly generated user %s",
-                    self.select_person,
-                    add_person.email,
-                )
+                print(f"{db.Person().email} added")
             else:
-                print(f"adding people random={self.random}")
-                add_person = db.PersonView.add()
-                if not add_person:
-                    logger.error("user add failed")
-                    sys.exit(1)
-                logger.warning(
-                    "Overriding user %s with user %s",
-                    self.select_person,
-                    add_person.email,
-                )
-            # As email is generated, argument must be set to new email
-            self.select_person = add_person.email
+                new_person = db.PersonView.add()
+                if new_person:
+                    print(f"{new_person.email} added")
 
     class PeopleList(People):
         def cli_cmd(self) -> None:
             print("listing persons")
             db.PersonView.list()
-        
+
     class Add(BaseSettings):
         bank_account: CliSubCommand[BankAccountAdd]
         debit_card: CliSubCommand[DebitCardAdd]
@@ -239,7 +201,6 @@ def main() -> None:
         def cli_cmd(self) -> None:
             CliApp.run_subcommand(self)
 
-
     class List(BaseSettings):
         person: CliSubCommand[PeopleList]
 
@@ -247,9 +208,8 @@ def main() -> None:
             CliApp.run_subcommand(self)
 
     class Version(BaseSettings):
-
         def cli_cmd(self) -> None:
-            print("0.1.0")
+            print(get_version(__package__))
 
     class View(BaseSettings):
         person: CliSubCommand[PersonView]
