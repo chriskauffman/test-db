@@ -146,9 +146,6 @@ class PersonView(BaseView):
         print("\nJobs:")
         for item in self._person.jobs:
             print(f"\t{item.employeeID}, {item.payGroup}")
-        print("\nOAuth2 Tokens:")
-        for item in self._person.oauth2Tokens:
-            print(f"\t{item.clientID}")
         print("\nPerson App KeyValue:")
         for item in self._person.PersonalKeyValues:
             print(f"\t{item.name} = {item.value}")
