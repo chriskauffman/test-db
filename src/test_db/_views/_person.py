@@ -136,11 +136,11 @@ class PersonView(BaseView):
             )
         print("\nBank Accounts:")
         for item in self._person.bankAccounts:
-            print(f"\t{item.name}, {item.routingNumber}, {item.accountNumber}")
+            print(f"\t{item.description}, {item.routingNumber}, {item.accountNumber}")
         print("\nDebit Cards:")
         for item in self._person.debitCards:
             print(
-                f"\t{item.name}, {item.cardNumber}, {item.cvv}, "
+                f"\t{item.description}, {item.cardNumber}, {item.cvv}, "
                 f"{item.expirationMonth}/{item.expirationYear}"
             )
         print("\nJobs:")
