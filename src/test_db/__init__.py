@@ -23,6 +23,7 @@ from test_db._personal_key_value import PersonalKeyValue as PersonalKeyValue
 from test_db._personal_key_value_secure import (
     PersonalKeyValueSecure as PersonalKeyValueSecure,
 )
+from test_db._views._debit_card import DebitCardView as DebitCardView
 from test_db._views._person import PersonView as PersonView
 
 # Global database options

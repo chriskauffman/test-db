@@ -7,6 +7,7 @@ from typing_extensions import Optional
 
 from test_db import Person
 from test_db._views._base_view import BaseView
+from test_db._views._debit_card import DebitCardView
 
 logger = logging.getLogger(__name__)
 
@@ -139,10 +140,7 @@ class PersonView(BaseView):
             print(f"\t{item.description}, {item.routingNumber}, {item.accountNumber}")
         print("\nDebit Cards:")
         for item in self._person.debitCards:
-            print(
-                f"\t{item.description}, {item.cardNumber}, {item.cvv}, "
-                f"{item.expirationMonth}/{item.expirationYear}"
-            )
+            DebitCardView(item).view()
         print("\nJobs:")
         for item in self._person.jobs:
             print(f"\t{item.employeeID}, {item.payGroup}")

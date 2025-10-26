@@ -1,7 +1,4 @@
-"""db_maintenance
-
-Basic tools for managing a user DB
-"""
+"""test_db maintenance script"""
 
 import datetime
 from importlib.metadata import version as get_version
@@ -28,8 +25,7 @@ import typer
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Literal, Optional, Union
 
-
-import test_db as db
+import test_db
 
 # OK to make dirs as default directory is "owned" by project
 DEFAULT_CONFIG_PATH = pathlib.Path(pathlib.Path.home(), ".test_db")
@@ -47,8 +43,6 @@ if not os.path.exists(DEFAULT_BACKUP_PATH):
 TOML_FILE_NAME = "test_db.toml"
 pathlib.Path(DEFAULT_CONFIG_PATH, TOML_FILE_NAME).touch()
 
-SCRIPT_NAME = "tdb"
-START_TIMESTAMP = datetime.datetime.now()
 
 logger = logging.getLogger(__name__)
 app = typer.Typer()
@@ -77,8 +71,7 @@ def app_callback(
         bool, typer.Option(help="upgrade the database if it is out of date")
     ] = False,
 ):
-    print(db_file_path)
-    settings = DBMaintenanceSettings()
+    settings = Settings()
     if db_file_path:
         if db_file_path.is_file():
             if settings.backup_path.is_dir():
@@ -100,7 +93,7 @@ def app_callback(
                 )
                 sys.exit(1)
         else:
-            if db_file_path != db.IN_MEMORY_DB_FILE and not create:
+            if db_file_path != test_db.IN_MEMORY_DB_FILE and not create:
                 print(
                     f"error: DB file {db_file_path} does not exist: "
                     "check db_file_path in toml, env and command options or use --create"
@@ -141,10 +134,10 @@ def app_callback(
     root_logger.addHandler(logging_stream_handler)
     logger.debug("settings=%s", settings)
 
-    db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
-    db.fernetIterations = settings.database_fernet_iterations
+    test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
+    test_db.fernetIterations = settings.database_fernet_iterations
 
-    db.DatabaseController(
+    test_db.DatabaseController(
         db_file_path,
         create=create,
         defaultConnection=True,
@@ -166,13 +159,13 @@ def bank_account_add(
     description: Optional[str] = None, person_email: Optional[str] = None
 ):
     if person_email:
-        person = db.Person.findByEmail(person_email)
+        person = test_db.Person.findByEmail(person_email)
         if person:
             person.getBankAccountByName(description or "default")
         else:
             print("error: email not found")
     else:
-        db.BankAccount(description=description)
+        test_db.BankAccount(description=description)
 
 
 @add_app.command("debit-card")
@@ -180,21 +173,21 @@ def debit_card_add(
     description: Optional[str] = None, person_email: Optional[str] = None
 ):
     if person_email:
-        person = db.Person.findByEmail(person_email)
+        person = test_db.Person.findByEmail(person_email)
         if person:
             person.getDebitCardByName(description or "default")
         else:
             print("error: email not found")
     else:
-        db.DebitCard(description=description)
+        test_db.DebitCard(description=description)
 
 
 @add_app.command("person")
 def person_add(random: bool = False):
     if random:
-        print(f"{db.Person().email} added")
+        print(f"{test_db.Person().email} added")
     else:
-        new_person = db.PersonView.add()
+        new_person = test_db.PersonView.add()
         if new_person:
             print(f"{new_person.email} added")
 
@@ -205,9 +198,9 @@ app.add_typer(edit_app, name="edit")
 
 @edit_app.command("person")
 def person_edit(email: str):
-    person = db.Person.findByEmail(email)
+    person = test_db.Person.findByEmail(email)
     if person:
-        db.PersonView(person).edit()
+        test_db.PersonView(person).edit()
     else:
         print("error: email not found")
 
@@ -216,9 +209,14 @@ list_app = typer.Typer()
 app.add_typer(list_app, name="list")
 
 
+@list_app.command("debit-cards")
+def debit_card_list():
+    test_db.DebitCardView.list()
+
+
 @list_app.command("people")
 def people_list():
-    db.PersonView.list()
+    test_db.PersonView.list()
 
 
 view_app = typer.Typer()
@@ -227,14 +225,14 @@ app.add_typer(view_app, name="view")
 
 @view_app.command("person")
 def person_view(email: str, db_file_path: Optional[pathlib.Path] = None):
-    person = db.Person.findByEmail(email)
+    person = test_db.Person.findByEmail(email)
     if person:
-        db.PersonView(person).viewDetails()
+        test_db.PersonView(person).viewDetails()
     else:
         print("error: email not found")
 
 
-class DBMaintenanceSettings(BaseSettings):
+class Settings(BaseSettings):
     """Test DB DB Maintenance Script
 
     Provides basic create and upgrade capability for the database
@@ -289,13 +287,6 @@ class DBMaintenanceSettings(BaseSettings):
             file_secret_settings,
             TomlConfigSettingsSource(settings_cls),
         )
-
-        # if self.attach_to_person:
-        # working_person.getBankAccountByName(self.add_bank_account)
-
-        # working_person.getDebitCardByName(self.add_debit_card)
-
-        # working_person.getJobByProviderId(self.add_job)
 
 
 def main() -> None:
