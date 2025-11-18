@@ -59,8 +59,8 @@ class DebitCardView(BaseView):
         """Display brief details of the debit card"""
         print(
             f"{self._debit_card.gID}, "
-            f"{self._debit_card.description}, "
             f"{self._debit_card.cardNumber}, "
             f"{self._debit_card.cvv}, "
-            f"{self._debit_card.expirationDate.strftime('%m/%y')}"
+            f"{self._debit_card.expirationDate.strftime('%m/%y')}, "
+            f"{str(self._debit_card.description)[:10]}"
         )

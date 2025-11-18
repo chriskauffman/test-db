@@ -59,5 +59,5 @@ class BankAccountView(BaseView):
     def view(self):
         """Display brief details of the debit card"""
         print(
-            f"{self._bank_account.gID}, {self._bank_account.routingNumber}, {self._bank_account.accountNumber}"
+            f"{self._bank_account.gID}, {self._bank_account.routingNumber}, {self._bank_account.accountNumber}, {str(self._bank_account.description)[:10]}"
         )

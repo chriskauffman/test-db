@@ -65,9 +65,15 @@ class AddressView(BaseView):
     def view(self):
         """Display brief details of the address"""
         print(
-            f"{self._address.gID}, {self._address.street}, {self._address.locality}, {self._address.region} {self._address.postalCode}"
+            f"{self._address.gID}, {self._address.street}, {self._address.postalCode}, {str(self._address.description)[:10]}"
         )
 
     def viewDetails(self):
         """Display the person"""
-        self.view()
+        print(f"Address ID: {self._address.gID}")
+        print(f"\n{self._address.street}")
+        print(
+            f"{self._address.locality}, {self._address.region} {self._address.postalCode}"
+        )
+        print(self._address.country)
+        print(f"\nDescription: {str(self._address.description)[:10]}")
