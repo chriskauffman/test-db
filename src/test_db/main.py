@@ -19,6 +19,8 @@ from pydantic_settings import (
     TomlConfigSettingsSource,
 )
 
+from sqlobject import SQLObjectNotFound  # type: ignore
+
 import typer
 
 # Using typing_extensions vs typing:
@@ -162,13 +164,14 @@ app.add_typer(add_app, name="add")
 @add_app.command("address")
 def address_add(occupant_gid: Optional[str] = None):
     if occupant_gid:
-        occupant = test_db.Person.byGID(occupant_gid) or test_db.Organization.byGID(
-            occupant_gid
-        )
-        if occupant:
-            test_db.AddressView.add(occupant=occupant)
-        else:
-            print("error: person or organization not found")
+        try:
+            occupant = test_db.Person.byGID(occupant_gid) or test_db.Organization.byGID(
+                occupant_gid
+            )
+        except SQLObjectNotFound as exc:
+            print(f"error: {str(exc)}")
+            return
+        test_db.AddressView.add(occupant=occupant)
     else:
         test_db.AddressView.add()
 
@@ -176,11 +179,15 @@ def address_add(occupant_gid: Optional[str] = None):
 @add_app.command("bank-account")
 def bank_account_add(owner_gid: Optional[str] = None):
     if owner_gid:
-        owner = test_db.Person.byGID(owner_gid) or test_db.Organization.byGID(owner_gid)
-        if owner:
-            test_db.BankAccountView.add(owner=owner)
-        else:
-            print("error: person or organization not found")
+        try:
+            owner = test_db.Person.byGID(owner_gid)
+        except SQLObjectNotFound:
+            try:
+                test_db.Organization.byGID(owner_gid)
+            except SQLObjectNotFound:
+                print("error: person or organization not found")
+                return
+        test_db.BankAccountView.add(owner=owner)
     else:
         test_db.BankAccountView.add()
 
@@ -188,11 +195,15 @@ def bank_account_add(owner_gid: Optional[str] = None):
 @add_app.command("debit-card")
 def debit_card_add(owner_gid: Optional[str] = None):
     if owner_gid:
-        owner = test_db.Person.byGID(owner_gid) or test_db.Organization.byGID(owner_gid)
-        if owner:
-            test_db.DebitCardView.add(owner=owner)
-        else:
-            print("error: person or organization not found")
+        try:
+            owner = test_db.Person.byGID(owner_gid)
+        except SQLObjectNotFound:
+            try:
+                test_db.Organization.byGID(owner_gid)
+            except SQLObjectNotFound:
+                print("error: person or organization not found")
+                return
+        test_db.DebitCardView.add(owner=owner)
     else:
         test_db.DebitCardView.add()
 
@@ -227,11 +238,12 @@ def person_add():
 
 @add_app.command("personal-key-value-secure")
 def personal_key_value_secure_add(person_gid: str, key: str, value: str):
-    person = test_db.Person.byGID(person_gid)
-    if person:
-        test_db.PersonalKeyValueSecureView.add(person=person, key=key, value=value)
-    else:
-        print("error: person not found")
+    try:
+        person = test_db.Person.byGID(person_gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.PersonalKeyValueSecureView.add(person=person, key=key, value=value)
 
 
 edit_app = typer.Typer()
@@ -240,65 +252,72 @@ app.add_typer(edit_app, name="edit")
 
 @edit_app.command("address")
 def address_edit(gid: str):
-    address = test_db.Address.byGID(gid)
-    if address:
-        test_db.AddressView(address).edit()
-    else:
-        print("error: gID not found")
+    try:
+        address = test_db.Address.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.AddressView(address).edit()
 
 
 @edit_app.command("bank-account")
 def bank_account_edit(gid: str):
-    bank_account = test_db.BankAccount.byGID(gid)
-    if bank_account:
-        test_db.BankAccountView(bank_account).edit()
-    else:
-        print("error: gID not found")
+    try:
+        bank_account = test_db.BankAccount.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.BankAccountView(bank_account).edit()
 
 
 @edit_app.command("debit-card")
 def debit_card_edit(gid: str):
-    debit_card = test_db.DebitCard.byGID(gid)
-    if debit_card:
-        test_db.DebitCardView(debit_card).edit()
-    else:
-        print("error: gID not found")
+    try:
+        debit_card = test_db.DebitCard.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.DebitCardView(debit_card).edit()
 
 
 @edit_app.command("job")
 def job_edit(gid: str):
-    job = test_db.Job.byGID(gid)
-    if job:
-        test_db.JobView(job).edit()
-    else:
-        print("error: gID not found")
+    try:
+        job = test_db.Job.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.JobView(job).edit()
 
 
 @edit_app.command("key-value")
 def key_value_edit(key: str):
-    key_value = test_db.KeyValue.byKey(key)
-    if key_value:
-        test_db.KeyValueView(key_value).edit()
-    else:
-        print("error: key not found")
+    try:
+        key_value = test_db.KeyValue.byKey(key)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.KeyValueView(key_value).edit()
 
 
 @edit_app.command("organization")
 def organization_edit(gid: str):
-    organization = test_db.Organization.byGID(gid)
-    if organization:
-        test_db.OrganizationView(organization).edit()
-    else:
-        print("error: gID not found")
+    try:
+        organization = test_db.Organization.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.OrganizationView(organization).edit()
 
 
 @edit_app.command("person")
 def person_edit(gid: str):
-    person = test_db.Person.byGID(gid)
-    if person:
-        test_db.PersonView(person).edit()
-    else:
-        print("error: gID not found")
+    try:
+        person = test_db.Person.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.PersonView(person).edit()
 
 
 list_app = typer.Typer()
@@ -351,65 +370,72 @@ app.add_typer(view_app, name="view")
 
 @view_app.command("address")
 def address_view(gid: str):
-    address = test_db.Address.byGID(gid)
-    if address:
-        test_db.AddressView(address).viewDetails()
-    else:
-        print("error: ID not found")
+    try:
+        address = test_db.Address.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.AddressView(address).viewDetails()
 
 
 @view_app.command("bank-account")
 def bank_account_view(gid: str):
-    bank_account = test_db.BankAccount.byGID(gid)
-    if bank_account:
-        test_db.BankAccountView(bank_account).viewDetails()
-    else:
-        print("error: ID not found")
+    try:
+        bank_account = test_db.BankAccount.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.BankAccountView(bank_account).viewDetails()
 
 
 @view_app.command("debit-card")
 def debit_card_view(gid: str):
-    debit_card = test_db.DebitCard.byGID(gid)
-    if debit_card:
-        test_db.DebitCardView(debit_card).viewDetails()
-    else:
-        print("error: ID not found")
+    try:
+        debit_card = test_db.DebitCard.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.DebitCardView(debit_card).viewDetails()
 
 
 @view_app.command("job")
 def job_view(gid: str):
-    job = test_db.Job.byGID(gid)
-    if job:
-        test_db.JobView(job).viewDetails()
-    else:
-        print("error: ID not found")
+    try:
+        job = test_db.Job.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.JobView(job).viewDetails()
 
 
 @view_app.command("key-value")
 def key_value_view(key: str):
-    key_value = test_db.KeyValue.byKey(key)
-    if key_value:
-        test_db.KeyValueView(key_value).viewDetails()
-    else:
-        print("error: key not found")
+    try:
+        key_value = test_db.KeyValue.byKey(key)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.KeyValueView(key_value).viewDetails()
 
 
 @view_app.command("organization")
 def organization_view(gid: str):
-    organization = test_db.Organization.byGID(gid)
-    if organization:
-        test_db.OrganizationView(organization).viewDetails()
-    else:
-        print("error: ID not found")
+    try:
+        organization = test_db.Organization.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.OrganizationView(organization).viewDetails()
 
 
 @view_app.command("person")
 def person_view(gid: str):
-    person = test_db.Person.byGID(gid)
-    if person:
-        test_db.PersonView(person).viewDetails()
-    else:
-        print("error: email not found")
+    try:
+        person = test_db.Person.byGID(gid)
+    except SQLObjectNotFound as exc:
+        print(f"error: {str(exc)}")
+        return
+    test_db.PersonView(person).viewDetails()
 
 
 @view_app.command("personal-key-value-secure")
