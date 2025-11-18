@@ -1,6 +1,10 @@
 import logging
 
-from test_db import DebitCard
+from typing_extensions import List, Union
+
+from sqlobject import SQLObject  # type: ignore
+
+from test_db import DebitCard, Organization, Person
 from test_db._views._base_view import BaseView
 
 logger = logging.getLogger(__name__)
@@ -18,18 +22,43 @@ class DebitCardView(BaseView):
     _user_inputs_required: bool = True
 
     @classmethod
-    def list(cls):
+    def add(self, owner: Union[Organization, Person, None] = None) -> DebitCard:
+        """Add a debit card"""
+        debit_card = DebitCard()
+        if owner:
+            debit_card.addPerson(owner)
+        print(debit_card.gID)
+        return debit_card
+
+    @classmethod
+    def list(cls, debit_cards: Union[List[DebitCard], SQLObject.select, None] = None):
         """List all people"""
-        for debit_card in DebitCard.select():
+        if debit_cards is None:
+            debit_cards = DebitCard.select()
+        for debit_card in debit_cards:
             DebitCardView(debit_card).view()
 
     def __init__(self, debit_card: DebitCard, **kwargs):
         super().__init__(**kwargs)
         self._debit_card = debit_card
 
+    def edit(self):
+        """Edit the debit card"""
+        self._debit_card.description = self._get_str_input(
+            "Description", self._debit_card.description
+        )
+        self._debit_card.cardNumber = self._get_str_input(
+            "Card Number", self._debit_card.cardNumber
+        )
+        self._debit_card.cvv = self._get_str_input("CVV", self._debit_card.cvv)
+        self._debit_card.expirationDate = self._get_str_input(
+            "Expiration Date (MM/YY)", self._debit_card.expirationDate.strftime("%m/%y")
+        )
+
     def view(self):
         """Display brief details of the debit card"""
         print(
+            f"{self._debit_card.gID}, "
             f"{self._debit_card.description}, "
             f"{self._debit_card.cardNumber}, "
             f"{self._debit_card.cvv}, "

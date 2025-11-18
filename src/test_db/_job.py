@@ -33,7 +33,7 @@ class Job(FullSQLObject):
         employeeID (StringCol): the person's employee ID
         location (StringCol): the job's location
         payGroup (StringCol): the job's pay group
-        employer (ForeignKey): the DB ID of the employer
+        organization (ForeignKey): the DB ID of the employer
         person (ForeignKey): the DB ID of the employee
     """
 
@@ -43,5 +43,5 @@ class Job(FullSQLObject):
     location: StringCol = StringCol(default=None)
     payGroup: StringCol = StringCol(default=None)
 
-    employer: ForeignKey = ForeignKey("Organization", cascade=True)
+    organization: ForeignKey = ForeignKey("Organization", cascade=True)
     person: ForeignKey = ForeignKey("Person", cascade=True)

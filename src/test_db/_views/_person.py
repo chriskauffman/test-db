@@ -1,13 +1,16 @@
-import datetime
-import json
 import logging
 
-from pydantic import EmailStr
-from typing_extensions import Optional
+from typing_extensions import List, Union
+
+from sqlobject import SQLObject  # type: ignore
 
 from test_db import Person
 from test_db._views._base_view import BaseView
+from test_db._views._address import AddressView
+from test_db._views._bank_account import BankAccountView
 from test_db._views._debit_card import DebitCardView
+from test_db._views._job import JobView
+from test_db._views._personal_key_value_secure import PersonalKeyValueSecureView
 
 logger = logging.getLogger(__name__)
 
@@ -24,53 +27,21 @@ class PersonView(BaseView):
     _user_inputs_required: bool = True
 
     @classmethod
-    def list(cls):
-        """List all people"""
-        for person in Person.select():
-            PersonView(person).view()
+    def add(cls) -> Person:
+        """Add a person"""
+        new_person = Person()
+        if BaseView.interactive:
+            PersonView(new_person).edit()
+        print(new_person.gID)
+        return new_person
 
     @classmethod
-    def add(
-        cls,
-        email: Optional[EmailStr] = None,
-        firstName: Optional[str] = None,
-        lastName: Optional[str] = None,
-    ) -> Optional[Person]:
-        """Add a person"""
-        if firstName and lastName and not email:
-            email = f"{firstName.lower()}.{lastName.lower()}@example.com"
-        if cls._user_inputs_required:
-            firstName = cls._get_input("First Name", str, firstName)
-            lastName = cls._get_input("Last Name", str, lastName)
-            email = (
-                email or f"{str(firstName).lower()}.{str(lastName).lower()}@example.com"
-            )
-            email = cls._get_input("Email", str, email)
-        if not Person.findByEmail(str(email)):
-            if email and firstName and lastName:
-                if (
-                    cls._user_inputs_required
-                    and (
-                        input(
-                            f"Would you like to add {email}, "
-                            f"{firstName} {lastName}? [y/n] "
-                        )
-                        .strip()
-                        .lower()
-                    )
-                    != "y"
-                ):
-                    return None
-                return Person(
-                    email=email,
-                    firstName=firstName,
-                    lastName=lastName,
-                )
-            else:
-                print("error: incorrect user info")
-        else:
-            print(f"error: User {email} exists, cannot add")
-        return None
+    def list(cls, people: Union[List[Person], SQLObject.select, None] = None):
+        """List all people"""
+        if people is None:
+            people = Person.select()
+        for person in people:
+            PersonView(person).view()
 
     def __init__(self, person: Person, **kwargs):
         super().__init__(**kwargs)
@@ -78,50 +49,46 @@ class PersonView(BaseView):
 
     def edit(self):
         """Edit the person"""
-        self._person.firstName = self._get_input(
-            "First Name", str, self._person.firstName
+        self._person.firstName = self._get_str_input(
+            "First Name", self._person.firstName
         )
-        self._person.lastName = self._get_input("Last Name", str, self._person.lastName)
-        dob_input = self._get_input(
-            "Date of Birth MM-DD-YYYY",
-            str,
+        self._person.lastName = self._get_str_input("Last Name", self._person.lastName)
+        self._person.dateOfBirth = self._get_date_input(
+            "Date of Birth",
             self._person.dateOfBirth.strftime("%m/%d/%Y"),
         )
-        if dob_input:
-            try:
-                self._person.dateOfBirth = datetime.datetime.strptime(
-                    dob_input, "%m/%d/%Y"
-                )
-            except ValueError:
-                logger.error("bad date - MM-DD-YYYY required")
-        self._person.socialSecurityNumber = self._get_input(
-            "SSN", str, self._person.socialSecurityNumber
+        self._person.socialSecurityNumber = self._get_str_input(
+            "SSN", self._person.socialSecurityNumber
         )
-        self._person.defaultAddress.street = self._get_input(
-            "Street", str, self._person.defaultAddress.street
+        self._person.defaultAddress.street = self._get_str_input(
+            "Street", self._person.defaultAddress.street
         )
-        self._person.defaultAddress.locality = self._get_input(
-            "Locality", str, self._person.defaultAddress.locality
+        self._person.defaultAddress.locality = self._get_str_input(
+            "Locality", self._person.defaultAddress.locality
         )
-        self._person.defaultAddress.region = self._get_input(
-            "Region", str, self._person.defaultAddress.region
+        self._person.defaultAddress.region = self._get_str_input(
+            "Region", self._person.defaultAddress.region
         )
-        self._person.defaultAddress.postalCode = self._get_input(
-            "Postal Code", str, self._person.defaultAddress.postalCode
+        self._person.defaultAddress.postalCode = self._get_str_input(
+            "Postal Code", self._person.defaultAddress.postalCode
         )
-        self._person.defaultAddress.country = self._get_input(
-            "Country", str, self._person.defaultAddress.country
+        self._person.defaultAddress.country = self._get_str_input(
+            "Country", self._person.defaultAddress.country
         )
-        self._person.phoneNumber = self._get_input(
-            "Phone Number", str, self._person.phoneNumber
+        self._person.email = self._get_str_input("Email", self._person.email)
+        self._person.phoneNumber = self._get_str_input(
+            "Phone Number", self._person.phoneNumber
         )
 
     def view(self):
         """Display brief details of the person"""
-        print(f"{self._person.firstName} {self._person.lastName}, {self._person.email}")
+        print(
+            f"{self._person.gID}, {self._person.firstName} {self._person.lastName}, {self._person.email}"
+        )
 
     def viewDetails(self):
         """Display the person"""
+        print(f"\nPerson ID:\t{self._person.gID}")
         print(f"\nFirst Name:\t{self._person.firstName}")
         print(f"Last Name:\t{self._person.lastName}")
         print(f"Date of Birth:\t{self._person.dateOfBirth.strftime('%m/%d/%Y')}")
@@ -131,24 +98,12 @@ class PersonView(BaseView):
         print(f"Created At:\t{self._person.createdAt}")
         print(f"Updated At:\t{self._person.updatedAt}")
         print("\nAddresses:")
-        for item in self._person.addresses:
-            print(
-                f"\t{item.street}, {item.locality}, {item.region}, {item.postalCode}, {item.country}"
-            )
+        AddressView.list(self._person.addresses)
         print("\nBank Accounts:")
-        for item in self._person.bankAccounts:
-            print(f"\t{item.description}, {item.routingNumber}, {item.accountNumber}")
+        BankAccountView.list(self._person.bankAccounts)
         print("\nDebit Cards:")
-        for item in self._person.debitCards:
-            DebitCardView(item).view()
+        DebitCardView.list(self._person.debitCards)
         print("\nJobs:")
-        for item in self._person.jobs:
-            print(f"\t{item.employeeID}, {item.payGroup}")
-        print("\nPerson App KeyValue:")
-        for item in self._person.PersonalKeyValues:
-            print(f"\t{item.name} = {item.value}")
-        print("\nPerson App KeyValue:")
-        for item in self._person.PersonalKeyJsons:
-            print(f"\t{item.name}")
-            print("\t\tAttributes:")
-            print(json.dumps(item.attributes, indent=4))
+        JobView.list(self._person.jobs)
+        print("\nPersonal Key Values:")
+        PersonalKeyValueSecureView.list(self._person.secureKeyValues)

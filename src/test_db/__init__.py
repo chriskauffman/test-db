@@ -13,18 +13,23 @@ from test_db._database_controller import (
 )
 from test_db._debit_card import DebitCard as DebitCard
 from test_db._job import Job as Job
-from test_db._key_value_secure import KeyValueSecure as KeyValueSecure
-from test_db._key_json import KeyJson as KeyJson
 from test_db._key_value import KeyValue as KeyValue
 from test_db._organization import Organization as Organization
 from test_db._person import Person as Person
-from test_db._personal_key_json import PersonalKeyJson as PersonalKeyJson
-from test_db._personal_key_value import PersonalKeyValue as PersonalKeyValue
 from test_db._personal_key_value_secure import (
     PersonalKeyValueSecure as PersonalKeyValueSecure,
 )
+
+from test_db._views._address import AddressView as AddressView
+from test_db._views._bank_account import BankAccountView as BankAccountView
 from test_db._views._debit_card import DebitCardView as DebitCardView
+from test_db._views._job import JobView as JobView
+from test_db._views._key_value import KeyValueView as KeyValueView
+from test_db._views._organization import OrganizationView as OrganizationView
 from test_db._views._person import PersonView as PersonView
+from test_db._views._personal_key_value_secure import (
+    PersonalKeyValueSecureView as PersonalKeyValueSecureView,
+)
 
 # Global database options
 databaseEncryptionKey: Optional[str] = None

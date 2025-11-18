@@ -26,6 +26,7 @@ import typer
 from typing_extensions import Literal, Optional, Union
 
 import test_db
+from test_db._views._base_view import BaseView
 
 # OK to make dirs as default directory is "owned" by project
 DEFAULT_CONFIG_PATH = pathlib.Path(pathlib.Path.home(), ".test_db")
@@ -67,10 +68,14 @@ def app_callback(
             help="databases are not created by default, creates the database file when True"
         ),
     ] = False,
+    interactive: Annotated[
+        bool, typer.Option(help="allow interactive prompts for user input")
+    ] = False,
     upgrade: Annotated[
         bool, typer.Option(help="upgrade the database if it is out of date")
     ] = False,
 ):
+    BaseView.interactive = interactive
     settings = Settings()
     if db_file_path:
         if db_file_path.is_file():
@@ -154,59 +159,160 @@ add_app = typer.Typer()
 app.add_typer(add_app, name="add")
 
 
-@add_app.command("bank-account")
-def bank_account_add(
-    description: Optional[str] = None, person_email: Optional[str] = None
-):
-    if person_email:
-        person = test_db.Person.findByEmail(person_email)
-        if person:
-            person.getBankAccountByName(description or "default")
+@add_app.command("address")
+def address_add(occupant_gid: Optional[str] = None):
+    if occupant_gid:
+        occupant = test_db.Person.byGID(occupant_gid) or test_db.Organization.byGID(
+            occupant_gid
+        )
+        if occupant:
+            test_db.AddressView.add(occupant=occupant)
         else:
-            print("error: email not found")
+            print("error: person or organization not found")
     else:
-        test_db.BankAccount(description=description)
+        test_db.AddressView.add()
+
+
+@add_app.command("bank-account")
+def bank_account_add(owner_gid: Optional[str] = None):
+    if owner_gid:
+        owner = test_db.Person.byGID(owner_gid) or test_db.Organization.byGID(owner_gid)
+        if owner:
+            test_db.BankAccountView.add(owner=owner)
+        else:
+            print("error: person or organization not found")
+    else:
+        test_db.BankAccountView.add()
 
 
 @add_app.command("debit-card")
-def debit_card_add(
-    description: Optional[str] = None, person_email: Optional[str] = None
-):
-    if person_email:
-        person = test_db.Person.findByEmail(person_email)
-        if person:
-            person.getDebitCardByName(description or "default")
+def debit_card_add(owner_gid: Optional[str] = None):
+    if owner_gid:
+        owner = test_db.Person.byGID(owner_gid) or test_db.Organization.byGID(owner_gid)
+        if owner:
+            test_db.DebitCardView.add(owner=owner)
         else:
-            print("error: email not found")
+            print("error: person or organization not found")
     else:
-        test_db.DebitCard(description=description)
+        test_db.DebitCardView.add()
+
+
+@add_app.command("job")
+def job_add(employer_gid: str, employee_gid: str):
+    employer = test_db.Organization.byGID(employer_gid)
+    if not employer:
+        print("error: organization not found")
+        return
+    employee = test_db.Person.byGID(employee_gid)
+    if not employee:
+        print("error: person not found")
+        return
+    test_db.JobView.add(employer=employer, employee=employee)
+
+
+@add_app.command("key-value")
+def key_value_add(key: str, value: str):
+    test_db.KeyValueView.add(key=key, value=value)
+
+
+@add_app.command("organization")
+def organization_add():
+    test_db.OrganizationView.add()
 
 
 @add_app.command("person")
-def person_add(random: bool = False):
-    if random:
-        print(f"{test_db.Person().email} added")
+def person_add():
+    test_db.PersonView.add()
+
+
+@add_app.command("personal-key-value-secure")
+def personal_key_value_secure_add(person_gid: str, key: str, value: str):
+    person = test_db.Person.byGID(person_gid)
+    if person:
+        test_db.PersonalKeyValueSecureView.add(person=person, key=key, value=value)
     else:
-        new_person = test_db.PersonView.add()
-        if new_person:
-            print(f"{new_person.email} added")
+        print("error: person not found")
 
 
 edit_app = typer.Typer()
 app.add_typer(edit_app, name="edit")
 
 
+@edit_app.command("address")
+def address_edit(gid: str):
+    address = test_db.Address.byGID(gid)
+    if address:
+        test_db.AddressView(address).edit()
+    else:
+        print("error: gID not found")
+
+
+@edit_app.command("bank-account")
+def bank_account_edit(gid: str):
+    bank_account = test_db.BankAccount.byGID(gid)
+    if bank_account:
+        test_db.BankAccountView(bank_account).edit()
+    else:
+        print("error: gID not found")
+
+
+@edit_app.command("debit-card")
+def debit_card_edit(gid: str):
+    debit_card = test_db.DebitCard.byGID(gid)
+    if debit_card:
+        test_db.DebitCardView(debit_card).edit()
+    else:
+        print("error: gID not found")
+
+
+@edit_app.command("job")
+def job_edit(gid: str):
+    job = test_db.Job.byGID(gid)
+    if job:
+        test_db.JobView(job).edit()
+    else:
+        print("error: gID not found")
+
+
+@edit_app.command("key-value")
+def key_value_edit(key: str):
+    key_value = test_db.KeyValue.byKey(key)
+    if key_value:
+        test_db.KeyValueView(key_value).edit()
+    else:
+        print("error: key not found")
+
+
+@edit_app.command("organization")
+def organization_edit(gid: str):
+    organization = test_db.Organization.byGID(gid)
+    if organization:
+        test_db.OrganizationView(organization).edit()
+    else:
+        print("error: gID not found")
+
+
 @edit_app.command("person")
-def person_edit(email: str):
-    person = test_db.Person.findByEmail(email)
+def person_edit(gid: str):
+    person = test_db.Person.byGID(gid)
     if person:
         test_db.PersonView(person).edit()
     else:
-        print("error: email not found")
+        print("error: gID not found")
 
 
 list_app = typer.Typer()
 app.add_typer(list_app, name="list")
+
+
+@list_app.command("addresses")
+def address_list():
+    test_db.AddressView.list()
+
+
+@list_app.command("bank-accounts")
+def bank_account_list():
+    test_db.BankAccountView.list()
 
 
 @list_app.command("debit-cards")
@@ -214,20 +320,105 @@ def debit_card_list():
     test_db.DebitCardView.list()
 
 
+@list_app.command("jobs")
+def job_list():
+    test_db.JobView.list()
+
+
+@list_app.command("key-value")
+def key_value_list():
+    test_db.KeyValueView.list()
+
+
+@list_app.command("organizations")
+def organizations_list():
+    test_db.OrganizationView.list()
+
+
 @list_app.command("people")
 def people_list():
     test_db.PersonView.list()
+
+
+@list_app.command("personal-key-value-secure")
+def personal_key_value_secure_list():
+    test_db.PersonalKeyValueSecureView.list()
 
 
 view_app = typer.Typer()
 app.add_typer(view_app, name="view")
 
 
+@view_app.command("address")
+def address_view(gid: str):
+    address = test_db.Address.byGID(gid)
+    if address:
+        test_db.AddressView(address).viewDetails()
+    else:
+        print("error: ID not found")
+
+
+@view_app.command("bank-account")
+def bank_account_view(gid: str):
+    bank_account = test_db.BankAccount.byGID(gid)
+    if bank_account:
+        test_db.BankAccountView(bank_account).viewDetails()
+    else:
+        print("error: ID not found")
+
+
+@view_app.command("debit-card")
+def debit_card_view(gid: str):
+    debit_card = test_db.DebitCard.byGID(gid)
+    if debit_card:
+        test_db.DebitCardView(debit_card).viewDetails()
+    else:
+        print("error: ID not found")
+
+
+@view_app.command("job")
+def job_view(gid: str):
+    job = test_db.Job.byGID(gid)
+    if job:
+        test_db.JobView(job).viewDetails()
+    else:
+        print("error: ID not found")
+
+
+@view_app.command("key-value")
+def key_value_view(key: str):
+    key_value = test_db.KeyValue.byKey(key)
+    if key_value:
+        test_db.KeyValueView(key_value).viewDetails()
+    else:
+        print("error: key not found")
+
+
+@view_app.command("organization")
+def organization_view(gid: str):
+    organization = test_db.Organization.byGID(gid)
+    if organization:
+        test_db.OrganizationView(organization).viewDetails()
+    else:
+        print("error: ID not found")
+
+
 @view_app.command("person")
-def person_view(email: str, db_file_path: Optional[pathlib.Path] = None):
-    person = test_db.Person.findByEmail(email)
+def person_view(gid: str):
+    person = test_db.Person.byGID(gid)
     if person:
         test_db.PersonView(person).viewDetails()
+    else:
+        print("error: email not found")
+
+
+@view_app.command("personal-key-value-secure")
+def personal_key_value_secure_view(person_gid: str, key: str):
+    person = test_db.Person.byGID(person_gid)
+    if person:
+        key_value = person.getPersonalKeyValueSecureByKey(key)
+        if key_value:
+            test_db.PersonalKeyValueSecureView(key_value).viewDetails()
     else:
         print("error: email not found")
 

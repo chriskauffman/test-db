@@ -1,0 +1,64 @@
+import logging
+
+from typing_extensions import List, Union
+
+from sqlobject import SQLObject  # type: ignore
+
+from test_db import Job, Organization, Person
+from test_db._views._base_view import BaseView
+
+logger = logging.getLogger(__name__)
+
+
+class JobView(BaseView):
+    """Debit card views
+
+    Args:
+        job (Job): The job to view
+        **kwargs:
+            - user_inputs_required (bool):
+    """
+
+    _user_inputs_required: bool = True
+
+    @classmethod
+    def add(self, employer: Organization, employee: Person) -> Job:
+        """Add a Job"""
+        new_job = Job(organization=employer, person=employee)
+        print(new_job.gID)
+        return new_job
+
+    @classmethod
+    def list(cls, jobs: Union[List[Job], SQLObject.select, None] = None):
+        """List all jobs"""
+        if jobs is None:
+            jobs = Job.select()
+        for job in jobs:
+            JobView(job).view()
+
+    def __init__(self, job: Job, **kwargs):
+        super().__init__(**kwargs)
+        self._job = job
+
+    def edit(self):
+        """Edit the job"""
+        pass
+
+    def view(self):
+        """Display brief details of the debit card"""
+        print(
+            f"{self._job.gID}, {self._job.organization.name}, {self._job.person.lastName}"
+        )
+
+    def viewDetails(self):
+        """Display brief details of the debit card"""
+        print(f"Job ID:\t{self._job.gID}")
+        print(f"\nEmployee ID:\t{self._job.employeeID}")
+        print(f"Location:\t{self._job.location}")
+        print(f"Pay Group:\t{self._job.payGroup}")
+        print(
+            f"\nEmployer:\t{self._job.organization.name}, {self._job.organization.gID}"
+        )
+        print(
+            f"Employee:\t{self._job.person.firstName} {self._job.person.lastName}, {self._job.person.gID}"
+        )

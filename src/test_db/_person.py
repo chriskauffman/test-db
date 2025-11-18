@@ -20,8 +20,6 @@ from test_db._bank_account import BankAccount
 from test_db._debit_card import DebitCard
 from test_db._organization import Organization
 from test_db._job import Job
-from test_db._personal_key_json import PersonalKeyJson
-from test_db._personal_key_value import PersonalKeyValue
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
 from test_db._full_sqlobject import FullSQLObject
 
@@ -43,10 +41,6 @@ class Person(FullSQLObject):
         phoneNumber (StringCol): the person's phone number
         jobs (MultipleJoin): list of employments
         jobsSelect (SQLMultipleJoin):
-        PersonalKeyValues (MultipleJoin):
-        PersonalKeyValuesSelect (SQLMultipleJoin):
-        PersonalKeyJsons (MultipleJoin):
-        PersonalKeyJsonsSelect (SQLMultipleJoin):
         addresses (RelatedJoin): list of addresses related to the person
         bankAccounts (RelatedJoin): list of bank accounts related to the person
         debitCards (RelatedJoin): list of debit cards related to the person
@@ -71,10 +65,6 @@ class Person(FullSQLObject):
 
     jobs: MultipleJoin = MultipleJoin("Job")
     jobsSelect: SQLMultipleJoin = SQLMultipleJoin("Job")
-    PersonalKeyValues: MultipleJoin = MultipleJoin("PersonalKeyValue")
-    PersonalKeyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyValue")
-    PersonalKeyJsons: MultipleJoin = MultipleJoin("PersonalKeyJson")
-    PersonalKeyJsonsSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyJson")
 
     addresses: RelatedJoin = RelatedJoin("Address")
     bankAccounts: RelatedJoin = RelatedJoin("BankAccount")
@@ -245,7 +235,7 @@ class Person(FullSQLObject):
             Job:
         """
         try:
-            return self.jobsSelect.filter(Job.q.employer == employer_id).getOne()
+            return self.jobsSelect.filter(Job.q.organization == employer_id).getOne()
         except SQLObjectNotFound:
             try:
                 employer = Organization.get(employer_id, connection=self._connection)
@@ -254,7 +244,7 @@ class Person(FullSQLObject):
             return Job(
                 connection=self._connection,
                 person=self.id,
-                employer=employer.id,
+                organization=employer.id,
                 **kwargs,
             )
 
@@ -271,7 +261,7 @@ class Person(FullSQLObject):
             Job:
         """
         try:
-            return self.jobsSelect.throughTo.employer.filter(
+            return self.jobsSelect.throughTo.organization.filter(
                 Organization.q.alternateID == employerAlternateID
             ).getOne()
         except SQLObjectNotFound:
@@ -287,7 +277,7 @@ class Person(FullSQLObject):
             return Job(
                 connection=self._connection,
                 person=self.id,
-                employer=employer.id,
+                organization=employer.id,
                 **kwargs,
             )
 
@@ -319,34 +309,6 @@ class Person(FullSQLObject):
         """
         return self.getByKey(
             self.secureKeyValuesSelect, PersonalKeyValueSecure, key, **kwargs
-        )
-
-    def getPersonalKeyValuesByKey(self, key: str, **kwargs) -> PersonalKeyValue:
-        """Find and create an PersonalKeyValue
-
-        Args:
-            key (str): name of the PersonalKeyValue
-            **kwargs:
-
-        Returns:
-            PersonalKeyValue:
-        """
-        return self.getByKey(
-            self.PersonalKeyValuesSelect, PersonalKeyValue, key, **kwargs
-        )
-
-    def getPersonalKeyJsonsByKey(self, key: str, **kwargs) -> PersonalKeyJson:
-        """Find and create an PersonalKeyJson
-
-        Args:
-            key (str): name of the PersonalKeyJson
-            **kwargs:
-
-        Returns:
-            PersonalKeyJson:
-        """
-        return self.getByKey(
-            self.PersonalKeyJsonsSelect, PersonalKeyJson, key, **kwargs
         )
 
     def getByKey(

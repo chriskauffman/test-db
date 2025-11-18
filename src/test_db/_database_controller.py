@@ -17,13 +17,9 @@ from test_db._database_options import _GlobalDatabaseOptions
 from test_db._debit_card import DebitCard
 from test_db._organization import Organization
 from test_db._job import Job
-from test_db._key_value_secure import KeyValueSecure
-from test_db._key_json import KeyJson
 from test_db._key_value import KeyValue
 from test_db._listeners import updateListener
 from test_db._person import Person
-from test_db._personal_key_json import PersonalKeyJson
-from test_db._personal_key_value import PersonalKeyValue
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
 
 ENCODING = "utf-8"
@@ -34,13 +30,9 @@ TABLES = (
     BankAccount,
     DebitCard,
     Job,
-    KeyJson,
-    KeyValueSecure,
     KeyValue,
     Organization,
     Person,
-    PersonalKeyJson,
-    PersonalKeyValue,
     PersonalKeyValueSecure,
 )
 

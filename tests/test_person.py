@@ -12,7 +12,6 @@ from test_db._debit_card import DebitCard
 # from test_db._oauth2_token import PersonalOAuth2Token
 from test_db._person import Person
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
-from test_db._personal_key_json import PersonalKeyJson
 
 
 fake = faker.Faker()
@@ -121,7 +120,7 @@ def test_getJobByOrganizationId(temporary_db):
     )
     test_job = test_person.getJobByOrganizationId(test_organization.id)
     assert isinstance(test_job, db.Job)
-    assert test_job.employer.name == "TestOrganization"
+    assert test_job.organization.name == "TestOrganization"
 
 
 def test_getJobByOrganizationAlternateId(temporary_db):
@@ -141,7 +140,7 @@ def test_getJobByOrganizationAlternateId(temporary_db):
     db.Organization(connection=temporary_db.connection, alternateID="employer22772")
     test_job = test_person.getJobByOrganizationAlternateId("employer22772")
     assert isinstance(test_job, db.Job)
-    assert test_job.employer.alternateID == "employer22772"
+    assert test_job.organization.alternateID == "employer22772"
 
 
 def test_getOAuth2TokenByClientId(temporary_db):
@@ -158,25 +157,3 @@ def test_getOAuth2TokenByClientId(temporary_db):
     )
 
     assert test_oauth2_token.value == {"access_token": "testAccessToken"}
-
-
-def test_getPersonalKeyJsonsByKey(temporary_db):
-    test_person = Person(connection=temporary_db.connection)
-
-    test_person_app_settings = test_person.getPersonalKeyJsonsByKey(
-        "test_getPersonalKeyJsonsByKey"
-    )
-
-    assert isinstance(test_person_app_settings, PersonalKeyJson)
-    assert test_person_app_settings.key == "test_getPersonalKeyJsonsByKey"
-
-    test_person_app_settings = test_person.getPersonalKeyJsonsByKey(
-        "test_getPersonalKeyJsonsByKey_2",
-        value={"default_bank_account_id": "testUUID"},
-    )
-
-    test_person_app_settings = test_person.getPersonalKeyJsonsByKey(
-        "test_getPersonalKeyJsonsByKey_2"
-    )
-
-    assert test_person_app_settings.value["default_bank_account_id"] == "testUUID"
