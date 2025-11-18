@@ -33,7 +33,9 @@ class AddressView(BaseView):
         """
         address = Address()
         if occupant:
-            return occupant.addAddress(address)
+            occupant.addAddress(address)
+        if BaseView.interactive:
+            AddressView(address).edit()
         print(address.gID)
         return address
 
@@ -51,6 +53,8 @@ class AddressView(BaseView):
 
     def edit(self):
         """Edit the address"""
+        if not BaseView.interactive:
+            return
         self._address.description = self._get_str_input(
             "Description", self._address.description
         )

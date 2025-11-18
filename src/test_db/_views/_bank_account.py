@@ -27,6 +27,8 @@ class BankAccountView(BaseView):
         bank_account = BankAccount()
         if owner:
             bank_account.addPerson(owner)
+        if BaseView.interactive:
+            BankAccountView(bank_account).edit()
         print(bank_account.gID)
         return bank_account
 

@@ -24,7 +24,7 @@ class Organization(FullSQLObject):
         debitCards (RelatedJoin): list of debit cards related to the employer
     """
 
-    _gIDPrefix: str = "e"
+    _gIDPrefix: str = "o"
 
     name: StringCol = StringCol(alternateID=True, default=fake.company)
     alternateID: StringCol = StringCol(alternateID=True, default=nanoid.generate)

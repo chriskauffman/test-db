@@ -25,6 +25,8 @@ class JobView(BaseView):
     def add(self, employer: Organization, employee: Person) -> Job:
         """Add a Job"""
         new_job = Job(organization=employer, person=employee)
+        if BaseView.interactive:
+            JobView(new_job).edit()
         print(new_job.gID)
         return new_job
 

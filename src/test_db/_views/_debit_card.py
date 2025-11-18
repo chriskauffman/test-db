@@ -27,6 +27,8 @@ class DebitCardView(BaseView):
         debit_card = DebitCard()
         if owner:
             debit_card.addPerson(owner)
+        if BaseView.interactive:
+            DebitCardView(debit_card).edit()
         print(debit_card.gID)
         return debit_card
 

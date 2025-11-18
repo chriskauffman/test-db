@@ -94,27 +94,27 @@ def app_callback(
                     backup_file_path,
                 )
             else:
-                print(
+                sys.stderr.write(
                     f"error: incorrect backup_path {settings.backup_path}, "
                     "must be existing directory"
                 )
                 sys.exit(1)
         else:
             if db_file_path != test_db.IN_MEMORY_DB_FILE and not create:
-                print(
+                sys.stderr.write(
                     f"error: DB file {db_file_path} does not exist: "
                     "check db_file_path in toml, env and command options or use --create"
                 )
                 sys.exit(1)
     else:
-        print(
+        sys.stderr.write(
             "error: DB file path not set: check db_file_path in toml, "
             "env and command options"
         )
         sys.exit(1)
 
     if not settings.log_path.is_dir():
-        print(
+        sys.stderr.write(
             f"error: incorrect log_path {settings.log_path}, must be existing directory"
         )
         sys.exit(1)
@@ -169,8 +169,8 @@ def address_add(occupant_gid: Optional[str] = None):
                 occupant_gid
             )
         except SQLObjectNotFound as exc:
-            print(f"error: {str(exc)}")
-            return
+            sys.stderr.write(f"error: {str(exc)}")
+            sys.exit(1)
         test_db.AddressView.add(occupant=occupant)
     else:
         test_db.AddressView.add()
@@ -185,8 +185,8 @@ def bank_account_add(owner_gid: Optional[str] = None):
             try:
                 test_db.Organization.byGID(owner_gid)
             except SQLObjectNotFound:
-                print("error: person or organization not found")
-                return
+                sys.stderr.write("error: person or organization not found")
+                sys.exit(1)
         test_db.BankAccountView.add(owner=owner)
     else:
         test_db.BankAccountView.add()
@@ -201,8 +201,8 @@ def debit_card_add(owner_gid: Optional[str] = None):
             try:
                 test_db.Organization.byGID(owner_gid)
             except SQLObjectNotFound:
-                print("error: person or organization not found")
-                return
+                sys.stderr.write("error: person or organization not found")
+                sys.exit(1)
         test_db.DebitCardView.add(owner=owner)
     else:
         test_db.DebitCardView.add()
@@ -210,14 +210,16 @@ def debit_card_add(owner_gid: Optional[str] = None):
 
 @add_app.command("job")
 def job_add(employer_gid: str, employee_gid: str):
-    employer = test_db.Organization.byGID(employer_gid)
-    if not employer:
-        print("error: organization not found")
-        return
-    employee = test_db.Person.byGID(employee_gid)
-    if not employee:
-        print("error: person not found")
-        return
+    try:
+        employer = test_db.Organization.byGID(employer_gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    try:
+        employee = test_db.Person.byGID(employee_gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.JobView.add(employer=employer, employee=employee)
 
 
@@ -241,8 +243,8 @@ def personal_key_value_secure_add(person_gid: str, key: str, value: str):
     try:
         person = test_db.Person.byGID(person_gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.PersonalKeyValueSecureView.add(person=person, key=key, value=value)
 
 
@@ -255,8 +257,8 @@ def address_edit(gid: str):
     try:
         address = test_db.Address.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.AddressView(address).edit()
 
 
@@ -265,8 +267,8 @@ def bank_account_edit(gid: str):
     try:
         bank_account = test_db.BankAccount.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.BankAccountView(bank_account).edit()
 
 
@@ -275,8 +277,8 @@ def debit_card_edit(gid: str):
     try:
         debit_card = test_db.DebitCard.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.DebitCardView(debit_card).edit()
 
 
@@ -285,8 +287,8 @@ def job_edit(gid: str):
     try:
         job = test_db.Job.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.JobView(job).edit()
 
 
@@ -295,8 +297,8 @@ def key_value_edit(key: str):
     try:
         key_value = test_db.KeyValue.byKey(key)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.KeyValueView(key_value).edit()
 
 
@@ -305,8 +307,8 @@ def organization_edit(gid: str):
     try:
         organization = test_db.Organization.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.OrganizationView(organization).edit()
 
 
@@ -315,8 +317,8 @@ def person_edit(gid: str):
     try:
         person = test_db.Person.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.PersonView(person).edit()
 
 
@@ -373,8 +375,8 @@ def address_view(gid: str):
     try:
         address = test_db.Address.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.AddressView(address).viewDetails()
 
 
@@ -383,8 +385,8 @@ def bank_account_view(gid: str):
     try:
         bank_account = test_db.BankAccount.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.BankAccountView(bank_account).viewDetails()
 
 
@@ -393,8 +395,8 @@ def debit_card_view(gid: str):
     try:
         debit_card = test_db.DebitCard.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.DebitCardView(debit_card).viewDetails()
 
 
@@ -403,8 +405,8 @@ def job_view(gid: str):
     try:
         job = test_db.Job.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.JobView(job).viewDetails()
 
 
@@ -413,8 +415,8 @@ def key_value_view(key: str):
     try:
         key_value = test_db.KeyValue.byKey(key)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.KeyValueView(key_value).viewDetails()
 
 
@@ -423,8 +425,8 @@ def organization_view(gid: str):
     try:
         organization = test_db.Organization.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.OrganizationView(organization).viewDetails()
 
 
@@ -433,8 +435,8 @@ def person_view(gid: str):
     try:
         person = test_db.Person.byGID(gid)
     except SQLObjectNotFound as exc:
-        print(f"error: {str(exc)}")
-        return
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
     test_db.PersonView(person).viewDetails()
 
 
@@ -446,7 +448,7 @@ def personal_key_value_secure_view(person_gid: str, key: str):
         if key_value:
             test_db.PersonalKeyValueSecureView(key_value).viewDetails()
     else:
-        print("error: email not found")
+        sys.stderr.write("error: gID not found")
 
 
 class Settings(BaseSettings):
