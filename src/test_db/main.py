@@ -250,7 +250,11 @@ def personal_key_value_secure_add(person_gid: str, key: str, value: str):
     except SQLObjectNotFound as exc:
         sys.stderr.write(f"error: {str(exc)}")
         sys.exit(1)
-    test_db.PersonalKeyValueSecureView.add(person=person, key=key, value=value)
+    try:
+        test_db.PersonalKeyValueSecureView.add(person=person, key=key, value=value)
+    except DuplicateEntryError as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
 
 
 edit_app = typer.Typer()
