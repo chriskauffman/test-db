@@ -12,14 +12,14 @@ from sqlobject import (  # type: ignore
 )  # type: ignore
 import sqlobject.sqlbuilder  # type: ignore
 
-from test_db._full_sqlobject import FullSQLObject
+from test_db._gid_sqlobject import GID_SQLObject
 
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
-class Organization(FullSQLObject):
+class Organization(GID_SQLObject):
     """Organization SQLObject
 
     Attributes:

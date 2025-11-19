@@ -5,7 +5,7 @@ import faker
 from sqlobject import DateTimeCol, JSONCol, RelatedJoin, StringCol  # type: ignore
 import sqlobject.sqlbuilder  # type: ignore
 
-from test_db._full_sqlobject import FullSQLObject
+from test_db._gid_sqlobject import GID_SQLObject
 
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 fake = faker.Faker()
 
 
-class Address(FullSQLObject):
+class Address(GID_SQLObject):
     """Basic address for use with other objects
 
     Attributes:

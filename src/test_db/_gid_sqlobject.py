@@ -12,8 +12,8 @@ from typeid.errors import (
 logger = logging.getLogger(__name__)
 
 
-class FullSQLObject(SQLObject):
-    """FullSQLObject SQLObject"""
+class GID_SQLObject(SQLObject):
+    """SQLObject with global ID support"""
 
     _gIDPrefix: str = "tdb"
 

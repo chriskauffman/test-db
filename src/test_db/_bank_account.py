@@ -6,7 +6,7 @@ from faker.providers.bank import Provider as BankProvider
 from sqlobject import DateTimeCol, JSONCol, RelatedJoin, StringCol  # type: ignore
 import sqlobject.sqlbuilder  # type: ignore
 
-from test_db._full_sqlobject import FullSQLObject
+from test_db._gid_sqlobject import GID_SQLObject
 
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ fake = faker.Faker()
 fake.add_provider(TestDBBankAccount)
 
 
-class BankAccount(FullSQLObject):
+class BankAccount(GID_SQLObject):
     """BankAccount SQLObject
 
     Attributes:

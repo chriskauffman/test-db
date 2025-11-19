@@ -7,7 +7,7 @@ import faker
 from sqlobject import DateCol, DateTimeCol, JSONCol, RelatedJoin, StringCol  # type: ignore
 import sqlobject.sqlbuilder  # type: ignore
 
-from test_db._full_sqlobject import FullSQLObject
+from test_db._gid_sqlobject import GID_SQLObject
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def fake_credit_card_expire_to_date() -> date:
     return expire_date.replace(day=num_days)
 
 
-class DebitCard(FullSQLObject):
+class DebitCard(GID_SQLObject):
     """DebitCard SQLObject
 
     Attributes:

@@ -11,7 +11,7 @@ from sqlobject import (  # type: ignore
 )
 import sqlobject.sqlbuilder  # type: ignore
 
-from test_db._full_sqlobject import FullSQLObject
+from test_db._gid_sqlobject import GID_SQLObject
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ fake = faker.Faker()
 fake.add_provider(FakeEmployment)
 
 
-class Job(FullSQLObject):
+class Job(GID_SQLObject):
     """Job SQLObject
 
     Attributes:

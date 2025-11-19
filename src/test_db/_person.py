@@ -24,13 +24,13 @@ from test_db._debit_card import DebitCard
 from test_db._organization import Organization
 from test_db._job import Job
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
-from test_db._full_sqlobject import FullSQLObject
+from test_db._gid_sqlobject import GID_SQLObject
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
-class Person(FullSQLObject):
+class Person(GID_SQLObject):
     """Person SQLObject
 
     Note: All attributes are generated when not provided
