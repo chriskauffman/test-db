@@ -44,8 +44,8 @@ def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("addr_")
@@ -59,8 +59,8 @@ def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 1
 
     captured = capsys.readouterr()
     assert "does not exist" in captured.err
@@ -71,8 +71,8 @@ def test_add_bank_account(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("ba_")
@@ -85,8 +85,8 @@ def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("ba_")
@@ -100,8 +100,8 @@ def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 1
 
     captured = capsys.readouterr()
     assert "not found" in captured.err
@@ -112,8 +112,8 @@ def test_add_debit_card(capsys, monkeypatch, db_file, temporary_db):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("dc_")
@@ -126,8 +126,8 @@ def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("dc_")
@@ -141,8 +141,8 @@ def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 1
 
     captured = capsys.readouterr()
     assert "not found" in captured.err
@@ -155,25 +155,81 @@ def test_add_job(capsys, monkeypatch, db_file, person, organization):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("j_")
 
 
-def test_add_key_value(capsys, monkeypatch, db_file, person, organization):
+def test_add_job_bad_org(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "add", "key-value", "test_key", "test_value"]
+        "sys.argv", ["tdb", db_file, "add", "job", "NonExistentGID", person.gID]
     )
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 1
+
+    captured = capsys.readouterr()
+    assert "does not exist" in captured.err
+
+
+def test_add_job_bad_person(capsys, monkeypatch, db_file, organization):
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", db_file, "add", "job", organization.gID, "NonExistentGID"]
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 1
+
+    captured = capsys.readouterr()
+    assert "does not exist" in captured.err
+
+
+def test_add_key_value(capsys, monkeypatch, db_file):
+    monkeypatch.setattr(
+        "sys.argv",
+        ["tdb", db_file, "add", "key-value", "test_add_key_value", "test_value"],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert not captured.out
+
+
+def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
+    db.KeyValue(
+        key="test_add_key_value_duplicate",
+        value="test_value",
+        connection=temporary_db.connection,
+    )
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            db_file,
+            "add",
+            "key-value",
+            "test_add_key_value_duplicate",
+            "test_value",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 1
+
+    captured = capsys.readouterr()
+    assert "UNIQUE constraint failed" in captured.err
 
 
 def test_add_organization(capsys, monkeypatch, db_file):
@@ -181,8 +237,8 @@ def test_add_organization(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("o_")
@@ -193,11 +249,81 @@ def test_add_person(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("p_")
+
+
+def test_add_personal_key_value_secure(capsys, monkeypatch, db_file, person):
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            db_file,
+            "add",
+            "personal-key-value-secure",
+            person.gID,
+            "secret",
+            "value",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert not captured.out
+
+
+def test_add_personal_key_value_secure_bad_person(capsys, monkeypatch, db_file):
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            db_file,
+            "add",
+            "personal-key-value-secure",
+            "NonExistentGID",
+            "secret",
+            "value",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 1
+
+    captured = capsys.readouterr()
+    assert "does not exist" in captured.err
+
+
+def test_add_personal_key_value_secure_duplicate(capsys, monkeypatch, db_file, person):
+    person.getPersonalKeyValueSecureByKey("secret2", value="test value")
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            db_file,
+            "add",
+            "personal-key-value-secure",
+            person.gID,
+            "secret2",
+            "value",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 1
+
+    captured = capsys.readouterr()
+    assert "UNIQUE constraint failed" in captured.err
 
 
 def test_list_addresses(capsys, monkeypatch, db_file):
@@ -205,8 +331,8 @@ def test_list_addresses(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("addr_")
@@ -217,8 +343,8 @@ def test_list_bank_accounts(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("ba_")
@@ -229,8 +355,8 @@ def test_list_debit_cards(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("dc_")
@@ -241,8 +367,8 @@ def test_list_jobs(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("j_")
@@ -253,8 +379,8 @@ def test_list_organizations(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("o_")
@@ -265,8 +391,8 @@ def test_list_people(capsys, monkeypatch, db_file):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("p_")
@@ -278,8 +404,8 @@ def test_view_address(capsys, monkeypatch, db_file, temporary_db):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("\nAddress ID: addr_")
@@ -293,8 +419,8 @@ def test_view_bank_account(capsys, monkeypatch, db_file, temporary_db):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("ba_")
@@ -308,8 +434,8 @@ def test_view_debit_card(capsys, monkeypatch, db_file, temporary_db):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("dc_")
@@ -323,8 +449,8 @@ def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, pers
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("\nJob ID:\tj_")
@@ -337,8 +463,8 @@ def test_view_organization(capsys, monkeypatch, db_file, organization):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("\nOrganization ID:\to_")
@@ -349,8 +475,8 @@ def test_view_person(capsys, monkeypatch, db_file, person):
 
     try:
         tdb()
-    except SystemExit:
-        pass  # Ignore sys.exit() calls
+    except SystemExit as e:
+        assert e.code == 0
 
     captured = capsys.readouterr()
     assert captured.out.startswith("\nPerson ID:\tp_")
