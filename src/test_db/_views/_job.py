@@ -54,7 +54,7 @@ class JobView(BaseView):
 
     def viewDetails(self):
         """Display brief details of the debit card"""
-        print(f"Job ID:\t{self._job.gID}")
+        print(f"\nJob ID:\t{self._job.gID}")
         print(f"\nEmployee ID:\t{self._job.employeeID}")
         print(f"Location:\t{self._job.location}")
         print(f"Pay Group:\t{self._job.payGroup}")

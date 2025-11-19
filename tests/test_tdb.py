@@ -1,3 +1,4 @@
+import os
 import pytest
 
 import test_db as db
@@ -19,6 +20,11 @@ def organization(temporary_db):
     return db.Organization(connection=temporary_db.connection)
 
 
+@pytest.fixture(scope="session", autouse=True)
+def set_env():
+    os.environ["DATABASE_ENCRYPTION_KEY"] = "a test encryption key"
+
+
 def test_add_address(capsys, monkeypatch, db_file):
     monkeypatch.setattr("sys.argv", ["tdb", db_file, "add", "address"])
 
@@ -28,7 +34,7 @@ def test_add_address(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "addr_" in captured.out
+    assert captured.out.startswith("addr_")
 
 
 def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
@@ -42,7 +48,7 @@ def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "addr_" in captured.out
+    assert captured.out.startswith("addr_")
 
 
 def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
@@ -69,7 +75,7 @@ def test_add_bank_account(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "ba_" in captured.out
+    assert captured.out.startswith("ba_")
 
 
 def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
@@ -83,7 +89,7 @@ def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "ba_" in captured.out
+    assert captured.out.startswith("ba_")
 
 
 def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
@@ -101,7 +107,7 @@ def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
     assert "not found" in captured.err
 
 
-def test_add_debit_card(capsys, monkeypatch, db_file):
+def test_add_debit_card(capsys, monkeypatch, db_file, temporary_db):
     monkeypatch.setattr("sys.argv", ["tdb", db_file, "add", "debit-card"])
 
     try:
@@ -110,7 +116,7 @@ def test_add_debit_card(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "dc_" in captured.out
+    assert captured.out.startswith("dc_")
 
 
 def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
@@ -124,7 +130,7 @@ def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "dc_" in captured.out
+    assert captured.out.startswith("dc_")
 
 
 def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
@@ -153,7 +159,7 @@ def test_add_job(capsys, monkeypatch, db_file, person, organization):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "j_" in captured.out
+    assert captured.out.startswith("j_")
 
 
 def test_add_key_value(capsys, monkeypatch, db_file, person, organization):
@@ -179,7 +185,7 @@ def test_add_organization(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "o_" in captured.out
+    assert captured.out.startswith("o_")
 
 
 def test_add_person(capsys, monkeypatch, db_file):
@@ -191,7 +197,7 @@ def test_add_person(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "p_" in captured.out
+    assert captured.out.startswith("p_")
 
 
 def test_list_addresses(capsys, monkeypatch, db_file):
@@ -203,7 +209,7 @@ def test_list_addresses(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "addr_" in captured.out
+    assert captured.out.startswith("addr_")
 
 
 def test_list_bank_accounts(capsys, monkeypatch, db_file):
@@ -215,7 +221,7 @@ def test_list_bank_accounts(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "ba_" in captured.out
+    assert captured.out.startswith("ba_")
 
 
 def test_list_debit_cards(capsys, monkeypatch, db_file):
@@ -227,7 +233,7 @@ def test_list_debit_cards(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "dc_" in captured.out
+    assert captured.out.startswith("dc_")
 
 
 def test_list_jobs(capsys, monkeypatch, db_file):
@@ -239,7 +245,7 @@ def test_list_jobs(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "j_" in captured.out
+    assert captured.out.startswith("j_")
 
 
 def test_list_organizations(capsys, monkeypatch, db_file):
@@ -251,7 +257,7 @@ def test_list_organizations(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "o_" in captured.out
+    assert captured.out.startswith("o_")
 
 
 def test_list_people(capsys, monkeypatch, db_file):
@@ -263,7 +269,7 @@ def test_list_people(capsys, monkeypatch, db_file):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "p_" in captured.out
+    assert captured.out.startswith("p_")
 
 
 def test_view_address(capsys, monkeypatch, db_file, temporary_db):
@@ -276,7 +282,7 @@ def test_view_address(capsys, monkeypatch, db_file, temporary_db):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "addr_" in captured.out
+    assert captured.out.startswith("\nAddress ID: addr_")
 
 
 def test_view_bank_account(capsys, monkeypatch, db_file, temporary_db):
@@ -291,7 +297,7 @@ def test_view_bank_account(capsys, monkeypatch, db_file, temporary_db):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "ba_" in captured.out
+    assert captured.out.startswith("ba_")
 
 
 def test_view_debit_card(capsys, monkeypatch, db_file, temporary_db):
@@ -306,7 +312,7 @@ def test_view_debit_card(capsys, monkeypatch, db_file, temporary_db):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "dc_" in captured.out
+    assert captured.out.startswith("dc_")
 
 
 def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, person):
@@ -321,7 +327,7 @@ def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, pers
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "j_" in captured.out
+    assert captured.out.startswith("\nJob ID:\tj_")
 
 
 def test_view_organization(capsys, monkeypatch, db_file, organization):
@@ -335,7 +341,7 @@ def test_view_organization(capsys, monkeypatch, db_file, organization):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "o_" in captured.out
+    assert captured.out.startswith("\nOrganization ID:\to_")
 
 
 def test_view_person(capsys, monkeypatch, db_file, person):
@@ -347,4 +353,4 @@ def test_view_person(capsys, monkeypatch, db_file, person):
         pass  # Ignore sys.exit() calls
 
     captured = capsys.readouterr()
-    assert "p_" in captured.out
+    assert captured.out.startswith("\nPerson ID:\tp_")

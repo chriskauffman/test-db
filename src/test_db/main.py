@@ -20,6 +20,7 @@ from pydantic_settings import (
 )
 
 from sqlobject import SQLObjectNotFound  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
 import typer
 
@@ -225,7 +226,11 @@ def job_add(employer_gid: str, employee_gid: str):
 
 @add_app.command("key-value")
 def key_value_add(key: str, value: str):
-    test_db.KeyValueView.add(key=key, value=value)
+    try:
+        test_db.KeyValueView.add(key=key, value=value)
+    except DuplicateEntryError as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
 
 
 @add_app.command("organization")
