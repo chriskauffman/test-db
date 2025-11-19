@@ -3,6 +3,8 @@ import logging
 import faker
 from sqlobject import (  # type: ignore
     DateCol,
+    DateTimeCol,
+    JSONCol,
     MultipleJoin,
     RelatedJoin,
     SQLMultipleJoin,
@@ -10,6 +12,7 @@ from sqlobject import (  # type: ignore
     SQLObjectNotFound,
     StringCol,
 )
+import sqlobject.sqlbuilder  # type: ignore
 
 
 # from sqlobject.main import SQLObjectNotFound
@@ -33,6 +36,11 @@ class Person(FullSQLObject):
     Note: All attributes are generated when not provided
 
     Attributes:
+        gID (StringCol): global ID for the object
+        attributes (JSONCol): JSON attributes for the object
+                              Note: the DB isn't updated until the object is saved
+                                    (no DB updates when individual fields are changed)
+        description (StringCol): description of the object
         firstName (StringCol): the person's first name
         lastName (StringCol): the person's last name
         dateOfBirth (DateCol): the person's birth date
@@ -46,9 +54,15 @@ class Person(FullSQLObject):
         debitCards (RelatedJoin): list of debit cards related to the person
         secureKeyValues (MultipleJoin): list of key/value pairs related to the person
         secureKeyValuesSelect (SQLMultipleJoin):
+        createdAt (DateTimeCol): creation date
+        updatedAt (DateTimeCol): last updated date
     """
 
     _gIDPrefix: str = "p"
+
+    gID: StringCol = StringCol(alternateID=True, default=None)
+    attributes: JSONCol = JSONCol(default=None)
+    description: StringCol = StringCol(default=None)
 
     firstName: StringCol = StringCol(default=fake.first_name)
     lastName: StringCol = StringCol(default=fake.last_name)
@@ -71,6 +85,22 @@ class Person(FullSQLObject):
     debitCards: RelatedJoin = RelatedJoin("DebitCard")
     secureKeyValues: MultipleJoin = MultipleJoin("PersonalKeyValueSecure")
     secureKeyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyValueSecure")
+
+    createdAt: DateTimeCol = DateTimeCol(
+        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
+    )
+    updatedAt: DateTimeCol = DateTimeCol(
+        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
+    )
+
+    def _set_gID(self, value):
+        if value:
+            if self.validGID(value):
+                self._SO_set_gID(value)
+            else:
+                raise ValueError(f"Invalid gID value: {value}")
+        else:
+            self._SO_set_gID(self._generateGID())
 
     @classmethod
     def deleteByEmail(cls, email: str, **kwargs):

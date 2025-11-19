@@ -2,7 +2,15 @@ import logging
 
 import faker
 import nanoid
-from sqlobject import MultipleJoin, RelatedJoin, SQLMultipleJoin, StringCol  # type: ignore
+from sqlobject import (  # type: ignore
+    DateTimeCol,
+    JSONCol,
+    MultipleJoin,
+    RelatedJoin,
+    SQLMultipleJoin,
+    StringCol,
+)  # type: ignore
+import sqlobject.sqlbuilder  # type: ignore
 
 from test_db._full_sqlobject import FullSQLObject
 
@@ -15,6 +23,11 @@ class Organization(FullSQLObject):
     """Organization SQLObject
 
     Attributes:
+        gID (StringCol): global ID for the object
+        attributes (JSONCol): JSON attributes for the object
+                              Note: the DB isn't updated until the object is saved
+                                    (no DB updates when individual fields are changed)
+        description (StringCol): description of the object
         name (StringCol): the name of the settings
         alternateID (StringCol): an alternate ID for the employer
         jobs (MultipleJoin): the jobs for the employer
@@ -22,9 +35,15 @@ class Organization(FullSQLObject):
         addresses (RelatedJoin): list of addresses related to the employer
         bankAccounts (RelatedJoin): list of bank accounts related to the employer
         debitCards (RelatedJoin): list of debit cards related to the employer
+        createdAt (DateTimeCol): creation date
+        updatedAt (DateTimeCol): last updated date
     """
 
     _gIDPrefix: str = "o"
+
+    gID: StringCol = StringCol(alternateID=True, default=None)
+    attributes: JSONCol = JSONCol(default=None)
+    description: StringCol = StringCol(default=None)
 
     name: StringCol = StringCol(alternateID=True, default=fake.company)
     alternateID: StringCol = StringCol(alternateID=True, default=nanoid.generate)
@@ -35,3 +54,19 @@ class Organization(FullSQLObject):
     addresses: RelatedJoin = RelatedJoin("Address")
     bankAccounts: RelatedJoin = RelatedJoin("BankAccount")
     debitCards: RelatedJoin = RelatedJoin("DebitCard")
+
+    createdAt: DateTimeCol = DateTimeCol(
+        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
+    )
+    updatedAt: DateTimeCol = DateTimeCol(
+        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
+    )
+
+    def _set_gID(self, value):
+        if value:
+            if self.validGID(value):
+                self._SO_set_gID(value)
+            else:
+                raise ValueError(f"Invalid gID value: {value}")
+        else:
+            self._SO_set_gID(self._generateGID())

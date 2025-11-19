@@ -1,6 +1,6 @@
 import logging
 
-from sqlobject import JSONCol, StringCol  # type: ignore
+from sqlobject import SQLObject  # type: ignore
 
 from typeid import TypeID
 from typeid.errors import (
@@ -9,21 +9,11 @@ from typeid.errors import (
     SuffixValidationException,
 )
 
-from test_db._base_sqlobject import BaseSQLObject
-
 logger = logging.getLogger(__name__)
 
 
-class FullSQLObject(BaseSQLObject):
-    """FullSQLObject SQLObject
-
-    Attributes:
-        gID (StringCol): global ID for the object
-        attributes (JSONCol): JSON attributes for the object
-                              Note: the DB isn't updated until the object is saved
-                                    (no DB updates when individual fields are changed)
-        description (StringCol): description of the object
-    """
+class FullSQLObject(SQLObject):
+    """FullSQLObject SQLObject"""
 
     _gIDPrefix: str = "tdb"
 
@@ -57,16 +47,3 @@ class FullSQLObject(BaseSQLObject):
         if globalTypeID.prefix != cls._gIDPrefix:
             return False
         return True
-
-    gID: StringCol = StringCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
-    description: StringCol = StringCol(default=None)
-
-    def _set_gID(self, value):
-        if value:
-            if self.validGID(value):
-                self._SO_set_gID(value)
-            else:
-                raise ValueError(f"Invalid gID value: {value}")
-        else:
-            self._SO_set_gID(self._generateGID())
