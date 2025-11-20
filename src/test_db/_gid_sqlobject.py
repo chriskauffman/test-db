@@ -18,13 +18,13 @@ class GID_SQLObject(SQLObject):
     _gIDPrefix: str = "tdb"
 
     @classmethod
-    def _generateGID(cls) -> str:
+    def _generateGID(cls) -> TypeID:
         """Generate a TypeID
 
         Returns:
-            str: new TypeID
+            TypeID: new TypeID
         """
-        return str(TypeID(cls._gIDPrefix))
+        return TypeID(cls._gIDPrefix)
 
     @classmethod
     def validGID(cls, gID: str) -> bool:

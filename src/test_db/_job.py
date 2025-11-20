@@ -11,6 +11,7 @@ from sqlobject import (  # type: ignore
 )
 import sqlobject.sqlbuilder  # type: ignore
 
+from test_db._type_id_col import TypeIDCol
 from test_db._gid_sqlobject import GID_SQLObject
 
 
@@ -33,7 +34,7 @@ class Job(GID_SQLObject):
     """Job SQLObject
 
     Attributes:
-        gID (StringCol): global ID for the object
+        gID (TypeIDCol): global ID for the object
         attributes (JSONCol): JSON attributes for the object
                               Note: the DB isn't updated until the object is saved
                                     (no DB updates when individual fields are changed)
@@ -49,7 +50,7 @@ class Job(GID_SQLObject):
 
     _gIDPrefix: str = "j"
 
-    gID: StringCol = StringCol(alternateID=True, default=None)
+    gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     attributes: JSONCol = JSONCol(default=None)
     description: StringCol = StringCol(default=None)
 

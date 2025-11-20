@@ -24,6 +24,7 @@ from test_db._debit_card import DebitCard
 from test_db._organization import Organization
 from test_db._job import Job
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
+from test_db._type_id_col import TypeIDCol
 from test_db._gid_sqlobject import GID_SQLObject
 
 fake = faker.Faker()
@@ -36,7 +37,7 @@ class Person(GID_SQLObject):
     Note: All attributes are generated when not provided
 
     Attributes:
-        gID (StringCol): global ID for the object
+        gID (TypeIDCol): global ID for the object
         attributes (JSONCol): JSON attributes for the object
                               Note: the DB isn't updated until the object is saved
                                     (no DB updates when individual fields are changed)
@@ -60,7 +61,7 @@ class Person(GID_SQLObject):
 
     _gIDPrefix: str = "p"
 
-    gID: StringCol = StringCol(alternateID=True, default=None)
+    gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     attributes: JSONCol = JSONCol(default=None)
     description: StringCol = StringCol(default=None)
 

@@ -16,7 +16,8 @@ def test_add_address(capsys, monkeypatch, db_file):
 
 def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "add", "address", "--occupant-gid", person.gID]
+        "sys.argv",
+        ["tdb", db_file, "add", "address", "--occupant-gid", str(person.gID)],
     )
 
     try:
@@ -31,7 +32,14 @@ def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
 def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "address", "--occupant-gid", "NonExistentGID"],
+        [
+            "tdb",
+            db_file,
+            "add",
+            "address",
+            "--occupant-gid",
+            "test_01kah9p4b0ejfb7apkkr2abr7c",
+        ],
     )
 
     try:
@@ -40,7 +48,7 @@ def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
         assert e.code == 1
 
     captured = capsys.readouterr()
-    assert "does not exist" in captured.err
+    assert "not found" in captured.err
 
 
 def test_add_bank_account(capsys, monkeypatch, db_file):
@@ -57,7 +65,8 @@ def test_add_bank_account(capsys, monkeypatch, db_file):
 
 def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "add", "bank-account", "--owner-gid", person.gID]
+        "sys.argv",
+        ["tdb", db_file, "add", "bank-account", "--owner-gid", str(person.gID)],
     )
 
     try:
@@ -72,7 +81,14 @@ def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
 def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "bank-account", "--owner-gid", "NonExistentGID"],
+        [
+            "tdb",
+            db_file,
+            "add",
+            "bank-account",
+            "--owner-gid",
+            "test_01kah9p4b0ejfb7apkkr2abr7c",
+        ],
     )
 
     try:
@@ -98,7 +114,8 @@ def test_add_debit_card(capsys, monkeypatch, db_file, temporary_db):
 
 def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "add", "debit-card", "--owner-gid", person.gID]
+        "sys.argv",
+        ["tdb", db_file, "add", "debit-card", "--owner-gid", str(person.gID)],
     )
 
     try:
@@ -113,7 +130,14 @@ def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
 def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "debit-card", "--owner-gid", "NonExistentGID"],
+        [
+            "tdb",
+            db_file,
+            "add",
+            "debit-card",
+            "--owner-gid",
+            "test_01kah9p4b0ejfb7apkkr2abr7c",
+        ],
     )
 
     try:
@@ -127,7 +151,8 @@ def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
 
 def test_add_job(capsys, monkeypatch, db_file, person, organization):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "add", "job", organization.gID, person.gID]
+        "sys.argv",
+        ["tdb", db_file, "add", "job", str(organization.gID), str(person.gID)],
     )
 
     try:
@@ -141,7 +166,15 @@ def test_add_job(capsys, monkeypatch, db_file, person, organization):
 
 def test_add_job_bad_org(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "add", "job", "NonExistentGID", person.gID]
+        "sys.argv",
+        [
+            "tdb",
+            db_file,
+            "add",
+            "job",
+            "test_01kah9p4b0ejfb7apkkr2abr7c",
+            str(person.gID),
+        ],
     )
 
     try:
@@ -155,7 +188,15 @@ def test_add_job_bad_org(capsys, monkeypatch, db_file, person):
 
 def test_add_job_bad_person(capsys, monkeypatch, db_file, organization):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "add", "job", organization.gID, "NonExistentGID"]
+        "sys.argv",
+        [
+            "tdb",
+            db_file,
+            "add",
+            "job",
+            str(organization.gID),
+            "test_01kah9p4b0ejfb7apkkr2abr7c",
+        ],
     )
 
     try:
@@ -241,7 +282,7 @@ def test_add_personal_key_value_secure(capsys, monkeypatch, db_file, person):
             db_file,
             "add",
             "personal-key-value-secure",
-            person.gID,
+            str(person.gID),
             "secret",
             "value",
         ],
@@ -264,7 +305,7 @@ def test_add_personal_key_value_secure_bad_person(capsys, monkeypatch, db_file):
             db_file,
             "add",
             "personal-key-value-secure",
-            "NonExistentGID",
+            "test_01kah9p4b0ejfb7apkkr2abr7c",
             "secret",
             "value",
         ],
@@ -288,7 +329,7 @@ def test_add_personal_key_value_secure_duplicate(capsys, monkeypatch, db_file, p
             db_file,
             "add",
             "personal-key-value-secure",
-            person.gID,
+            str(person.gID),
             "secret2",
             "value",
         ],

@@ -166,12 +166,13 @@ app.add_typer(add_app, name="add")
 def address_add(occupant_gid: Optional[str] = None):
     if occupant_gid:
         try:
-            occupant = test_db.Person.byGID(occupant_gid) or test_db.Organization.byGID(
-                occupant_gid
-            )
-        except SQLObjectNotFound as exc:
-            sys.stderr.write(f"error: {str(exc)}")
-            sys.exit(1)
+            occupant = test_db.Person.byGID(occupant_gid)
+        except SQLObjectNotFound:
+            try:
+                occupant = test_db.Organization.byGID(occupant_gid)
+            except SQLObjectNotFound:
+                sys.stderr.write("error: person or organization not found")
+                sys.exit(1)
         test_db.AddressView.add(occupant=occupant)
     else:
         test_db.AddressView.add()
@@ -184,7 +185,7 @@ def bank_account_add(owner_gid: Optional[str] = None):
             owner = test_db.Person.byGID(owner_gid)
         except SQLObjectNotFound:
             try:
-                test_db.Organization.byGID(owner_gid)
+                owner = test_db.Organization.byGID(owner_gid)
             except SQLObjectNotFound:
                 sys.stderr.write("error: person or organization not found")
                 sys.exit(1)
@@ -200,7 +201,7 @@ def debit_card_add(owner_gid: Optional[str] = None):
             owner = test_db.Person.byGID(owner_gid)
         except SQLObjectNotFound:
             try:
-                test_db.Organization.byGID(owner_gid)
+                owner = test_db.Organization.byGID(owner_gid)
             except SQLObjectNotFound:
                 sys.stderr.write("error: person or organization not found")
                 sys.exit(1)
