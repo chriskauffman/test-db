@@ -26,7 +26,9 @@ print(ObjectWithUuid.byUid(test_object.uid, connection=connection))
 print((ObjectWithUuid.byUid(test_object.uid, connection=connection) is test_object))
 
 # Shouldn't this also work?
-print((ObjectWithUuid.byUid(str(test_object.uid), connection=connection) is test_object))
+print(
+    (ObjectWithUuid.byUid(str(test_object.uid), connection=connection) is test_object)
+)
 
 
 test_uuid = uuid4()
