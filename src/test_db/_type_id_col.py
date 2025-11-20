@@ -1,4 +1,5 @@
 import logging
+
 from typeid import TypeID
 from typeid.errors import (
     InvalidTypeIDStringException,
@@ -8,7 +9,6 @@ from typeid.errors import (
 
 from typing_extensions import Optional
 
-# from sqlobject import sqlbuilder
 from sqlobject.col import Col, SOCol, SOValidator  # type: ignore
 from formencode import validators  # type: ignore
 
@@ -16,12 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class TypeIDValidator(SOValidator):
-    # def getGIDPrefix(self, state):
-    #     try:
-    #         return self.gIDPrefix
-    #     except AttributeError:
-    #         return self.soCol.getGIDPrefix(state)
-
     def to_python(self, value, state) -> Optional[TypeID]:
         if value is None:
             return None
@@ -36,7 +30,7 @@ class TypeIDValidator(SOValidator):
             state,
         )
 
-    def from_python(self, value, state):
+    def from_python(self, value, state) -> Optional[str]:
         if value is None:
             return None
         if isinstance(value, str):
@@ -66,10 +60,6 @@ class TypeIDValidator(SOValidator):
 
 
 class SOTypeIDCol(SOCol):
-    # def __init__(self, **kw):
-    #     self.gIDPrefix = kw.pop("gIDPrefix", "tdb")
-    #     super(SOTypeIDCol, self).__init__(**kw)
-
     def createValidators(self):
         return [TypeIDValidator(name=self.name)] + super(
             SOTypeIDCol, self
@@ -78,25 +68,6 @@ class SOTypeIDCol(SOCol):
     # Python TypeID documentation specifies max length of 90 characters
     def _sqlType(self):
         return "VARCHAR(90)"
-
-    # def getGIDPrefix(self, state):
-    #     if self.gIDPrefix:
-    #         return self.gIDPrefix
-    #     try:
-    #         gIDPrefix = state.soObject.sqlmeta.gIDPrefix
-    #     except AttributeError:
-    #         gIDPrefix = None
-    #     if gIDPrefix:
-    #         return gIDPrefix
-    #     try:
-    #         connection = state.connection or state.soObject._connection
-    #     except AttributeError:
-    #         gIDPrefix = None
-    #     else:
-    #         gIDPrefix = getattr(connection, "gIDPrefix", None)
-    #     if not gIDPrefix:
-    #         raise ValueError("Invalid TypeID config, check gIDPrefix value")
-    #     return gIDPrefix
 
 
 class TypeIDCol(Col):
