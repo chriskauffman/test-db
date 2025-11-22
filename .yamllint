@@ -1,0 +1,12 @@
+---
+extends: default
+# ignore: |
+#   .ansible-venv/
+#   .travis.yml
+#   .venv/
+rules:
+  # line-length:
+  #   max: 90
+  comments:
+    min-spaces-from-content: 1
+  # comments-indentation: false

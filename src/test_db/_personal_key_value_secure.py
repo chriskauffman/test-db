@@ -1,0 +1,25 @@
+from sqlobject import DateTimeCol, ForeignKey, DatabaseIndex, SQLObject, StringCol  # type: ignore
+
+from test_db._encrypted_pickle_col import EncryptedPickleCol
+
+
+class PersonalKeyValueSecure(SQLObject):
+    """Personal KeyValueSecure SQLObject
+
+    Attributes:
+        key (StringCol): key name
+        person (ForeignKey): person who owns the key/value pair
+        value (EncryptedPickleCol):
+        keyPersonIndex (DatabaseIndex): unique index on (key, person)
+        createdAt (DateTimeCol): creation date
+        updatedAt (DateTimeCol): last updated date
+    """
+
+    key: StringCol = StringCol(notNone=True)
+    person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
+    value: EncryptedPickleCol = EncryptedPickleCol(default=None)
+
+    keyPersonIndex: DatabaseIndex = DatabaseIndex(key, person, unique=True)
+
+    createdAt: DateTimeCol = DateTimeCol()
+    updatedAt: DateTimeCol = DateTimeCol()
