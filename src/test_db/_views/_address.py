@@ -22,18 +22,18 @@ class AddressView(BaseView):
     _user_inputs_required: bool = True
 
     @classmethod
-    def add(self, occupant: Union[Organization, Person, None] = None) -> Address:
+    def add(self, entity: Union[Organization, Person, None] = None) -> Address:
         """Add an address
 
         Args:
-            occupant (Union[Organization, Person, None]): The occupant of the address
+            entity (Union[Organization, Person, None]): The entity of the address
 
         Returns:
             Address: The created address
         """
         address = Address()
-        if occupant:
-            occupant.addAddress(address)
+        if entity:
+            entity.addAddress(address)
         if BaseView.interactive:
             AddressView(address).edit()
         print(address.gID)
@@ -55,9 +55,7 @@ class AddressView(BaseView):
         """Edit the address"""
         if not BaseView.interactive:
             return
-        self._address.description = self._get_str_input(
-            "Description", self._address.description
-        )
+        self._address.name = self._get_str_input("Description", self._address.name)
         self._address.street = self._get_str_input("Street", self._address.street)
         self._address.locality = self._get_str_input("Locality", self._address.locality)
         self._address.region = self._get_str_input("Region", self._address.region)
@@ -69,7 +67,7 @@ class AddressView(BaseView):
     def view(self):
         """Display brief details of the address"""
         print(
-            f"{self._address.gID}, {self._address.street}, {self._address.postalCode}, {str(self._address.description)[:10]}"
+            f"{self._address.gID}, {self._address.street}, {self._address.postalCode}, {str(self._address.name)[:10]}"
         )
 
     def viewDetails(self):
@@ -80,4 +78,4 @@ class AddressView(BaseView):
             f"{self._address.locality}, {self._address.region} {self._address.postalCode}"
         )
         print(self._address.country)
-        print(f"\nDescription: {str(self._address.description)[:10]}")
+        print(f"\nDescription: {str(self._address.name)[:10]}")

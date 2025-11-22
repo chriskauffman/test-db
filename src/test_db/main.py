@@ -163,66 +163,70 @@ app.add_typer(add_app, name="add")
 
 
 @add_app.command("address")
-def address_add(occupant_gid: Optional[str] = None):
-    if occupant_gid:
+def address_add(entity_gid: Optional[str] = None):
+    if entity_gid:
         try:
-            occupant = test_db.Person.byGID(occupant_gid)
+            entity = test_db.Person.byGID(entity_gid)
         except SQLObjectNotFound:
             try:
-                occupant = test_db.Organization.byGID(occupant_gid)
+                entity = test_db.Organization.byGID(entity_gid)
             except SQLObjectNotFound:
                 sys.stderr.write("error: person or organization not found")
                 sys.exit(1)
-        test_db.AddressView.add(occupant=occupant)
+        test_db.AddressView.add(entity=entity)
     else:
         test_db.AddressView.add()
 
 
 @add_app.command("bank-account")
-def bank_account_add(owner_gid: Optional[str] = None):
-    if owner_gid:
+def bank_account_add(entity_gid: Optional[str] = None):
+    if entity_gid:
         try:
-            owner = test_db.Person.byGID(owner_gid)
+            entity = test_db.Person.byGID(entity_gid)
         except SQLObjectNotFound:
             try:
-                owner = test_db.Organization.byGID(owner_gid)
+                entity = test_db.Organization.byGID(entity_gid)
             except SQLObjectNotFound:
                 sys.stderr.write("error: person or organization not found")
                 sys.exit(1)
-        test_db.BankAccountView.add(owner=owner)
+        test_db.BankAccountView.add(entity=entity)
     else:
         test_db.BankAccountView.add()
 
 
 @add_app.command("debit-card")
-def debit_card_add(owner_gid: Optional[str] = None):
-    if owner_gid:
+def debit_card_add(entity_gid: Optional[str] = None):
+    if entity_gid:
         try:
-            owner = test_db.Person.byGID(owner_gid)
+            entity = test_db.Person.byGID(entity_gid)
         except SQLObjectNotFound:
             try:
-                owner = test_db.Organization.byGID(owner_gid)
+                entity = test_db.Organization.byGID(entity_gid)
             except SQLObjectNotFound:
                 sys.stderr.write("error: person or organization not found")
                 sys.exit(1)
-        test_db.DebitCardView.add(owner=owner)
+        test_db.DebitCardView.add(entity=entity)
     else:
         test_db.DebitCardView.add()
 
 
 @add_app.command("job")
-def job_add(employer_gid: str, employee_gid: str):
-    try:
-        employer = test_db.Organization.byGID(employer_gid)
-    except SQLObjectNotFound as exc:
-        sys.stderr.write(f"error: {str(exc)}")
-        sys.exit(1)
-    try:
-        employee = test_db.Person.byGID(employee_gid)
-    except SQLObjectNotFound as exc:
-        sys.stderr.write(f"error: {str(exc)}")
-        sys.exit(1)
-    test_db.JobView.add(employer=employer, employee=employee)
+def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = None):
+    organization = None
+    person = None
+    if organization_gid:
+        try:
+            organization = test_db.Organization.byGID(organization_gid)
+        except SQLObjectNotFound as exc:
+            sys.stderr.write(f"error: {str(exc)}")
+            sys.exit(1)
+    if person_gid:
+        try:
+            person = test_db.Person.byGID(person_gid)
+        except SQLObjectNotFound as exc:
+            sys.stderr.write(f"error: {str(exc)}")
+            sys.exit(1)
+    test_db.JobView.add(organization=organization, person=person)
 
 
 @add_app.command("key-value")
@@ -256,6 +260,94 @@ def personal_key_value_secure_add(person_gid: str, key: str, value: str):
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {str(exc)}")
         sys.exit(1)
+
+
+delete_app = typer.Typer()
+app.add_typer(delete_app, name="delete")
+
+
+@delete_app.command("address")
+def address_delete(gid: str):
+    try:
+        address = test_db.Address.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    address.destroySelf()
+
+
+@delete_app.command("bank-account")
+def bank_account_delete(gid: str):
+    try:
+        bank_account = test_db.BankAccount.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    bank_account.destroySelf()
+
+
+@delete_app.command("debit-card")
+def debit_card_delete(gid: str):
+    try:
+        debit_card = test_db.DebitCard.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    debit_card.destroySelf()
+
+
+@delete_app.command("job")
+def job_delete(gid: str):
+    try:
+        job = test_db.Job.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    job.destroySelf()
+
+
+@delete_app.command("key-value")
+def key_value_delete(key: str):
+    if key in test_db.RESTRICTED_KEYS:
+        sys.stderr.write(f"error: key '{key}' is restricted and cannot be deleted")
+        sys.exit(1)
+    try:
+        key_value = test_db.KeyValue.byKey(key)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    key_value.destroySelf()
+
+
+@delete_app.command("organization")
+def organization_delete(gid: str):
+    try:
+        organization = test_db.Organization.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    organization.destroySelf()
+
+
+@delete_app.command("person")
+def person_delete(gid: str):
+    try:
+        person = test_db.Person.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    person.destroySelf()
+
+
+@delete_app.command("personal-key-value-secure")
+def personal_key_value_secure_delete(person_gid: str, key: str):
+    person = test_db.Person.byGID(person_gid)
+    if person:
+        key_value = person.getPersonalKeyValueSecureByKey(key)
+        if key_value:
+            key_value.destroySelf()
+    else:
+        sys.stderr.write("error: gID not found")
 
 
 edit_app = typer.Typer()
@@ -304,6 +396,9 @@ def job_edit(gid: str):
 
 @edit_app.command("key-value")
 def key_value_edit(key: str):
+    if key in test_db.RESTRICTED_KEYS:
+        sys.stderr.write(f"error: key '{key}' is restricted and cannot be edited")
+        sys.exit(1)
     try:
         key_value = test_db.KeyValue.byKey(key)
     except SQLObjectNotFound as exc:

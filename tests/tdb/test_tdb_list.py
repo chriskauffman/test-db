@@ -97,7 +97,11 @@ def test_list_jobs(
     assert not captured.out
     assert not captured.err
 
-    db.Job(connection=temporary_db.connection, organization=organization, person=person)
+    db.Job(
+        connection=temporary_db.connection,
+        organization=organization,
+        person=person,
+    )
     monkeypatch.setattr("sys.argv", ["tdb", db_file, "list", "jobs"])
     try:
         tdb()

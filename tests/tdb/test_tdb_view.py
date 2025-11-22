@@ -49,7 +49,9 @@ def test_view_debit_card(capsys, monkeypatch, db_file, temporary_db):
 
 def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, person):
     job = db.Job(
-        organization=organization, person=person, connection=temporary_db.connection
+        organization=organization,
+        person=person,
+        connection=temporary_db.connection,
     )
     monkeypatch.setattr("sys.argv", ["tdb", db_file, "view", "job", str(job.gID)])
 

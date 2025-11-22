@@ -3,12 +3,18 @@ from datetime import date, datetime
 import logging
 
 import faker
-
-from sqlobject import DateCol, DateTimeCol, JSONCol, RelatedJoin, StringCol  # type: ignore
-import sqlobject.sqlbuilder  # type: ignore
+from sqlobject import (  # type: ignore
+    DateCol,
+    DateTimeCol,
+    JSONCol,
+    RelatedJoin,
+    SQLObject,
+    StringCol,
+)
+from typeid import TypeID
 
 from test_db._type_id_col import TypeIDCol
-from test_db._gid_sqlobject import GID_SQLObject
+from test_db._gid import validGID
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +31,7 @@ def fake_credit_card_expire_to_date() -> date:
     return expire_date.replace(day=num_days)
 
 
-class DebitCard(GID_SQLObject):
+class DebitCard(SQLObject):
     """DebitCard SQLObject
 
     Attributes:
@@ -33,21 +39,21 @@ class DebitCard(GID_SQLObject):
         attributes (JSONCol): JSON attributes for the object
                               Note: the DB isn't updated until the object is saved
                                     (no DB updates when individual fields are changed)
-        description (StringCol): description of the object
+        name (StringCol): name of the object
         cardNumber (StringCol): debit card number (generated when not provided)
         cvv (StringCol): debit card security code (generated when not provided)
         expirationDate (DateCol): four digit year (generated when not provided)
-        organizations (RelatedJoin): list of employers related to the debit card
-        people (RelatedJoin): list of people related to the debit card
+        entities (RelatedJoin): list of people related to the debit card
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
     """
 
+    _autoCreateDependents: bool = True
     _gIDPrefix: str = "dc"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     attributes: JSONCol = JSONCol(default=None)
-    description: StringCol = StringCol(default=None)
+    name: StringCol = StringCol(default=None)
 
     # Note: cardNumber cannot be an alternateId because many test environments
     # have a limited set of card numbers that may be used, requiring duplicate entries
@@ -55,21 +61,16 @@ class DebitCard(GID_SQLObject):
     cvv: StringCol = StringCol(length=3, default=fake.credit_card_security_code)
     expirationDate: DateCol = DateCol(default=fake_credit_card_expire_to_date)
 
-    organizations: RelatedJoin = RelatedJoin("Organization")
-    people: RelatedJoin = RelatedJoin("Person")
+    entities: RelatedJoin = RelatedJoin("Entity")
 
-    createdAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
-    updatedAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
+    createdAt: DateTimeCol = DateTimeCol()
+    updatedAt: DateTimeCol = DateTimeCol()
 
     def _set_gID(self, value):
         if value:
-            if self.validGID(value):
+            if validGID(value, self._gIDPrefix):
                 self._SO_set_gID(value)
             else:
                 raise ValueError(f"Invalid gID value: {value}")
         else:
-            self._SO_set_gID(self._generateGID())
+            self._SO_set_gID(TypeID(self._gIDPrefix))

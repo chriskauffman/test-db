@@ -1,7 +1,6 @@
 import logging
 
 from sqlobject import DateTimeCol, SQLObject, StringCol  # type: ignore
-import sqlobject.sqlbuilder  # type: ignore
 
 
 logger = logging.getLogger(__name__)
@@ -22,9 +21,5 @@ class KeyValue(SQLObject):
     key: StringCol = StringCol(alternateID=True, unique=True)
     value: StringCol = StringCol(default=None)
 
-    createdAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
-    updatedAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
+    createdAt: DateTimeCol = DateTimeCol()
+    updatedAt: DateTimeCol = DateTimeCol()

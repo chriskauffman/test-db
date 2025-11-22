@@ -33,7 +33,7 @@ src/test_db/schemas/v1.sql: tests/data/test_schema_v1.sqlite
 	sqlite3 --readonly tests/data/test_schema_v1.sqlite .schema > $@
 
 tests/data/test_schema_v1.sqlite:
-	uv run tdb --db_file_path tests/data/test_schema_v1.sqlite --create --no-upgrade
+	uv run tdb --create --no-upgrade tests/data/test_schema_v1.sqlite version
 
 .PHONY: init
 init: log tmp

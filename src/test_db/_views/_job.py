@@ -1,6 +1,6 @@
 import logging
 
-from typing_extensions import List, Union
+from typing_extensions import List, Optional, Union
 
 from sqlobject import SQLObject  # type: ignore
 
@@ -22,9 +22,13 @@ class JobView(BaseView):
     _user_inputs_required: bool = True
 
     @classmethod
-    def add(self, employer: Organization, employee: Person) -> Job:
+    def add(
+        self,
+        organization: Optional[Organization] = None,
+        person: Optional[Person] = None,
+    ) -> Job:
         """Add a Job"""
-        new_job = Job(organization=employer, person=employee)
+        new_job = Job(organization=organization, person=person)
         if BaseView.interactive:
             JobView(new_job).edit()
         print(new_job.gID)

@@ -17,7 +17,7 @@ def test_add_address(capsys, monkeypatch, db_file):
 def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "address", "--occupant-gid", str(person.gID)],
+        ["tdb", db_file, "add", "address", "--entity-gid", str(person.gID)],
     )
 
     try:
@@ -37,7 +37,7 @@ def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
             db_file,
             "add",
             "address",
-            "--occupant-gid",
+            "--entity-gid",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
         ],
     )
@@ -66,7 +66,7 @@ def test_add_bank_account(capsys, monkeypatch, db_file):
 def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "bank-account", "--owner-gid", str(person.gID)],
+        ["tdb", db_file, "add", "bank-account", "--entity-gid", str(person.gID)],
     )
 
     try:
@@ -86,7 +86,7 @@ def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
             db_file,
             "add",
             "bank-account",
-            "--owner-gid",
+            "--entity-gid",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
         ],
     )
@@ -115,7 +115,7 @@ def test_add_debit_card(capsys, monkeypatch, db_file, temporary_db):
 def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "debit-card", "--owner-gid", str(person.gID)],
+        ["tdb", db_file, "add", "debit-card", "--entity-gid", str(person.gID)],
     )
 
     try:
@@ -135,7 +135,7 @@ def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
             db_file,
             "add",
             "debit-card",
-            "--owner-gid",
+            "--entity-gid",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
         ],
     )
@@ -152,7 +152,16 @@ def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
 def test_add_job(capsys, monkeypatch, db_file, person, organization):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "job", str(organization.gID), str(person.gID)],
+        [
+            "tdb",
+            db_file,
+            "add",
+            "job",
+            "--organization-gid",
+            str(organization.gID),
+            "--person-gid",
+            str(person.gID),
+        ],
     )
 
     try:
@@ -172,7 +181,9 @@ def test_add_job_bad_org(capsys, monkeypatch, db_file, person):
             db_file,
             "add",
             "job",
+            "--organization-gid",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
+            "--person-gid",
             str(person.gID),
         ],
     )
@@ -194,7 +205,9 @@ def test_add_job_bad_person(capsys, monkeypatch, db_file, organization):
             db_file,
             "add",
             "job",
+            "--organization-gid",
             str(organization.gID),
+            "--person-gid",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
         ],
     )

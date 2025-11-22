@@ -4,70 +4,68 @@ import faker
 import nanoid
 from sqlobject import (  # type: ignore
     DateTimeCol,
-    JSONCol,
     MultipleJoin,
-    RelatedJoin,
     SQLMultipleJoin,
+    SQLObject,
     StringCol,
-)  # type: ignore
-import sqlobject.sqlbuilder  # type: ignore
+)
 
+from typeid import TypeID
+
+from test_db._global_database_options import _GlobalDatabaseOptions
+from test_db._entity import Entity
+from test_db._gid import validGID
 from test_db._type_id_col import TypeIDCol
-from test_db._gid_sqlobject import GID_SQLObject
 
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
-class Organization(GID_SQLObject):
+class Organization(Entity):
     """Organization SQLObject
 
     Attributes:
         gID (TypeIDCol): global ID for the object
-        attributes (JSONCol): JSON attributes for the object
-                              Note: the DB isn't updated until the object is saved
-                                    (no DB updates when individual fields are changed)
-        description (StringCol): description of the object
         name (StringCol): the name of the settings
-        alternateID (StringCol): an alternate ID for the employer
-        jobs (MultipleJoin): the jobs for the employer
-        jobsSelect (SQLMultipleJoin): the jobs for the employer
-        addresses (RelatedJoin): list of addresses related to the employer
-        bankAccounts (RelatedJoin): list of bank accounts related to the employer
-        debitCards (RelatedJoin): list of debit cards related to the employer
+        employerIdentificationNumber (StringCol): the organization's EIN
+        externalID (StringCol): an alternate ID for the organization
+        jobs (MultipleJoin): the jobs for the organization
+        jobsSelect (SQLMultipleJoin): the jobs for the organization
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
     """
 
+    _autoCreateDependents: bool = True
     _gIDPrefix: str = "o"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
-    description: StringCol = StringCol(default=None)
 
     name: StringCol = StringCol(alternateID=True, default=fake.company)
-    alternateID: StringCol = StringCol(alternateID=True, default=nanoid.generate)
+    employerIdentificationNumber: StringCol = StringCol(
+        alternateID=True, default=fake.ein
+    )
+    externalID: StringCol = StringCol(alternateID=True, default=nanoid.generate)
 
     jobs: MultipleJoin = MultipleJoin("Job")
     jobsSelect: SQLMultipleJoin = SQLMultipleJoin("Job")
 
-    addresses: RelatedJoin = RelatedJoin("Address")
-    bankAccounts: RelatedJoin = RelatedJoin("BankAccount")
-    debitCards: RelatedJoin = RelatedJoin("DebitCard")
+    createdAt: DateTimeCol = DateTimeCol()
+    updatedAt: DateTimeCol = DateTimeCol()
 
-    createdAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
-    updatedAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
+    def _init(self, *args, **kw):
+        SQLObject._init(self, *args, **kw)
+        self._globalDatabaseOptions = _GlobalDatabaseOptions()
+        self._autoCreateDependents = (
+            self._autoCreateDependents
+            or self._globalDatabaseOptions.autoCreateDependents
+        )
 
     def _set_gID(self, value):
         if value:
-            if self.validGID(value):
+            if validGID(value, self._gIDPrefix):
                 self._SO_set_gID(value)
             else:
                 raise ValueError(f"Invalid gID value: {value}")
         else:
-            self._SO_set_gID(self._generateGID())
+            self._SO_set_gID(TypeID(self._gIDPrefix))

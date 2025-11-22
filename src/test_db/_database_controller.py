@@ -13,12 +13,13 @@ from typing_extensions import Optional, Union
 
 from test_db._address import Address
 from test_db._bank_account import BankAccount
-from test_db._database_options import _GlobalDatabaseOptions
+from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._debit_card import DebitCard
+from test_db._entity import Entity
 from test_db._organization import Organization
 from test_db._job import Job
 from test_db._key_value import KeyValue
-from test_db._listeners import updateListener
+from test_db._listeners import createListener, updateListener
 from test_db._person import Person
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
 
@@ -29,12 +30,16 @@ TABLES = (
     Address,
     BankAccount,
     DebitCard,
+    Entity,
     Job,
     KeyValue,
     Organization,
     Person,
     PersonalKeyValueSecure,
 )
+
+# Entity is base class, do not add listeners
+TABLES_WITH_LISTENERS = [table for table in TABLES if table not in (Entity,)]
 
 APPLICATION_ID = 990001
 BACKUP_PATH = "backups"
@@ -112,7 +117,10 @@ class DatabaseController:
 
         self._rawCursor.execute("PRAGMA foreign_keys = ON")
 
-        for table in TABLES:
+        for table in TABLES_WITH_LISTENERS:
+            sqlobject.events.listen(
+                createListener, table, sqlobject.events.RowCreateSignal
+            )
             sqlobject.events.listen(
                 updateListener, table, sqlobject.events.RowUpdateSignal
             )
@@ -123,11 +131,11 @@ class DatabaseController:
         if databaseEncryptionKey:
             try:
                 fernet_salt = KeyValue.byKey(
-                    "oauth2_token_encryption_salt", connection=self.connection
+                    "TestDB_EncryptedPickleColSalt", connection=self.connection
                 ).value.encode(ENCODING)
             except sqlobject.SQLObjectNotFound:
                 fernet_salt = KeyValue(
-                    key="oauth2_token_encryption_salt",
+                    key="TestDB_EncryptedPickleColSalt",
                     value=secrets.token_hex(16),
                     connection=self.connection,
                 ).value.encode(ENCODING)

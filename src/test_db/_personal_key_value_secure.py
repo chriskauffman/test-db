@@ -1,6 +1,4 @@
-from sqlobject import ForeignKey, DatabaseIndex, StringCol  # type: ignore
-from sqlobject import DateTimeCol, SQLObject  # type: ignore
-import sqlobject.sqlbuilder  # type: ignore
+from sqlobject import DateTimeCol, ForeignKey, DatabaseIndex, SQLObject, StringCol  # type: ignore
 
 from test_db._encrypted_pickle_col import EncryptedPickleCol
 
@@ -17,15 +15,11 @@ class PersonalKeyValueSecure(SQLObject):
         updatedAt (DateTimeCol): last updated date
     """
 
-    key: StringCol = StringCol()
+    key: StringCol = StringCol(notNone=True)
     person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
     value: EncryptedPickleCol = EncryptedPickleCol(default=None)
 
     keyPersonIndex: DatabaseIndex = DatabaseIndex(key, person, unique=True)
 
-    createdAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
-    updatedAt: DateTimeCol = DateTimeCol(
-        default=sqlobject.sqlbuilder.func.strftime("%Y-%m-%d %H:%M:%f", "now")
-    )
+    createdAt: DateTimeCol = DateTimeCol()
+    updatedAt: DateTimeCol = DateTimeCol()
