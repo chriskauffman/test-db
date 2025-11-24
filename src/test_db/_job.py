@@ -47,9 +47,9 @@ class Job(SQLObject):
         payGroup (StringCol): the job's pay group
         organization (ForeignKey): the DB ID of the organization
         person (ForeignKey): the DB ID of the person
-        employeeIDOrganizationIndex (DatabaseIndex):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        employeeIDOrganizationIndex (DatabaseIndex):
     """
 
     _autoCreateDependents: bool = True

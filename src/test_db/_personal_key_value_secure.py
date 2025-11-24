@@ -10,9 +10,9 @@ class PersonalKeyValueSecure(SQLObject):
         key (StringCol): key name
         person (ForeignKey): person who owns the key/value pair
         value (EncryptedPickleCol):
-        keyPersonIndex (DatabaseIndex): unique index on (key, person)
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        keyPersonIndex (DatabaseIndex): unique index on (key, person)
     """
 
     key: StringCol = StringCol(notNone=True)
