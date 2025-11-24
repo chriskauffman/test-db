@@ -1,6 +1,8 @@
 import logging
 
 import sqlobject  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError as DuplicateEntryError  # type: ignore
+
 from typing_extensions import Optional
 
 from test_db._address import Address as Address

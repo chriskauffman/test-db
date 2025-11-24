@@ -45,7 +45,7 @@ def db_schema_is_valid(test_db):
                 f"PRAGMA index_list({db.Job.sqlmeta.table})"
             ).fetchall()
         )
-        == 1
+        == 2
     )
 
     assert test_db.validSchema
