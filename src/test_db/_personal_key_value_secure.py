@@ -19,7 +19,7 @@ class PersonalKeyValueSecure(SQLObject):
     person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
     value: EncryptedPickleCol = EncryptedPickleCol(default=None)
 
-    keyPersonIndex: DatabaseIndex = DatabaseIndex(key, person, unique=True)
-
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
+
+    keyPersonIndex: DatabaseIndex = DatabaseIndex(key, person, unique=True)

@@ -66,12 +66,12 @@ class Job(SQLObject):
     organization: ForeignKey = ForeignKey("Organization", default=None)
     person: ForeignKey = ForeignKey("Person", default=None)
 
+    createdAt: DateTimeCol = DateTimeCol()
+    updatedAt: DateTimeCol = DateTimeCol()
+
     employeeIDOrganizationIndex: DatabaseIndex = DatabaseIndex(
         employeeID, organization, unique=True
     )
-
-    createdAt: DateTimeCol = DateTimeCol()
-    updatedAt: DateTimeCol = DateTimeCol()
 
     def _set_gID(self, value):
         if value:
