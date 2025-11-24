@@ -65,6 +65,7 @@ CREATE TABLE job (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
+CREATE UNIQUE INDEX job_employeeIDOrganizationIndex ON job (employee_id, organization_id);
 CREATE TABLE key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     key TEXT NOT NULL UNIQUE,

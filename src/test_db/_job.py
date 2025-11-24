@@ -4,6 +4,7 @@ import faker
 from faker.providers import BaseProvider
 import nanoid
 from sqlobject import (  # type: ignore
+    DatabaseIndex,
     DateTimeCol,
     JSONCol,
     ForeignKey,
@@ -46,6 +47,7 @@ class Job(SQLObject):
         payGroup (StringCol): the job's pay group
         organization (ForeignKey): the DB ID of the organization
         person (ForeignKey): the DB ID of the person
+        employeeIDOrganizationIndex (DatabaseIndex):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
     """
@@ -63,6 +65,10 @@ class Job(SQLObject):
 
     organization: ForeignKey = ForeignKey("Organization", default=None)
     person: ForeignKey = ForeignKey("Person", default=None)
+
+    employeeIDOrganizationIndex: DatabaseIndex = DatabaseIndex(
+        employeeID, organization, unique=True
+    )
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
