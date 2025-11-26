@@ -14,9 +14,9 @@ from sqlobject import (  # type: ignore
 from typeid import TypeID
 from typing_extensions import Optional
 
-from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._entity import Entity
 from test_db._gid import validGID
+from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
 from test_db._type_id_col import TypeIDCol
 
