@@ -3,7 +3,14 @@ import random
 
 import faker
 from faker.providers.bank import Provider as BankProvider
-from sqlobject import DateTimeCol, JSONCol, RelatedJoin, SQLObject, StringCol  # type: ignore
+from sqlobject import (  # type: ignore
+    DatabaseIndex,
+    DateTimeCol,
+    JSONCol,
+    RelatedJoin,
+    SQLObject,
+    StringCol,
+)
 from typeid import TypeID
 
 from test_db._type_id_col import TypeIDCol
@@ -37,12 +44,13 @@ class BankAccount(SQLObject):
         attributes (JSONCol): JSON attributes for the object
                               Note: the DB isn't updated until the object is saved
                                     (no DB updates when individual fields are changed)
-        name (StringCol): name of the object
+        description (StringCol): name of the object
         routingNumber (StringCol): bank routing number (generated when not provided)
         accountNumber (StringCol): bank account (generated when not provided)
         entities (RelatedJoin): list of people related to the bank account
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        routingNumberAccountNumberIndex (DatabaseIndex):
     """
 
     _autoCreateDependents: bool = True
@@ -50,19 +58,21 @@ class BankAccount(SQLObject):
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     attributes: JSONCol = JSONCol(default=None)
-    name: StringCol = StringCol(default=None)
-
-    # Note: A unique index on routingNumber and accountNumber is not used because
-    # many test environments have a limited set of accounts that may be used,
-    # requiring duplicate entries
+    description: StringCol = StringCol(default=None)
 
     routingNumber: StringCol = StringCol(default=fake.aba)
     accountNumber: StringCol = StringCol(default=fake.bank_account_number)
 
-    entities: RelatedJoin = RelatedJoin("Entity")
+    entities: RelatedJoin = RelatedJoin(
+        "Entity", intermediateTable="bank_account_entity", createRelatedTable=False
+    )
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
+
+    routingNumberAccountNumberIndex: DatabaseIndex = DatabaseIndex(
+        routingNumber, accountNumber, unique=True
+    )
 
     def _set_gID(self, value):
         if value:
@@ -72,3 +82,17 @@ class BankAccount(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
+
+    @classmethod
+    def byRoutingAndAccountNumber(
+        cls,
+        routingNumber: str,
+        accountNumber: str,
+        connection=None,
+        **kw,
+    ):
+        return cls.selectBy(
+            routingNumber=routingNumber,
+            accountNumber=accountNumber,
+            connection=connection,
+        ).getOne()

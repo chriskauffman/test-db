@@ -12,6 +12,7 @@ from sqlobject import (  # type: ignore
     StringCol,
 )
 from typeid import TypeID
+from typing_extensions import Union
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
@@ -93,3 +94,15 @@ class Job(SQLObject):
             self._SO_set_personID(value)
         else:
             self._SO_set_personID(Person(connection=self._connection).id)
+
+    @classmethod
+    def byOrganizationAndPerson(
+        cls,
+        organization: Union[Organization, int],
+        person: Union[Person, int],
+        connection=None,
+        **kw,
+    ):
+        return cls.selectBy(
+            organization=organization, person=person, connection=connection
+        ).getOne()

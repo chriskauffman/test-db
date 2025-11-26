@@ -12,9 +12,12 @@ import sqlobject  # type: ignore
 from typing_extensions import Optional, Union
 
 from test_db._address import Address
+from test_db._address_entity import AddressEntity
 from test_db._bank_account import BankAccount
+from test_db._bank_account_entity import BankAccountEntity
 from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._debit_card import DebitCard
+from test_db._debit_card_entity import DebitCardEntity
 from test_db._entity import Entity
 from test_db._organization import Organization
 from test_db._job import Job
@@ -27,6 +30,9 @@ ENCODING = "utf-8"
 IN_MEMORY_DB_FILE = "/:memory:"
 
 TABLES = (
+    AddressEntity,
+    BankAccountEntity,
+    DebitCardEntity,
     Address,
     BankAccount,
     DebitCard,
@@ -39,7 +45,17 @@ TABLES = (
 )
 
 # Entity is base class, do not add listeners
-TABLES_WITH_LISTENERS = [table for table in TABLES if table not in (Entity,)]
+TABLES_WITH_LISTENERS = [
+    table
+    for table in TABLES
+    if table
+    not in (
+        AddressEntity,
+        BankAccountEntity,
+        DebitCardEntity,
+        Entity,
+    )
+]
 
 APPLICATION_ID = 990001
 BACKUP_PATH = "backups"

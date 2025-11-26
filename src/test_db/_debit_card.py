@@ -39,7 +39,7 @@ class DebitCard(SQLObject):
         attributes (JSONCol): JSON attributes for the object
                               Note: the DB isn't updated until the object is saved
                                     (no DB updates when individual fields are changed)
-        name (StringCol): name of the object
+        description (StringCol): name of the object
         cardNumber (StringCol): debit card number (generated when not provided)
         cvv (StringCol): debit card security code (generated when not provided)
         expirationDate (DateCol): four digit year (generated when not provided)
@@ -53,15 +53,17 @@ class DebitCard(SQLObject):
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     attributes: JSONCol = JSONCol(default=None)
-    name: StringCol = StringCol(default=None)
+    description: StringCol = StringCol(default=None)
 
-    # Note: cardNumber cannot be an alternateId because many test environments
-    # have a limited set of card numbers that may be used, requiring duplicate entries
-    cardNumber: StringCol = StringCol(length=16, default=fake.credit_card_number)
+    cardNumber: StringCol = StringCol(
+        alternateID=True, length=16, default=fake.credit_card_number
+    )
     cvv: StringCol = StringCol(length=3, default=fake.credit_card_security_code)
     expirationDate: DateCol = DateCol(default=fake_credit_card_expire_to_date)
 
-    entities: RelatedJoin = RelatedJoin("Entity")
+    entities: RelatedJoin = RelatedJoin(
+        "Entity", intermediateTable="debit_card_entity", createRelatedTable=False
+    )
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()

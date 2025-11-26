@@ -9,3 +9,16 @@ def test_bank_account(temporary_db):
     assert isinstance(int(test_personal_bank_account.accountNumber), int)
     assert isinstance(test_personal_bank_account.accountNumber, str)
     assert isinstance(int(test_personal_bank_account.accountNumber), int)
+
+
+def test_byRoutingAndAccountNumber(temporary_db):
+    test_bank_account = BankAccount(connection=temporary_db.connection)
+
+    assert (
+        BankAccount.byRoutingAndAccountNumber(
+            test_bank_account.routingNumber,
+            test_bank_account.accountNumber,
+            connection=temporary_db.connection,
+        )
+        is test_bank_account
+    )

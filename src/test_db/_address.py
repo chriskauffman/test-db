@@ -22,12 +22,12 @@ class Address(SQLObject):
         attributes (JSONCol): JSON attributes for the object
                               Note: the DB isn't updated until the object is saved
                                     (no DB updates when individual fields are changed)
-        name (StringCol): name of the object
+        description (StringCol): name of the object
         street (StringCol): the person's residence street
         locality (StringCol): the person's residence city
         region (StringCol): the person's residence state
         postalCode (StringCol): the person's residence zip
-        country (StringCol): the person's residence country
+        country (StringCol): the person's residence country, defaults to US
         entities (RelatedJoin): Entity that occupies the address
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
@@ -38,15 +38,17 @@ class Address(SQLObject):
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     attributes: JSONCol = JSONCol(default=None)
-    name: StringCol = StringCol(default=None)
+    description: StringCol = StringCol(default=None)
 
     street: StringCol = StringCol(default=fake.street_address)
     locality: StringCol = StringCol(default=fake.city)
     region: StringCol = StringCol(default=fake.state_abbr)
     postalCode: StringCol = StringCol(default=fake.postcode)
-    country: StringCol = StringCol(default=fake.country_code)
+    country: StringCol = StringCol(default="US")
 
-    entities: RelatedJoin = RelatedJoin("Entity")
+    entities: RelatedJoin = RelatedJoin(
+        "Entity", intermediateTable="address_entity", createRelatedTable=False
+    )
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()

@@ -5,11 +5,6 @@ import faker
 from sqlobject import JSONCol, RelatedJoin, SQLRelatedJoin, StringCol  # type: ignore
 from sqlobject.inheritance import InheritableSQLObject  # type: ignore
 
-from typing_extensions import Optional
-
-from test_db._address import Address
-from test_db._bank_account import BankAccount
-from test_db._debit_card import DebitCard
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
@@ -42,106 +37,21 @@ class Entity(InheritableSQLObject):
     description: StringCol = StringCol(default=None)
     phoneNumber: StringCol = StringCol(default=fake.basic_phone_number)
 
-    addresses: RelatedJoin = RelatedJoin("Address")
-    addressesSelect: SQLRelatedJoin = SQLRelatedJoin("Address")
-    bankAccounts: RelatedJoin = RelatedJoin("BankAccount")
-    bankAccountsSelect: SQLRelatedJoin = SQLRelatedJoin("BankAccount")
-    debitCards: RelatedJoin = RelatedJoin("DebitCard")
-    debitCardsSelect: SQLRelatedJoin = SQLRelatedJoin("DebitCard")
-
-    @property
-    def defaultAddress(self) -> Optional[Address]:
-        return self.getAddressByName("default")
-
-    @property
-    def defaultBankAccount(self) -> Optional[BankAccount]:
-        return self.getBankAccountByName("default")
-
-    @property
-    def defaultDebitCard(self) -> Optional[DebitCard]:
-        return self.getDebitCardByName("default")
-
-    def getAddressByName(self, name: str, **kwargs) -> Optional[Address]:
-        """Return the default address for the person
-
-        Args:
-            name (str): name of the item
-            **kwargs:
-
-        Returns:
-            Optional[Address]: the default address or None
-        """
-        address = next(
-            (address for address in self.addresses if address.name == name),
-            None,
-        )
-        if address:
-            return address
-        else:
-            if self._autoCreateDependents:
-                address = Address(
-                    connection=self._connection,
-                    name=name,
-                    **kwargs,
-                )
-                self.addAddress(address)
-                return address
-        return None
-
-    def getBankAccountByName(self, name: str, **kwargs) -> Optional[BankAccount]:
-        """Find and create bank account
-
-        Args:
-            name (str): name of the item
-            **kwargs:
-
-        Returns:
-            Optional[BankAccount]:
-        """
-        bank_account = next(
-            (
-                bank_account
-                for bank_account in self.bankAccounts
-                if bank_account.name == name
-            ),
-            None,
-        )
-        if bank_account:
-            return bank_account
-        else:
-            if self._autoCreateDependents:
-                bank_account = BankAccount(
-                    connection=self._connection,
-                    name=name,
-                    **kwargs,
-                )
-                self.addBankAccount(bank_account)
-                return bank_account
-        return None
-
-    def getDebitCardByName(self, name: str, **kwargs) -> Optional[DebitCard]:
-        """Find and create debit card
-
-        Args:
-            name (str): name of the item
-            **kwargs:
-
-        Returns:
-            Optional[DebitCard]:
-        """
-        debit_card = next(
-            (debit_card for debit_card in self.debitCards if debit_card.name == name),
-            None,
-        )
-        if debit_card:
-            return debit_card
-        else:
-            if self._autoCreateDependents:
-                debit_card = DebitCard(
-                    connection=self._connection,
-                    name=name,
-                    **kwargs,
-                )
-                self.addDebitCard(debit_card)
-                return debit_card
-        return None
+    addresses: RelatedJoin = RelatedJoin(
+        "Address", intermediateTable="address_entity", createRelatedTable=False
+    )
+    addressesSelect: SQLRelatedJoin = SQLRelatedJoin(
+        "Address", intermediateTable="address_entity", createRelatedTable=False
+    )
+    bankAccounts: RelatedJoin = RelatedJoin(
+        "BankAccount", intermediateTable="bank_account_entity", createRelatedTable=False
+    )
+    bankAccountsSelect: SQLRelatedJoin = SQLRelatedJoin(
+        "BankAccount", intermediateTable="bank_account_entity", createRelatedTable=False
+    )
+    debitCards: RelatedJoin = RelatedJoin(
+        "DebitCard", intermediateTable="debit_card_entity", createRelatedTable=False
+    )
+    debitCardsSelect: SQLRelatedJoin = SQLRelatedJoin(
+        "DebitCard", intermediateTable="debit_card_entity", createRelatedTable=False
+    )

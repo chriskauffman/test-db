@@ -48,8 +48,8 @@ class BankAccountView(BaseView):
 
     def edit(self):
         """Edit the bank account"""
-        self._bank_account.name = self._get_str_input(
-            "Description", self._bank_account.name
+        self._bank_account.description = self._get_str_input(
+            "Description", self._bank_account.description
         )
         self._bank_account.accountNumber = self._get_str_input(
             "Account Number", self._bank_account.accountNumber
@@ -61,5 +61,5 @@ class BankAccountView(BaseView):
     def view(self):
         """Display brief details of the debit card"""
         print(
-            f"{self._bank_account.gID}, {self._bank_account.routingNumber}, {self._bank_account.accountNumber}, {str(self._bank_account.name)[:10]}"
+            f"{self._bank_account.gID}, {self._bank_account.routingNumber}, {self._bank_account.accountNumber}, {str(self._bank_account.description)[:10]}"
         )
