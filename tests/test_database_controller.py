@@ -29,7 +29,7 @@ def db_schema_is_valid(test_db):
                 f"PRAGMA index_list({db.BankAccount.sqlmeta.table})"
             ).fetchall()
         )
-        == 1
+        == 2
     )
     assert (
         len(
@@ -37,7 +37,7 @@ def db_schema_is_valid(test_db):
                 f"PRAGMA index_list({db.DebitCard.sqlmeta.table})"
             ).fetchall()
         )
-        == 1
+        == 2
     )
     assert (
         len(
