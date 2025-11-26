@@ -102,7 +102,6 @@ class Job(SQLObject):
         organization: Union[Organization, int],
         person: Union[Person, int],
         connection: Optional[connectionForURI] = None,
-        **kw,
     ) -> Self:
         """Locate jobs using unique index properties
 
@@ -112,7 +111,6 @@ class Job(SQLObject):
             organization (Union[Organization, int]):
             person (Union[Person, int]):
             connection (Optional[connectionForURI]):
-            **kw:
 
         Returns:
             Self: Job
