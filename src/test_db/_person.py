@@ -27,8 +27,6 @@ logger = logging.getLogger(__name__)
 class Person(Entity):
     """Person SQLObject
 
-    Note: All attributes are generated when not provided
-
     Attributes:
         gID (TypeIDCol): global ID for the object
         firstName (StringCol): the person's first name

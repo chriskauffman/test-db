@@ -36,9 +36,9 @@ class DebitCard(SQLObject):
 
     Attributes:
         gID (TypeIDCol): global ID for the object
-        attributes (JSONCol): JSON attributes for the object
-                              Note: the DB isn't updated until the object is saved
-                                    (no DB updates when individual fields are changed)
+        attributes (JSONCol): JSON attributes for the object. **Note** - The DB
+                              isn't updated until the object is saved (no DB updates
+                              when individual fields are changed)
         description (StringCol): name of the object
         cardNumber (StringCol): debit card number (generated when not provided)
         cvv (StringCol): debit card security code (generated when not provided)

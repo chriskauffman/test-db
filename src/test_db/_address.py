@@ -19,9 +19,9 @@ class Address(SQLObject):
 
     Attributes:
         gID (TypeIDCol): global ID for the object
-        attributes (JSONCol): JSON attributes for the object
-                              Note: the DB isn't updated until the object is saved
-                                    (no DB updates when individual fields are changed)
+        attributes (JSONCol): JSON attributes for the object. **Note** - The DB
+                              isn't updated until the object is saved (no DB updates
+                              when individual fields are changed)
         description (StringCol): name of the object
         street (StringCol): the person's residence street
         locality (StringCol): the person's residence city

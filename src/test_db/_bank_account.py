@@ -4,6 +4,7 @@ import random
 import faker
 from faker.providers.bank import Provider as BankProvider
 from sqlobject import (  # type: ignore
+    connectionForURI,
     DatabaseIndex,
     DateTimeCol,
     JSONCol,
@@ -12,6 +13,7 @@ from sqlobject import (  # type: ignore
     StringCol,
 )
 from typeid import TypeID
+from typing_extensions import Optional, Self
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
@@ -41,9 +43,9 @@ class BankAccount(SQLObject):
 
     Attributes:
         gID (TypeIDCol): global ID for the object
-        attributes (JSONCol): JSON attributes for the object
-                              Note: the DB isn't updated until the object is saved
-                                    (no DB updates when individual fields are changed)
+        attributes (JSONCol): JSON attributes for the object. **Note** - The DB
+                              isn't updated until the object is saved (no DB updates
+                              when individual fields are changed)
         description (StringCol): name of the object
         routingNumber (StringCol): bank routing number (generated when not provided)
         accountNumber (StringCol): bank account (generated when not provided)
@@ -88,9 +90,22 @@ class BankAccount(SQLObject):
         cls,
         routingNumber: str,
         accountNumber: str,
-        connection=None,
+        connection: Optional[connectionForURI] = None,
         **kw,
-    ):
+    ) -> Self:
+        """Locate bank accounts using unique index properties
+
+        Simulates SQLObject's automatic by{alternateID} functions
+
+        Args:
+            routingNumber (str):
+            accountNumber (str):
+            connection (Optional[connectionForURI]):
+            **kw:
+
+        Returns:
+            Self: BankAccount
+        """
         return cls.selectBy(
             routingNumber=routingNumber,
             accountNumber=accountNumber,

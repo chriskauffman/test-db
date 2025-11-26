@@ -13,14 +13,14 @@ logger = logging.getLogger(__name__)
 class Entity(InheritableSQLObject):
     """Base Entity SQLObject
 
-    This is a base class for all entities in the test database.
-    It can be extended to include common attributes or methods
-    that should be shared across all entity types.
+    This is a base class for Organization and Person in the test database.
+    It can be extended to include common attributes or methods that should
+    be shared across all entity types.
 
     Attributes:
-        attributes (JSONCol): JSON attributes for the entity
-                              Note: the DB isn't updated until the object is saved
-                                    (no DB updates when individual fields are changed)
+        attributes (JSONCol): JSON attributes for the object. **Note** - The DB
+                              isn't updated until the object is saved (no DB updates
+                              when individual fields are changed)
         description (StringCol): description of the entity
         phoneNumber (StringCol): the entity's phone number
         addresses (RelatedJoin): list of addresses related to the entity

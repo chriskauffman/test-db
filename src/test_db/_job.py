@@ -4,6 +4,7 @@ import faker
 from faker.providers import BaseProvider
 import nanoid
 from sqlobject import (  # type: ignore
+    connectionForURI,
     DatabaseIndex,
     DateTimeCol,
     JSONCol,
@@ -12,7 +13,7 @@ from sqlobject import (  # type: ignore
     StringCol,
 )
 from typeid import TypeID
-from typing_extensions import Union
+from typing_extensions import Optional, Self, Union
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
@@ -39,9 +40,9 @@ class Job(SQLObject):
 
     Attributes:
         gID (TypeIDCol): global ID for the object
-        attributes (JSONCol): JSON attributes for the object
-                              Note: the DB isn't updated until the object is saved
-                                    (no DB updates when individual fields are changed)
+        attributes (JSONCol): JSON attributes for the object. **Note** - The DB
+                              isn't updated until the object is saved (no DB updates
+                              when individual fields are changed)
         description (StringCol): description of the object
         employeeID (StringCol): the person's employee ID
         location (StringCol): the job's location
@@ -100,9 +101,22 @@ class Job(SQLObject):
         cls,
         organization: Union[Organization, int],
         person: Union[Person, int],
-        connection=None,
+        connection: Optional[connectionForURI] = None,
         **kw,
-    ):
+    ) -> Self:
+        """Locate jobs using unique index properties
+
+        Simulates SQLObject's automatic by{alternateID} functions
+
+        Args:
+            organization (Union[Organization, int]):
+            person (Union[Person, int]):
+            connection (Optional[connectionForURI]):
+            **kw:
+
+        Returns:
+            Self: Job
+        """
         return cls.selectBy(
             organization=organization, person=person, connection=connection
         ).getOne()
