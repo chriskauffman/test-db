@@ -872,7 +872,7 @@ wheels = [
 
 [[package]]
 name = "pydoclint"
-version = "0.8.2"
+version = "0.8.3"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -883,9 +883,9 @@ dependencies = [
     { name = "docstring-parser-fork", marker = "python_full_version >= '3.10'" },
     { name = "tomli", marker = "python_full_version == '3.10.*'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c9/42/2a7ec214259bfd94462f82321a493a515396fc8b813f00e9a0cf096929eb/pydoclint-0.8.2.tar.gz", hash = "sha256:e453a6ea4e8f1fc30e9901564c65961bc3435df9810d64237d18ed7ea0bd5902", size = 182631, upload-time = "2025-11-21T06:40:13.695Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/58/bb3c7edd2bd06b07d9bbb494e52e2d2d6d53405b166aac531b1a27cef972/pydoclint-0.8.3.tar.gz", hash = "sha256:0c69c0ed92c6f6b5aec2a14371bbd9e0a77980da8e2fa0f708092aa06b3b20b3", size = 186619, upload-time = "2025-11-26T06:53:43.361Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c8/9a/2245712a523a15b33cc130b9e18571aa875d2a5d7e61a6c50f4dbdb05e7f/pydoclint-0.8.2-py3-none-any.whl", hash = "sha256:bfedff0f39356a57cec0dbb1d1f881febf80521259e808c4650bdc42282028a5", size = 77874, upload-time = "2025-11-21T06:40:12.383Z" },
+    { url = "https://files.pythonhosted.org/packages/87/6f/cc2b231dc78d8c3aaa674a676db190b8f8071c50134af8f8cf39b9b8e8df/pydoclint-0.8.3-py3-none-any.whl", hash = "sha256:5fc9b82d0d515afce0908cb70e8ff695a68b19042785c248c4f227ad66b4a164", size = 79075, upload-time = "2025-11-26T06:53:42.129Z" },
 ]
 
 [[package]]
@@ -1036,7 +1036,7 @@ dev = [
     { name = "coverage", version = "7.12.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "mypy" },
     { name = "pydoclint", version = "0.7.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "pydoclint", version = "0.8.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pydoclint", version = "0.8.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "pytest", version = "9.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "ruff" },
