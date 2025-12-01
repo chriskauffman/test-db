@@ -55,7 +55,6 @@ class BankAccount(SQLObject):
         routingNumberAccountNumberIndex (DatabaseIndex):
     """
 
-    _autoCreateDependents: bool = True
     _gIDPrefix: str = "ba"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)

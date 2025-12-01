@@ -33,7 +33,6 @@ class Address(SQLObject):
         updatedAt (DateTimeCol): last updated date
     """
 
-    _autoCreateDependents: bool = True
     _gIDPrefix: str = "addr"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)

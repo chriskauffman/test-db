@@ -22,7 +22,11 @@ from test_db._entity import Entity
 from test_db._organization import Organization
 from test_db._job import Job
 from test_db._key_value import KeyValue
-from test_db._listeners import createListener, updateListener
+from test_db._listeners import (
+    handleRowCreatedSignal,
+    handleRowCreateSignal,
+    handleRowUpdateSignal,
+)
 from test_db._person import Person
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
 
@@ -45,7 +49,7 @@ TABLES = (
 )
 
 # Entity is base class, do not add listeners
-TABLES_WITH_LISTENERS = [
+TABLES_WITH_SIGNAL_HANDLING = [
     table
     for table in TABLES
     if table
@@ -89,8 +93,6 @@ class DatabaseController:
         validSchema (bool): True if schema passes checks
     """
 
-    _globalDatabaseOptions = None
-
     def __init__(
         self,
         filePath: Union[pathlib.Path, str],
@@ -99,8 +101,6 @@ class DatabaseController:
         upgrade: bool = False,
         databaseEncryptionKey: Optional[str] = None,
     ) -> None:
-        self._globalDatabaseOptions = _GlobalDatabaseOptions()
-
         self.filePath = pathlib.Path(os.path.abspath(filePath))
 
         # In-memory DB can be opened with 'sqlite:/:memory:'
@@ -108,6 +108,7 @@ class DatabaseController:
             raise ValueError(f"DB file {self.filePath} does not exist")
 
         self.connection = sqlobject.connectionForURI(f"sqlite:{self.filePath}")
+        self.connection.tdbGlobalDatabaseOptions = _GlobalDatabaseOptions()
 
         self._raw = self.connection.getConnection()
         self._rawCursor = self._raw.cursor()
@@ -133,16 +134,20 @@ class DatabaseController:
 
         self._rawCursor.execute("PRAGMA foreign_keys = ON")
 
-        for table in TABLES_WITH_LISTENERS:
+        for table in TABLES_WITH_SIGNAL_HANDLING:
             sqlobject.events.listen(
-                createListener, table, sqlobject.events.RowCreateSignal
+                handleRowCreateSignal, table, sqlobject.events.RowCreateSignal
             )
             sqlobject.events.listen(
-                updateListener, table, sqlobject.events.RowUpdateSignal
+                handleRowUpdateSignal, table, sqlobject.events.RowUpdateSignal
+            )
+            sqlobject.events.listen(
+                handleRowCreatedSignal, table, sqlobject.events.RowCreatedSignal
             )
 
         databaseEncryptionKey = (
-            databaseEncryptionKey or self._globalDatabaseOptions.databaseEncryptionKey
+            databaseEncryptionKey
+            or self.connection.tdbGlobalDatabaseOptions.databaseEncryptionKey
         )
         if databaseEncryptionKey:
             try:
@@ -159,7 +164,7 @@ class DatabaseController:
                 algorithm=hashes.SHA256(),
                 length=32,
                 salt=fernet_salt,
-                iterations=self._globalDatabaseOptions.fernetIterations,
+                iterations=self.connection.tdbGlobalDatabaseOptions.fernetIterations,
             )
             fernet_key_material = databaseEncryptionKey.encode(ENCODING)
             key = base64.urlsafe_b64encode(fernet_kdf.derive(fernet_key_material))

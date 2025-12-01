@@ -31,8 +31,6 @@ class Entity(InheritableSQLObject):
         debitCardsSelect (SQLRelatedJoin):
     """
 
-    _autoCreateDependents: bool = True
-
     attributes: JSONCol = JSONCol(default=None)
     description: StringCol = StringCol(default=None)
     phoneNumber: StringCol = StringCol(default=fake.basic_phone_number)
