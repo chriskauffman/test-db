@@ -262,6 +262,73 @@ def personal_key_value_secure_add(person_gid: str, key: str, value: str):
         sys.exit(1)
 
 
+connect_app = typer.Typer()
+app.add_typer(connect_app, name="connect")
+
+
+@connect_app.command("address")
+def address_connect(gid: str, entity_gid: str):
+    try:
+        address = test_db.Address.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    try:
+        entity = test_db.Organization.byGID(entity_gid)
+    except SQLObjectNotFound:
+        try:
+            entity = test_db.Person.byGID(entity_gid)
+        except SQLObjectNotFound:
+            sys.stderr.write("error: person or organization not found")
+            sys.exit(1)
+    try:
+        entity.addAddress(address)
+    except DuplicateEntryError:
+        pass
+
+
+@connect_app.command("bank-account")
+def bank_account_connect(gid: str, entity_gid: str):
+    try:
+        bank_account = test_db.BankAccount.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    try:
+        entity = test_db.Organization.byGID(entity_gid)
+    except SQLObjectNotFound:
+        try:
+            entity = test_db.Person.byGID(entity_gid)
+        except SQLObjectNotFound:
+            sys.stderr.write("error: person or organization not found")
+            sys.exit(1)
+    try:
+        entity.addBankAccount(bank_account)
+    except DuplicateEntryError:
+        pass
+
+
+@connect_app.command("debit-card")
+def debit_card_connect(gid: str, entity_gid: str):
+    try:
+        debit_card = test_db.DebitCard.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    try:
+        entity = test_db.Organization.byGID(entity_gid)
+    except SQLObjectNotFound:
+        try:
+            entity = test_db.Person.byGID(entity_gid)
+        except SQLObjectNotFound:
+            sys.stderr.write("error: person or organization not found")
+            sys.exit(1)
+    try:
+        entity.addDebitCard(debit_card)
+    except DuplicateEntryError:
+        pass
+
+
 delete_app = typer.Typer()
 app.add_typer(delete_app, name="delete")
 
@@ -348,6 +415,64 @@ def personal_key_value_secure_delete(person_gid: str, key: str):
             key_value.destroySelf()
     else:
         sys.stderr.write("error: gID not found")
+
+
+disconnect_app = typer.Typer()
+app.add_typer(disconnect_app, name="disconnect")
+
+
+@disconnect_app.command("address")
+def address_disconnect(gid: str, entity_gid: str):
+    try:
+        address = test_db.Address.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    try:
+        entity = test_db.Organization.byGID(entity_gid)
+    except SQLObjectNotFound:
+        try:
+            entity = test_db.Person.byGID(entity_gid)
+        except SQLObjectNotFound:
+            sys.stderr.write("error: person or organization not found")
+            sys.exit(1)
+    entity.removeAddress(address)
+
+
+@disconnect_app.command("bank-account")
+def bank_account_disconnect(gid: str, entity_gid: str):
+    try:
+        bank_account = test_db.BankAccount.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    try:
+        entity = test_db.Organization.byGID(entity_gid)
+    except SQLObjectNotFound:
+        try:
+            entity = test_db.Person.byGID(entity_gid)
+        except SQLObjectNotFound:
+            sys.stderr.write("error: person or organization not found")
+            sys.exit(1)
+    entity.removeBankAccount(bank_account)
+
+
+@disconnect_app.command("debit-card")
+def debit_card_disconnect(gid: str, entity_gid: str):
+    try:
+        debit_card = test_db.DebitCard.byGID(gid)
+    except SQLObjectNotFound as exc:
+        sys.stderr.write(f"error: {str(exc)}")
+        sys.exit(1)
+    try:
+        entity = test_db.Organization.byGID(entity_gid)
+    except SQLObjectNotFound:
+        try:
+            entity = test_db.Person.byGID(entity_gid)
+        except SQLObjectNotFound:
+            sys.stderr.write("error: person or organization not found")
+            sys.exit(1)
+    entity.removeDebitCard(debit_card)
 
 
 edit_app = typer.Typer()
@@ -557,11 +682,6 @@ def personal_key_value_secure_view(person_gid: str, key: str):
 
 
 class Settings(BaseSettings):
-    """Test DB DB Maintenance Script
-
-    Provides basic create and upgrade capability for the database
-    """
-
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
