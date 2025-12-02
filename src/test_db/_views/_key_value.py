@@ -38,7 +38,7 @@ class KeyValueView(BaseView):
 
     def edit(self):
         """Edit a key value"""
-        self._key_value.value = self._get_str_input(
+        self._key_value.value = self._getStrInput(
             f"{self._key_value.key}", self._key_value.value
         )
 

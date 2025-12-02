@@ -10,22 +10,20 @@ class BaseView:
     interactive: bool = True
 
     @staticmethod
-    def _get_date_input(
-        prompt: str, default: Optional[str] = None
-    ) -> datetime.datetime:
+    def _getDateInput(prompt: str, default: Optional[str] = None) -> datetime.datetime:
         while True:
-            date_input = BaseView._get_input(f"{prompt} MM/DD/YYYY", default)
+            date_input = BaseView._getInput(f"{prompt} MM/DD/YYYY", default)
             try:
                 return datetime.datetime.strptime(date_input, "%m/%d/%Y")
             except ValueError:
                 logger.error("bad date - MM-DD-YYYY required")
 
     @staticmethod
-    def _get_str_input(
+    def _getStrInput(
         prompt: str, default: Optional[str] = None, numeric: Optional[bool] = False
     ) -> str:
         while True:
-            string_input = BaseView._get_input(prompt, default)
+            string_input = BaseView._getInput(prompt, default)
             if numeric:
                 try:
                     int(string_input)
@@ -37,7 +35,7 @@ class BaseView:
                 logger.error("invalid string input")
 
     @staticmethod
-    def _get_input(prompt: str, default: Optional[str] = None) -> str:
+    def _getInput(prompt: str, default: Optional[str] = None) -> str:
         while True:
             if default:
                 value = input(f"{prompt} ({default}): ") or default

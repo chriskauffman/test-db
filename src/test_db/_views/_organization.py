@@ -48,7 +48,7 @@ class OrganizationView(BaseView):
 
     def edit(self):
         """Edit the organization"""
-        self._organization.name = self._get_str_input("Name", self._organization.name)
+        self._organization.name = self._getStrInput("Name", self._organization.name)
 
     def view(self):
         """Display brief details of the person"""
