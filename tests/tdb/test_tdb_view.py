@@ -61,7 +61,7 @@ def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, pers
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("\nJob ID:\tj_")
+    assert captured.out.startswith("\nJob ID: j_")
 
 
 def test_view_organization(capsys, monkeypatch, db_file, organization):
@@ -75,7 +75,7 @@ def test_view_organization(capsys, monkeypatch, db_file, organization):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("\nOrganization ID:\to_")
+    assert captured.out.startswith("\nOrganization ID: o_")
 
 
 def test_view_person(capsys, monkeypatch, db_file, person):
@@ -87,4 +87,4 @@ def test_view_person(capsys, monkeypatch, db_file, person):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("\nPerson ID:\tp_")
+    assert captured.out.startswith("\nPerson ID: p_")

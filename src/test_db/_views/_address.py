@@ -54,7 +54,7 @@ class AddressView(BaseView):
         if not BaseView.interactive:
             return
         self._address.description = self._getStrInput(
-            "Description", self._address.description
+            "Description", self._address.description, acceptNull=True
         )
         self._address.street = self._getStrInput("Street", self._address.street)
         self._address.locality = self._getStrInput("Locality", self._address.locality)
@@ -79,3 +79,5 @@ class AddressView(BaseView):
         )
         print(self._address.country)
         print(f"\nDescription: {str(self._address.description)[:10]}")
+        print(f"\nCreated At:\t{self._address.createdAt}")
+        print(f"Updated At:\t{self._address.updatedAt}")
