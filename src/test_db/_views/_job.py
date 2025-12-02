@@ -52,9 +52,7 @@ class JobView(BaseView):
 
     def view(self):
         """Display brief details of the debit card"""
-        print(
-            f"{self._job.gID}, {self._job.organization.name}, {self._job.person.lastName}"
-        )
+        print(f"{self._job.gID}, {self._job.employeeID}, {self._job.payGroup}")
 
     def viewDetails(self):
         """Display brief details of the debit card"""
@@ -62,9 +60,15 @@ class JobView(BaseView):
         print(f"\nEmployee ID:\t{self._job.employeeID}")
         print(f"Location:\t{self._job.location}")
         print(f"Pay Group:\t{self._job.payGroup}")
-        print(
-            f"\nEmployer:\t{self._job.organization.name}, {self._job.organization.gID}"
-        )
-        print(
-            f"Employee:\t{self._job.person.firstName} {self._job.person.lastName}, {self._job.person.gID}"
-        )
+        if self._job.organization:
+            print(
+                f"\nEmployer:\t{self._job.organization.name}, {self._job.organization.gID}"
+            )
+        else:
+            print(f"\nEmployer:\t{self._job.organization}")
+        if self._job.person:
+            print(
+                f"Employee:\t{self._job.person.firstName} {self._job.person.lastName}, {self._job.person.gID}"
+            )
+        else:
+            print(f"Employee:\t{self._job.person}")

@@ -54,7 +54,6 @@ class Job(SQLObject):
         employeeIDOrganizationIndex (DatabaseIndex):
     """
 
-    _autoCreateDependents: bool = True
     _gIDPrefix: str = "j"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
@@ -84,17 +83,21 @@ class Job(SQLObject):
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
 
-    def _set_organizationID(self, value):
-        if value:
-            self._SO_set_organizationID(value)
-        else:
-            self._SO_set_organizationID(Organization(connection=self._connection).id)
+    # def _set_organizationID(self, value):
+    #     if value:
+    #         self._SO_set_organizationID(value)
+    #     else:
+    #         if self.createDependents:
+    #             self._SO_set_organizationID(
+    #                 Organization(connection=self._connection).id
+    #             )
 
-    def _set_personID(self, value):
-        if value:
-            self._SO_set_personID(value)
-        else:
-            self._SO_set_personID(Person(connection=self._connection).id)
+    # def _set_personID(self, value):
+    #     if value:
+    #         self._SO_set_personID(value)
+    #     else:
+    #         if self.createDependents:
+    #             self._SO_set_personID(Person(connection=self._connection).id)
 
     @classmethod
     def byOrganizationAndPerson(
@@ -102,7 +105,6 @@ class Job(SQLObject):
         organization: Union[Organization, int],
         person: Union[Person, int],
         connection: Optional[connectionForURI] = None,
-        **kw,
     ) -> Self:
         """Locate jobs using unique index properties
 
@@ -112,7 +114,6 @@ class Job(SQLObject):
             organization (Union[Organization, int]):
             person (Union[Person, int]):
             connection (Optional[connectionForURI]):
-            **kw:
 
         Returns:
             Self: Job

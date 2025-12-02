@@ -55,7 +55,6 @@ class BankAccount(SQLObject):
         routingNumberAccountNumberIndex (DatabaseIndex):
     """
 
-    _autoCreateDependents: bool = True
     _gIDPrefix: str = "ba"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
@@ -91,7 +90,6 @@ class BankAccount(SQLObject):
         routingNumber: str,
         accountNumber: str,
         connection: Optional[connectionForURI] = None,
-        **kw,
     ) -> Self:
         """Locate bank accounts using unique index properties
 
@@ -101,7 +99,6 @@ class BankAccount(SQLObject):
             routingNumber (str):
             accountNumber (str):
             connection (Optional[connectionForURI]):
-            **kw:
 
         Returns:
             Self: BankAccount

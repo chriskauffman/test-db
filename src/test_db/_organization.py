@@ -6,13 +6,11 @@ from sqlobject import (  # type: ignore
     DateTimeCol,
     MultipleJoin,
     SQLMultipleJoin,
-    SQLObject,
     StringCol,
 )
 
 from typeid import TypeID
 
-from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._entity import Entity
 from test_db._gid import validGID
 from test_db._type_id_col import TypeIDCol
@@ -36,7 +34,6 @@ class Organization(Entity):
         updatedAt (DateTimeCol): last updated date
     """
 
-    _autoCreateDependents: bool = True
     _gIDPrefix: str = "o"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
@@ -52,14 +49,6 @@ class Organization(Entity):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
-
-    def _init(self, *args, **kw):
-        SQLObject._init(self, *args, **kw)
-        self._globalDatabaseOptions = _GlobalDatabaseOptions()
-        self._autoCreateDependents = (
-            self._autoCreateDependents
-            or self._globalDatabaseOptions.autoCreateDependents
-        )
 
     def _set_gID(self, value):
         if value:

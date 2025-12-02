@@ -48,7 +48,6 @@ class DebitCard(SQLObject):
         updatedAt (DateTimeCol): last updated date
     """
 
-    _autoCreateDependents: bool = True
     _gIDPrefix: str = "dc"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)

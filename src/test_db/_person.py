@@ -6,7 +6,6 @@ from sqlobject import (  # type: ignore
     DateTimeCol,
     MultipleJoin,
     SQLMultipleJoin,
-    SQLObject,
     SQLObjectNotFound,
     StringCol,
 )
@@ -14,7 +13,6 @@ from sqlobject import (  # type: ignore
 from typeid import TypeID
 from typing_extensions import Optional
 
-from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._entity import Entity
 from test_db._gid import validGID
 from test_db._personal_key_value_secure import PersonalKeyValueSecure
@@ -42,7 +40,6 @@ class Person(Entity):
         updatedAt (DateTimeCol): last updated date
     """
 
-    _autoCreateDependents: bool = True
     _gIDPrefix: str = "p"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
@@ -65,14 +62,6 @@ class Person(Entity):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
-
-    def _init(self, *args, **kw):
-        SQLObject._init(self, *args, **kw)
-        self._globalDatabaseOptions = _GlobalDatabaseOptions()
-        self._autoCreateDependents = (
-            self._autoCreateDependents
-            or self._globalDatabaseOptions.autoCreateDependents
-        )
 
     def _set_email(self, value=None):
         """Handle email generation when names provided"""
