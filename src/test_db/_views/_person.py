@@ -69,9 +69,10 @@ class PersonView(BaseView):
 
     def viewDetails(self):
         """Display the person"""
-        print(f"\nPerson ID:\t{self._person.gID}")
+        print(f"\nPerson ID: {self._person.gID}")
         print(f"\nFirst Name:\t{self._person.firstName}")
         print(f"Last Name:\t{self._person.lastName}")
+        print(f"Description:\t{self._person.description}")
         print(f"Date of Birth:\t{self._person.dateOfBirth.strftime('%m/%d/%Y')}")
         print(f"SSN:\t\t{self._person.socialSecurityNumber}")
         print(f"Email:\t\t{self._person.email}")

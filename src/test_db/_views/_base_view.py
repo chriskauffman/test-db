@@ -20,10 +20,13 @@ class BaseView:
 
     @staticmethod
     def _getStrInput(
-        prompt: str, default: Optional[str] = None, numeric: Optional[bool] = False
+        prompt: str,
+        default: Optional[str] = None,
+        numeric: Optional[bool] = False,
+        acceptNull: Optional[bool] = False,
     ) -> str:
         while True:
-            string_input = BaseView._getInput(prompt, default)
+            string_input = BaseView._getInput(prompt, default, acceptNull=acceptNull)
             if numeric:
                 try:
                     int(string_input)
@@ -35,13 +38,17 @@ class BaseView:
                 logger.error("invalid string input")
 
     @staticmethod
-    def _getInput(prompt: str, default: Optional[str] = None) -> str:
+    def _getInput(
+        prompt: str, default: Optional[str] = None, acceptNull: Optional[bool] = False
+    ) -> str:
         while True:
             if default:
                 value = input(f"{prompt} ({default}): ") or default
             else:
                 value = input(f"{prompt}: ")
-            if value:
+            if value == "NULL":
+                value = ""
+            if value or acceptNull:
                 return value
             else:
                 print("Input is required")

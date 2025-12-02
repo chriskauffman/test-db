@@ -49,6 +49,18 @@ class OrganizationView(BaseView):
     def edit(self):
         """Edit the organization"""
         self._organization.name = self._getStrInput("Name", self._organization.name)
+        self._organization.description = self._getStrInput(
+            "Description", self._organization.description, acceptNull=True
+        )
+        self._organization.employerIdentificationNumber = self._getStrInput(
+            "EIN", self._organization.employerIdentificationNumber
+        )
+        self._organization.externalID = self._getStrInput(
+            "External ID", self._organization.externalID
+        )
+        self._organization.phoneNumber = self._getStrInput(
+            "Phone Number", self._organization.phoneNumber
+        )
 
     def view(self):
         """Display brief details of the person"""
@@ -56,8 +68,14 @@ class OrganizationView(BaseView):
 
     def viewDetails(self):
         """Display brief details of the organization"""
-        print(f"\nOrganization ID:\t{self._organization.gID}")
-        print(f"\nName:\t{self._organization.name}")
+        print(f"\nOrganization ID: {self._organization.gID}")
+        print(f"\nName:\t\t{self._organization.name}")
+        print(f"Description:\t{self._organization.description}")
+        print(f"EIN:\t\t{self._organization.employerIdentificationNumber}")
+        print(f"External ID:\t{self._organization.externalID}")
+        print(f"Phone Number:\t{self._organization.phoneNumber}")
+        print(f"Created At:\t{self._organization.createdAt}")
+        print(f"Updated At:\t{self._organization.updatedAt}")
         print("\nAddresses:")
         AddressView.list(self._organization.addresses)
         print("\nBank Accounts:")
