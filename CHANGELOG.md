@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1-alpha.3](https://github.com/chriskauffman/test-db/compare/v0.1.0-alpha.3...v0.1.1-alpha.3) (2025-12-02)
+
+
+### Bug Fixes
+
+* organization view missing details ([#23](https://github.com/chriskauffman/test-db/issues/23)) ([a657bab](https://github.com/chriskauffman/test-db/commit/a657bab093208ed9e357d143d8b80de94754ed16)), closes [#22](https://github.com/chriskauffman/test-db/issues/22)
+
 ## [0.1.0-alpha.3](https://github.com/chriskauffman/test-db/compare/v0.1.0-alpha.3...v0.1.0-alpha.3) (2025-12-02)
 
 
