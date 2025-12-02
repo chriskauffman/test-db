@@ -19,8 +19,6 @@ class DebitCardView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(self, entity: Union[Organization, Person, None] = None) -> DebitCard:
         """Add a debit card"""
@@ -46,14 +44,14 @@ class DebitCardView(BaseView):
 
     def edit(self):
         """Edit the debit card"""
-        self._debit_card.description = self._get_str_input(
+        self._debit_card.description = self._getStrInput(
             "Description", self._debit_card.description
         )
-        self._debit_card.cardNumber = self._get_str_input(
+        self._debit_card.cardNumber = self._getStrInput(
             "Card Number", self._debit_card.cardNumber
         )
-        self._debit_card.cvv = self._get_str_input("CVV", self._debit_card.cvv)
-        self._debit_card.expirationDate = self._get_str_input(
+        self._debit_card.cvv = self._getStrInput("CVV", self._debit_card.cvv)
+        self._debit_card.expirationDate = self._getStrInput(
             "Expiration Date (MM/YY)", self._debit_card.expirationDate.strftime("%m/%y")
         )
 

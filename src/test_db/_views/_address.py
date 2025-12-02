@@ -19,8 +19,6 @@ class AddressView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(self, entity: Union[Organization, Person, None] = None) -> Address:
         """Add an address
@@ -55,16 +53,16 @@ class AddressView(BaseView):
         """Edit the address"""
         if not BaseView.interactive:
             return
-        self._address.description = self._get_str_input(
+        self._address.description = self._getStrInput(
             "Description", self._address.description
         )
-        self._address.street = self._get_str_input("Street", self._address.street)
-        self._address.locality = self._get_str_input("Locality", self._address.locality)
-        self._address.region = self._get_str_input("Region", self._address.region)
-        self._address.postalCode = self._get_str_input(
+        self._address.street = self._getStrInput("Street", self._address.street)
+        self._address.locality = self._getStrInput("Locality", self._address.locality)
+        self._address.region = self._getStrInput("Region", self._address.region)
+        self._address.postalCode = self._getStrInput(
             "Postal Code", self._address.postalCode
         )
-        self._address.country = self._get_str_input("Country", self._address.country)
+        self._address.country = self._getStrInput("Country", self._address.country)
 
     def view(self):
         """Display brief details of the address"""

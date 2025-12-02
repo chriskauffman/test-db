@@ -24,8 +24,6 @@ class PersonView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(cls) -> Person:
         """Add a person"""
@@ -49,34 +47,17 @@ class PersonView(BaseView):
 
     def edit(self):
         """Edit the person"""
-        self._person.firstName = self._get_str_input(
-            "First Name", self._person.firstName
-        )
-        self._person.lastName = self._get_str_input("Last Name", self._person.lastName)
-        self._person.dateOfBirth = self._get_date_input(
+        self._person.firstName = self._getStrInput("First Name", self._person.firstName)
+        self._person.lastName = self._getStrInput("Last Name", self._person.lastName)
+        self._person.dateOfBirth = self._getDateInput(
             "Date of Birth",
             self._person.dateOfBirth.strftime("%m/%d/%Y"),
         )
-        self._person.socialSecurityNumber = self._get_str_input(
+        self._person.socialSecurityNumber = self._getStrInput(
             "SSN", self._person.socialSecurityNumber
         )
-        self._person.defaultAddress.street = self._get_str_input(
-            "Street", self._person.defaultAddress.street
-        )
-        self._person.defaultAddress.locality = self._get_str_input(
-            "Locality", self._person.defaultAddress.locality
-        )
-        self._person.defaultAddress.region = self._get_str_input(
-            "Region", self._person.defaultAddress.region
-        )
-        self._person.defaultAddress.postalCode = self._get_str_input(
-            "Postal Code", self._person.defaultAddress.postalCode
-        )
-        self._person.defaultAddress.country = self._get_str_input(
-            "Country", self._person.defaultAddress.country
-        )
-        self._person.email = self._get_str_input("Email", self._person.email)
-        self._person.phoneNumber = self._get_str_input(
+        self._person.email = self._getStrInput("Email", self._person.email)
+        self._person.phoneNumber = self._getStrInput(
             "Phone Number", self._person.phoneNumber
         )
 
