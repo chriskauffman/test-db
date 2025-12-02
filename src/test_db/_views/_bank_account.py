@@ -19,8 +19,6 @@ class BankAccountView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(self, entity: Union[Organization, Person, None] = None) -> BankAccount:
         """Add a bank account"""

@@ -19,8 +19,6 @@ class JobView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(
         self,

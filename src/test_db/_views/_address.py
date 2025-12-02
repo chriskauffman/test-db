@@ -19,8 +19,6 @@ class AddressView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(self, entity: Union[Organization, Person, None] = None) -> Address:
         """Add an address

@@ -19,8 +19,6 @@ class KeyValueView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(self, key: str, value: str) -> KeyValue:
         """Add a key value"""

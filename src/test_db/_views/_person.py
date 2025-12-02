@@ -24,8 +24,6 @@ class PersonView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(cls) -> Person:
         """Add a person"""

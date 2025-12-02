@@ -19,8 +19,6 @@ class PersonalKeyValueSecureView(BaseView):
             - user_inputs_required (bool):
     """
 
-    _user_inputs_required: bool = True
-
     @classmethod
     def add(self, person: Person, key: str, value: Any) -> PersonalKeyValueSecure:
         """Add a bank account"""

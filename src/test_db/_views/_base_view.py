@@ -9,11 +9,6 @@ logger = logging.getLogger(__name__)
 class BaseView:
     interactive: bool = True
 
-    def __init__(self, **kwargs):
-        self._user_inputs_required = kwargs.get("user_inputs_required")
-        if self._user_inputs_required is None:
-            self._user_inputs_required = True
-
     @staticmethod
     def _get_date_input(
         prompt: str, default: Optional[str] = None
