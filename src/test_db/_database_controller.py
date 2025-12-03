@@ -62,7 +62,6 @@ TABLES_WITH_SIGNAL_HANDLING = [
 ]
 
 APPLICATION_ID = 990001
-BACKUP_PATH = "backups"
 CURRENT_APPLICATION_SCHEMA_VERSION = 1
 
 logger = logging.getLogger(__name__)
