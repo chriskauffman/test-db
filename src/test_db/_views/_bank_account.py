@@ -20,12 +20,16 @@ class BankAccountView(BaseView):
     """
 
     @classmethod
-    def add(self, entity: Union[Organization, Person, None] = None) -> BankAccount:
+    def add(
+        cls,
+        entity: Union[Organization, Person, None] = None,
+        interactive: bool = True,
+    ) -> BankAccount:
         """Add a bank account"""
         bank_account = BankAccount()
         if entity:
             bank_account.addEntity(entity)
-        if BaseView.interactive:
+        if interactive:
             BankAccountView(bank_account).edit()
         print(bank_account.gID)
         return bank_account

@@ -20,11 +20,16 @@ class AddressView(BaseView):
     """
 
     @classmethod
-    def add(self, entity: Union[Organization, Person, None] = None) -> Address:
+    def add(
+        cls,
+        entity: Union[Organization, Person, None] = None,
+        interactive: bool = True,
+    ) -> Address:
         """Add an address
 
         Args:
             entity (Union[Organization, Person, None]): The entity of the address
+            interactive (bool):
 
         Returns:
             Address: The created address
@@ -32,7 +37,7 @@ class AddressView(BaseView):
         address = Address()
         if entity:
             entity.addAddress(address)
-        if BaseView.interactive:
+        if interactive:
             AddressView(address).edit()
         print(address.gID)
         return address
@@ -51,8 +56,6 @@ class AddressView(BaseView):
 
     def edit(self):
         """Edit the address"""
-        if not BaseView.interactive:
-            return
         self._address.description = self._getStrInput(
             "Description", self._address.description, acceptNull=True
         )

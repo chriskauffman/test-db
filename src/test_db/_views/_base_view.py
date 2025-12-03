@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseView:
-    interactive: bool = True
-
     @staticmethod
     def _getDateInput(prompt: str, default: Optional[str] = None) -> datetime.datetime:
         while True:
@@ -84,10 +82,14 @@ class BaseView:
         """
         return message
 
+    def edit(self):
+        """Edit the object"""
+        pass
+
     def view(self):
-        """Display the person"""
+        """Display the object"""
         pass
 
     def viewDetails(self):
-        """Display the person"""
+        """Display the object's details"""
         self.view()

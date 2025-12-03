@@ -25,10 +25,10 @@ class PersonView(BaseView):
     """
 
     @classmethod
-    def add(cls) -> Person:
+    def add(cls, interactive: bool = True) -> Person:
         """Add a person"""
         new_person = Person()
-        if BaseView.interactive:
+        if interactive:
             PersonView(new_person).edit()
         print(new_person.gID)
         return new_person

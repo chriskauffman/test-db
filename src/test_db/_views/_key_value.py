@@ -20,7 +20,7 @@ class KeyValueView(BaseView):
     """
 
     @classmethod
-    def add(self, key: str, value: str) -> KeyValue:
+    def add(cls, key: str, value: str, interactive: bool = True) -> KeyValue:
         """Add a key value"""
         return KeyValue(key=key, value=value)
 

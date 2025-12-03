@@ -30,7 +30,6 @@ import typer
 from typing_extensions import Literal, Optional, Union
 
 import test_db
-from test_db._views._base_view import BaseView
 
 # OK to make dirs as default directory is "owned" by project
 DEFAULT_CONFIG_PATH = pathlib.Path(pathlib.Path.home(), ".test_db")
@@ -51,6 +50,7 @@ pathlib.Path(DEFAULT_CONFIG_PATH, TOML_FILE_NAME).touch()
 
 logger = logging.getLogger(__name__)
 app = typer.Typer()
+interactive_views = True
 
 
 def locateTomlFile() -> Optional[pathlib.Path]:
@@ -79,7 +79,8 @@ def app_callback(
         bool, typer.Option(help="upgrade the database if it is out of date")
     ] = False,
 ):
-    BaseView.interactive = interactive
+    global interactive_views
+    interactive_views = interactive
     settings = Settings()
     if db_file_path:
         if db_file_path.is_file():
@@ -237,27 +238,27 @@ def validate_person(gid: str):
 def address_add(entity_gid: Optional[str] = None):
     if entity_gid:
         entity = validate_entity(entity_gid)
-        test_db.AddressView.add(entity=entity)
+        test_db.AddressView.add(entity=entity, interactive=interactive_views)
     else:
-        test_db.AddressView.add()
+        test_db.AddressView.add(interactive=interactive_views)
 
 
 @add_app.command("bank-account")
 def bank_account_add(entity_gid: Optional[str] = None):
     if entity_gid:
         entity = validate_entity(entity_gid)
-        test_db.BankAccountView.add(entity=entity)
+        test_db.BankAccountView.add(entity=entity, interactive=interactive_views)
     else:
-        test_db.BankAccountView.add()
+        test_db.BankAccountView.add(interactive=interactive_views)
 
 
 @add_app.command("debit-card")
 def debit_card_add(entity_gid: Optional[str] = None):
     if entity_gid:
         entity = validate_entity(entity_gid)
-        test_db.DebitCardView.add(entity=entity)
+        test_db.DebitCardView.add(entity=entity, interactive=interactive_views)
     else:
-        test_db.DebitCardView.add()
+        test_db.DebitCardView.add(interactive=interactive_views)
 
 
 @add_app.command("job")
@@ -268,13 +269,15 @@ def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = 
         organization = validate_orgnization(organization_gid)
     if person_gid:
         person = validate_person(person_gid)
-    test_db.JobView.add(organization=organization, person=person)
+    test_db.JobView.add(
+        organization=organization, person=person, interactive=interactive_views
+    )
 
 
 @add_app.command("key-value")
 def key_value_add(key: str, value: str):
     try:
-        test_db.KeyValueView.add(key=key, value=value)
+        test_db.KeyValueView.add(key=key, value=value, interactive=interactive_views)
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {str(exc)}")
         sys.exit(1)
@@ -282,19 +285,21 @@ def key_value_add(key: str, value: str):
 
 @add_app.command("organization")
 def organization_add():
-    test_db.OrganizationView.add()
+    test_db.OrganizationView.add(interactive=interactive_views)
 
 
 @add_app.command("person")
 def person_add():
-    test_db.PersonView.add()
+    test_db.PersonView.add(interactive=interactive_views)
 
 
 @add_app.command("personal-key-value-secure")
 def personal_key_value_secure_add(person_gid: str, key: str, value: str):
     person = validate_person(person_gid)
     try:
-        test_db.PersonalKeyValueSecureView.add(person=person, key=key, value=value)
+        test_db.PersonalKeyValueSecureView.add(
+            person=person, key=key, value=value, interactive=interactive_views
+        )
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {str(exc)}")
         sys.exit(1)

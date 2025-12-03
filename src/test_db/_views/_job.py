@@ -21,13 +21,14 @@ class JobView(BaseView):
 
     @classmethod
     def add(
-        self,
+        cls,
         organization: Optional[Organization] = None,
         person: Optional[Person] = None,
+        interactive: bool = True,
     ) -> Job:
         """Add a Job"""
         new_job = Job(organization=organization, person=person)
-        if BaseView.interactive:
+        if interactive:
             JobView(new_job).edit()
         print(new_job.gID)
         return new_job
@@ -46,7 +47,13 @@ class JobView(BaseView):
 
     def edit(self):
         """Edit the job"""
-        pass
+        self._job.employeeID = self._getStrInput("Employee ID", self._job.employeeID)
+        self._job.location = self._getStrInput(
+            "Location", self._job.location, acceptNull=True
+        )
+        self._job.payGroup = self._getStrInput(
+            "Pay Group", self._job.payGroup, acceptNull=True
+        )
 
     def view(self):
         """Display brief details of the debit card"""

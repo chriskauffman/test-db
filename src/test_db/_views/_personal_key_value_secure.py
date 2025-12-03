@@ -20,7 +20,9 @@ class PersonalKeyValueSecureView(BaseView):
     """
 
     @classmethod
-    def add(self, person: Person, key: str, value: Any) -> PersonalKeyValueSecure:
+    def add(
+        cls, person: Person, key: str, value: Any, interactive: bool = True
+    ) -> PersonalKeyValueSecure:
         """Add a bank account"""
         return PersonalKeyValueSecure(person=person, key=key, value=value)
 
@@ -39,13 +41,11 @@ class PersonalKeyValueSecureView(BaseView):
         super().__init__(**kwargs)
         self._personal_key_value = personal_key_value
 
-    def edit(self):
-        """Edit the key value"""
-        pass
-
     def view(self):
         """Display brief details of the key value"""
         print(f"{self._personal_key_value.person.gID}, {self._personal_key_value.key}")
 
     def viewDetails(self):
-        print(f"{self._personal_key_value.key} = {self._personal_key_value.value}")
+        print(
+            f"{self._personal_key_value.person.gID}, {self._personal_key_value.key} = {self._personal_key_value.value}"
+        )

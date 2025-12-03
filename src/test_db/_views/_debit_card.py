@@ -20,12 +20,16 @@ class DebitCardView(BaseView):
     """
 
     @classmethod
-    def add(self, entity: Union[Organization, Person, None] = None) -> DebitCard:
+    def add(
+        cls,
+        entity: Union[Organization, Person, None] = None,
+        interactive: bool = True,
+    ) -> DebitCard:
         """Add a debit card"""
         debit_card = DebitCard()
         if entity:
             debit_card.addEntity(entity)
-        if BaseView.interactive:
+        if interactive:
             DebitCardView(debit_card).edit()
         print(debit_card.gID)
         return debit_card

@@ -24,10 +24,10 @@ class OrganizationView(BaseView):
     """
 
     @classmethod
-    def add(cls) -> Organization:
+    def add(cls, interactive: bool = True) -> Organization:
         """Add a organization"""
         new_org = Organization()
-        if BaseView.interactive:
+        if interactive:
             OrganizationView(new_org).edit()
         print(new_org.gID)
         return new_org
