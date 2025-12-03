@@ -32,6 +32,7 @@ class BaseView:
                     int(string_input)
                 except ValueError:
                     logger.error("string input must be numeric")
+                    continue
             try:
                 return str(string_input)
             except ValueError:

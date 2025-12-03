@@ -45,14 +45,17 @@ class DebitCardView(BaseView):
     def edit(self):
         """Edit the debit card"""
         self._debit_card.description = self._getStrInput(
-            "Description", self._debit_card.description
+            "Description", self._debit_card.description, acceptNull=True
         )
         self._debit_card.cardNumber = self._getStrInput(
-            "Card Number", self._debit_card.cardNumber
+            "Card Number", self._debit_card.cardNumber, numeric=True
         )
-        self._debit_card.cvv = self._getStrInput("CVV", self._debit_card.cvv)
-        self._debit_card.expirationDate = self._getStrInput(
-            "Expiration Date (MM/YY)", self._debit_card.expirationDate.strftime("%m/%y")
+        self._debit_card.cvv = self._getStrInput(
+            "CVV", self._debit_card.cvv, numeric=True
+        )
+        self._debit_card.expirationDate = self._getDateInput(
+            "Expiration Date",
+            self._debit_card.expirationDate.strftime("%m/%d/%Y"),
         )
 
     def view(self):
