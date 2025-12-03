@@ -57,7 +57,7 @@ class Job(SQLObject):
     _gIDPrefix: str = "j"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
+    attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
 
     employeeID: StringCol = StringCol(default=fake.employee_id)

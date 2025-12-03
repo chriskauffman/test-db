@@ -51,7 +51,7 @@ class DebitCard(SQLObject):
     _gIDPrefix: str = "dc"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
+    attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
 
     cardNumber: StringCol = StringCol(

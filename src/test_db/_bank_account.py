@@ -58,7 +58,7 @@ class BankAccount(SQLObject):
     _gIDPrefix: str = "ba"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
+    attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
 
     routingNumber: StringCol = StringCol(default=fake.aba)
