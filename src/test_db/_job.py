@@ -74,6 +74,18 @@ class Job(SQLObject):
         employeeID, organization, unique=True
     )
 
+    @property
+    def visualID(self):
+        viewItems = [
+            str(self.gID),
+            self.employeeID,
+        ]
+        if self.person:
+            viewItems.append(self.person.lastName)
+        if self.organization:
+            viewItems.append(self.organization.name)
+        return ", ".join(viewItems)
+
     def _set_gID(self, value):
         if value:
             if validGID(value, self._gIDPrefix):

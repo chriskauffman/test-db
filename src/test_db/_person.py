@@ -63,10 +63,19 @@ class Person(Entity):
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
+    @property
+    def name(self):
+        return f"{self.firstName} {self.lastName}"
+
+    @property
+    def visualID(self) -> str:
+        """Easy representation of the object"""
+        return f"{self.gID} {self.name} {self.email}"
+
     def _set_email(self, value=None):
         """Handle email generation when names provided"""
-        self.firstName = self.firstName or self.fake.first_name()
-        self.lastName = self.lastName or self.fake.last_name()
+        self.firstName = self.firstName or fake.first_name()
+        self.lastName = self.lastName or fake.last_name()
         if value:
             self._SO_set_email(value)
         else:

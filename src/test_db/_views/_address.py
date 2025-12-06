@@ -24,17 +24,19 @@ class AddressView(BaseView):
         cls,
         entity: Union[Organization, Person, None] = None,
         interactive: bool = True,
+        **kwargs,
     ) -> Address:
         """Add an address
 
         Args:
             entity (Union[Organization, Person, None]): The entity of the address
             interactive (bool):
+            **kwargs:
 
         Returns:
             Address: The created address
         """
-        address = Address()
+        address = Address(**kwargs)
         if entity:
             entity.addAddress(address)
         if interactive:
@@ -54,6 +56,15 @@ class AddressView(BaseView):
         super().__init__(**kwargs)
         self._address = address
 
+    def delete(self, interactive: bool = True):
+        """Delete the card"""
+        if (
+            interactive
+            and input(f"Delete {self._address.visualID}? [y/n] ").strip().lower() != "y"
+        ):
+            return
+        self._address.destroySelf()
+
     def edit(self):
         """Edit the address"""
         self._address.description = self._getStrInput(
@@ -69,9 +80,7 @@ class AddressView(BaseView):
 
     def view(self):
         """Display brief details of the address"""
-        print(
-            f"{self._address.gID}, {self._address.street}, {self._address.postalCode}, {str(self._address.description)[:10]}"
-        )
+        print(f"{self._address.visualID}")
 
     def viewDetails(self):
         """Display the person"""

@@ -36,7 +36,7 @@ class Address(SQLObject):
     _gIDPrefix: str = "addr"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
+    attributes: JSONCol = JSONCol(default={})
     description: StringCol = StringCol(default=None)
 
     street: StringCol = StringCol(default=fake.street_address)
@@ -51,6 +51,10 @@ class Address(SQLObject):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
+
+    @property
+    def visualID(self):
+        return f"{self.gID}, {self.street}, {self.postalCode}"
 
     def _set_gID(self, value):
         if value:

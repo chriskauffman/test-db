@@ -24,9 +24,10 @@ class DebitCardView(BaseView):
         cls,
         entity: Union[Organization, Person, None] = None,
         interactive: bool = True,
+        **kwargs,
     ) -> DebitCard:
         """Add a debit card"""
-        debit_card = DebitCard()
+        debit_card = DebitCard(**kwargs)
         if entity:
             debit_card.addEntity(entity)
         if interactive:
@@ -45,6 +46,16 @@ class DebitCardView(BaseView):
     def __init__(self, debit_card: DebitCard, **kwargs):
         super().__init__(**kwargs)
         self._debit_card = debit_card
+
+    def delete(self, interactive: bool = True):
+        """Delete the card"""
+        if (
+            interactive
+            and input(f"Delete {self._debit_card.visualID}? [y/n] ").strip().lower()
+            != "y"
+        ):
+            return
+        self._debit_card.destroySelf()
 
     def edit(self):
         """Edit the debit card"""
@@ -65,9 +76,7 @@ class DebitCardView(BaseView):
     def view(self):
         """Display brief details of the debit card"""
         print(
-            f"{self._debit_card.gID}, "
-            f"{self._debit_card.cardNumber}, "
+            f"{self._debit_card.visualID}, "
             f"{self._debit_card.cvv}, "
-            f"{self._debit_card.expirationDate.strftime('%m/%y')}, "
             f"{str(self._debit_card.description)[:10]}"
         )

@@ -82,6 +82,10 @@ class BaseView:
         """
         return message
 
+    def delete(self):
+        """Delete the object"""
+        pass
+
     def edit(self):
         """Edit the object"""
         pass

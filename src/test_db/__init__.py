@@ -1,6 +1,7 @@
 import logging
 
 import sqlobject  # type: ignore
+from sqlobject import SQLObjectNotFound as SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError as DuplicateEntryError  # type: ignore
 
 from typing_extensions import Optional

@@ -75,6 +75,10 @@ class BankAccount(SQLObject):
         routingNumber, accountNumber, unique=True
     )
 
+    @property
+    def visualID(self):
+        return f"{self.gID}, {self.routingNumber}, {self.accountNumber}"
+
     def _set_gID(self, value):
         if value:
             if validGID(value, self._gIDPrefix):

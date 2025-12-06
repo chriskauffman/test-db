@@ -24,9 +24,9 @@ class OrganizationView(BaseView):
     """
 
     @classmethod
-    def add(cls, interactive: bool = True) -> Organization:
+    def add(cls, interactive: bool = True, **kwargs) -> Organization:
         """Add a organization"""
-        new_org = Organization()
+        new_org = Organization(**kwargs)
         if interactive:
             OrganizationView(new_org).edit()
         print(new_org.gID)
@@ -46,6 +46,16 @@ class OrganizationView(BaseView):
         super().__init__(**kwargs)
         self._organization = organization
 
+    def delete(self, interactive: bool = True):
+        """Delete the organization"""
+        if (
+            interactive
+            and input(f"Delete {self._organization.visualID}? [y/n] ").strip().lower()
+            != "y"
+        ):
+            return
+        self._organization.destroySelf()
+
     def edit(self):
         """Edit the organization"""
         self._organization.name = self._getStrInput("Name", self._organization.name)
@@ -64,7 +74,7 @@ class OrganizationView(BaseView):
 
     def view(self):
         """Display brief details of the person"""
-        print(f"{self._organization.gID}, {self._organization.name}")
+        print(f"{self._organization.visualID}")
 
     def viewDetails(self):
         """Display brief details of the organization"""

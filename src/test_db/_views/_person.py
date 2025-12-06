@@ -25,9 +25,9 @@ class PersonView(BaseView):
     """
 
     @classmethod
-    def add(cls, interactive: bool = True) -> Person:
+    def add(cls, interactive: bool = True, **kwargs) -> Person:
         """Add a person"""
-        new_person = Person()
+        new_person = Person(**kwargs)
         if interactive:
             PersonView(new_person).edit()
         print(new_person.gID)
@@ -44,6 +44,15 @@ class PersonView(BaseView):
     def __init__(self, person: Person, **kwargs):
         super().__init__(**kwargs)
         self._person = person
+
+    def delete(self, interactive: bool = True):
+        """Delete the person"""
+        if (
+            interactive
+            and input(f"Delete {self._person.visualID}? [y/n] ").strip().lower() != "y"
+        ):
+            return
+        self._person.destroySelf()
 
     def edit(self):
         """Edit the person"""
@@ -63,9 +72,7 @@ class PersonView(BaseView):
 
     def view(self):
         """Display brief details of the person"""
-        print(
-            f"{self._person.gID}, {self._person.firstName} {self._person.lastName}, {self._person.email}"
-        )
+        print(f"{self._person.visualID}")
 
     def viewDetails(self):
         """Display the person"""

@@ -25,9 +25,10 @@ class JobView(BaseView):
         organization: Optional[Organization] = None,
         person: Optional[Person] = None,
         interactive: bool = True,
+        **kwargs,
     ) -> Job:
         """Add a Job"""
-        new_job = Job(organization=organization, person=person)
+        new_job = Job(organization=organization, person=person, **kwargs)
         if interactive:
             JobView(new_job).edit()
         print(new_job.gID)
@@ -45,6 +46,15 @@ class JobView(BaseView):
         super().__init__(**kwargs)
         self._job = job
 
+    def delete(self, interactive: bool = True):
+        """Delete the job"""
+        if (
+            interactive
+            and input(f"Delete {self._job.visualID}? [y/n] ").strip().lower() != "y"
+        ):
+            return
+        self._job.destroySelf()
+
     def edit(self):
         """Edit the job"""
         self._job.employeeID = self._getStrInput("Employee ID", self._job.employeeID)
@@ -57,7 +67,7 @@ class JobView(BaseView):
 
     def view(self):
         """Display brief details of the debit card"""
-        print(f"{self._job.gID}, {self._job.employeeID}, {self._job.payGroup}")
+        print(f"{self._job.visualID}")
 
     def viewDetails(self):
         """Display brief details of the debit card"""

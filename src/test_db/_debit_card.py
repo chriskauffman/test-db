@@ -67,6 +67,10 @@ class DebitCard(SQLObject):
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
+    @property
+    def visualID(self):
+        return f"{self.gID}, {self.cardNumber}, {self.expirationDate.strftime('%m/%y')}"
+
     def _set_gID(self, value):
         if value:
             if validGID(value, self._gIDPrefix):
