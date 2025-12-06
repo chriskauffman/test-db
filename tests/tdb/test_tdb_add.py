@@ -3,7 +3,9 @@ from test_db.main import main as tdb
 
 
 def test_add_address(capsys, monkeypatch, db_file):
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "add", "address"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "add", "address"]
+    )
 
     try:
         tdb()
@@ -17,7 +19,15 @@ def test_add_address(capsys, monkeypatch, db_file):
 def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "address", "--entity-gid", str(person.gID)],
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "add",
+            "address",
+            "--entity-gid",
+            str(person.gID),
+        ],
     )
 
     try:
@@ -34,6 +44,7 @@ def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "address",
@@ -52,7 +63,9 @@ def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
 
 
 def test_add_bank_account(capsys, monkeypatch, db_file):
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "add", "bank-account"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "add", "bank-account"]
+    )
 
     try:
         tdb()
@@ -66,7 +79,15 @@ def test_add_bank_account(capsys, monkeypatch, db_file):
 def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "bank-account", "--entity-gid", str(person.gID)],
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "add",
+            "bank-account",
+            "--entity-gid",
+            str(person.gID),
+        ],
     )
 
     try:
@@ -83,6 +104,7 @@ def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "bank-account",
@@ -101,7 +123,9 @@ def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
 
 
 def test_add_debit_card(capsys, monkeypatch, db_file, temporary_db):
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "add", "debit-card"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "add", "debit-card"]
+    )
 
     try:
         tdb()
@@ -115,7 +139,15 @@ def test_add_debit_card(capsys, monkeypatch, db_file, temporary_db):
 def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "debit-card", "--entity-gid", str(person.gID)],
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "add",
+            "debit-card",
+            "--entity-gid",
+            str(person.gID),
+        ],
     )
 
     try:
@@ -132,6 +164,7 @@ def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "debit-card",
@@ -154,6 +187,7 @@ def test_add_job(capsys, monkeypatch, db_file, person, organization):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "job",
@@ -178,6 +212,7 @@ def test_add_job_bad_org(capsys, monkeypatch, db_file, person):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "job",
@@ -202,6 +237,7 @@ def test_add_job_bad_person(capsys, monkeypatch, db_file, organization):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "job",
@@ -224,7 +260,15 @@ def test_add_job_bad_person(capsys, monkeypatch, db_file, organization):
 def test_add_key_value(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "add", "key-value", "test_add_key_value", "test_value"],
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "add",
+            "key-value",
+            "test_add_key_value",
+            "test_value",
+        ],
     )
 
     try:
@@ -246,6 +290,7 @@ def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "key-value",
@@ -264,7 +309,9 @@ def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
 
 
 def test_add_organization(capsys, monkeypatch, db_file):
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "add", "organization"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "add", "organization"]
+    )
 
     try:
         tdb()
@@ -276,7 +323,7 @@ def test_add_organization(capsys, monkeypatch, db_file):
 
 
 def test_add_person(capsys, monkeypatch, db_file):
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "add", "person"])
+    monkeypatch.setattr("sys.argv", ["tdb", "--db-file-path", db_file, "add", "person"])
 
     try:
         tdb()
@@ -292,6 +339,7 @@ def test_add_personal_key_value_secure(capsys, monkeypatch, db_file, person):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "personal-key-value-secure",
@@ -315,6 +363,7 @@ def test_add_personal_key_value_secure_bad_person(capsys, monkeypatch, db_file):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "personal-key-value-secure",
@@ -339,6 +388,7 @@ def test_add_personal_key_value_secure_duplicate(capsys, monkeypatch, db_file, p
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "add",
             "personal-key-value-secure",

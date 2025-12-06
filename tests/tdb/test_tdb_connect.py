@@ -11,6 +11,7 @@ def test_connect_address(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "connect",
             "address",
@@ -37,6 +38,7 @@ def test_connect_address(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "connect",
             "address",
@@ -67,6 +69,7 @@ def test_connect_bank_account(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "connect",
             "bank-account",
@@ -93,6 +96,7 @@ def test_connect_bank_account(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "connect",
             "bank-account",
@@ -123,6 +127,7 @@ def test_connect_debit_card(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "connect",
             "debit-card",
@@ -149,6 +154,7 @@ def test_connect_debit_card(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "connect",
             "debit-card",

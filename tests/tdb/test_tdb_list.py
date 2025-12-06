@@ -5,7 +5,8 @@ from test_db.main import main as tdb
 def test_list_addresses(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--create", empty_db_file, "list", "addresses"]
+        "sys.argv",
+        ["tdb", "--create", "--db-file-path", empty_db_file, "list", "addresses"],
     )
 
     try:
@@ -18,7 +19,9 @@ def test_list_addresses(capsys, monkeypatch, db_file, temporary_db, tmp_path_fac
     assert not captured.err
 
     db.Address(connection=temporary_db.connection)
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "list", "addresses"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "list", "addresses"]
+    )
     try:
         tdb()
     except SystemExit as e:
@@ -33,7 +36,8 @@ def test_list_bank_accounts(
 ):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--create", empty_db_file, "list", "bank-accounts"]
+        "sys.argv",
+        ["tdb", "--create", "--db-file-path", empty_db_file, "list", "bank-accounts"],
     )
 
     try:
@@ -46,7 +50,9 @@ def test_list_bank_accounts(
     assert not captured.err
 
     db.BankAccount(connection=temporary_db.connection)
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "list", "bank-accounts"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "list", "bank-accounts"]
+    )
     try:
         tdb()
     except SystemExit as e:
@@ -59,7 +65,8 @@ def test_list_bank_accounts(
 def test_list_debit_cards(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--create", empty_db_file, "list", "debit-cards"]
+        "sys.argv",
+        ["tdb", "--create", "--db-file-path", empty_db_file, "list", "debit-cards"],
     )
 
     try:
@@ -72,7 +79,9 @@ def test_list_debit_cards(capsys, monkeypatch, db_file, temporary_db, tmp_path_f
     assert not captured.err
 
     db.DebitCard(connection=temporary_db.connection)
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "list", "debit-cards"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "list", "debit-cards"]
+    )
     try:
         tdb()
     except SystemExit as e:
@@ -86,7 +95,9 @@ def test_list_jobs(
     capsys, monkeypatch, db_file, temporary_db, tmp_path_factory, organization, person
 ):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
-    monkeypatch.setattr("sys.argv", ["tdb", "--create", empty_db_file, "list", "jobs"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--create", "--db-file-path", empty_db_file, "list", "jobs"]
+    )
 
     try:
         tdb()
@@ -102,7 +113,7 @@ def test_list_jobs(
         organization=organization,
         person=person,
     )
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "list", "jobs"])
+    monkeypatch.setattr("sys.argv", ["tdb", "--db-file-path", db_file, "list", "jobs"])
     try:
         tdb()
     except SystemExit as e:
@@ -117,7 +128,8 @@ def test_list_organizations(
 ):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--create", empty_db_file, "list", "organizations"]
+        "sys.argv",
+        ["tdb", "--create", "--db-file-path", empty_db_file, "list", "organizations"],
     )
 
     try:
@@ -130,7 +142,9 @@ def test_list_organizations(
     assert not captured.err
 
     db.Organization(connection=temporary_db.connection)
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "list", "organizations"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "list", "organizations"]
+    )
     try:
         tdb()
     except SystemExit as e:
@@ -143,7 +157,8 @@ def test_list_organizations(
 def test_list_people(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--create", empty_db_file, "list", "people"]
+        "sys.argv",
+        ["tdb", "--create", "--db-file-path", empty_db_file, "list", "people"],
     )
 
     try:
@@ -156,7 +171,9 @@ def test_list_people(capsys, monkeypatch, db_file, temporary_db, tmp_path_factor
     assert not captured.err
 
     db.Person(connection=temporary_db.connection)
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "list", "people"])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "list", "people"]
+    )
     try:
         tdb()
     except SystemExit as e:

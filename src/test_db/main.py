@@ -36,6 +36,10 @@ DEFAULT_CONFIG_PATH = pathlib.Path(pathlib.Path.home(), ".test_db")
 if not os.path.exists(DEFAULT_CONFIG_PATH):
     os.makedirs(DEFAULT_CONFIG_PATH)
 
+DEFAULT_DB_NAME = "test_db.sqlite"
+DEFAULT_DB_PATH = pathlib.Path(DEFAULT_CONFIG_PATH, DEFAULT_DB_NAME)
+DEFAULT_DB_PATH.touch()
+
 DEFAULT_LOG_PATH = pathlib.Path(DEFAULT_CONFIG_PATH, "log")
 if not os.path.exists(DEFAULT_LOG_PATH):
     os.makedirs(DEFAULT_LOG_PATH)
@@ -44,28 +48,32 @@ DEFAULT_BACKUP_PATH = pathlib.Path(DEFAULT_CONFIG_PATH, "backup")
 if not os.path.exists(DEFAULT_BACKUP_PATH):
     os.makedirs(DEFAULT_BACKUP_PATH)
 
-TOML_FILE_NAME = "test_db.toml"
-pathlib.Path(DEFAULT_CONFIG_PATH, TOML_FILE_NAME).touch()
+CONFIG_FILE_NAME = "test_db.toml"
+pathlib.Path(DEFAULT_CONFIG_PATH, CONFIG_FILE_NAME).touch()
 
 
 logger = logging.getLogger(__name__)
-app = typer.Typer()
-interactive_views = True
 
 
-def locateTomlFile() -> Optional[pathlib.Path]:
-    for toml_file_path in (
-        pathlib.Path(TOML_FILE_NAME),
-        pathlib.Path(DEFAULT_CONFIG_PATH, TOML_FILE_NAME),
+def locateFile(file_name: str) -> Optional[pathlib.Path]:
+    for file_path in (
+        pathlib.Path(file_name),
+        pathlib.Path(DEFAULT_CONFIG_PATH, file_name),
     ):
-        if os.path.exists(toml_file_path):
-            return toml_file_path
+        if file_path.is_file():
+            return file_path
     return None
+
+
+app = typer.Typer()
+state = {"interactive": True}
 
 
 @app.callback()
 def app_callback(
-    db_file_path: pathlib.Path,
+    db_file_path: Annotated[
+        Optional[pathlib.Path], typer.Option(help="path to database file")
+    ] = None,
     create: Annotated[
         bool,
         typer.Option(
@@ -79,9 +87,9 @@ def app_callback(
         bool, typer.Option(help="upgrade the database if it is out of date")
     ] = False,
 ):
-    global interactive_views
-    interactive_views = interactive
+    state["interactive"] = interactive
     settings = Settings()
+    db_file_path = db_file_path or settings.db_file_path or DEFAULT_DB_PATH
     if db_file_path:
         if db_file_path.is_file():
             if settings.backup_path.is_dir():
@@ -238,27 +246,27 @@ def validate_person(gid: str):
 def address_add(entity_gid: Optional[str] = None):
     if entity_gid:
         entity = validate_entity(entity_gid)
-        test_db.AddressView.add(entity=entity, interactive=interactive_views)
+        test_db.AddressView.add(entity=entity, interactive=state["interactive"])
     else:
-        test_db.AddressView.add(interactive=interactive_views)
+        test_db.AddressView.add(interactive=state["interactive"])
 
 
 @add_app.command("bank-account")
 def bank_account_add(entity_gid: Optional[str] = None):
     if entity_gid:
         entity = validate_entity(entity_gid)
-        test_db.BankAccountView.add(entity=entity, interactive=interactive_views)
+        test_db.BankAccountView.add(entity=entity, interactive=state["interactive"])
     else:
-        test_db.BankAccountView.add(interactive=interactive_views)
+        test_db.BankAccountView.add(interactive=state["interactive"])
 
 
 @add_app.command("debit-card")
 def debit_card_add(entity_gid: Optional[str] = None):
     if entity_gid:
         entity = validate_entity(entity_gid)
-        test_db.DebitCardView.add(entity=entity, interactive=interactive_views)
+        test_db.DebitCardView.add(entity=entity, interactive=state["interactive"])
     else:
-        test_db.DebitCardView.add(interactive=interactive_views)
+        test_db.DebitCardView.add(interactive=state["interactive"])
 
 
 @add_app.command("job")
@@ -270,14 +278,14 @@ def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = 
     if person_gid:
         person = validate_person(person_gid)
     test_db.JobView.add(
-        organization=organization, person=person, interactive=interactive_views
+        organization=organization, person=person, interactive=state["interactive"]
     )
 
 
 @add_app.command("key-value")
 def key_value_add(key: str, value: str):
     try:
-        test_db.KeyValueView.add(key=key, value=value, interactive=interactive_views)
+        test_db.KeyValueView.add(key=key, value=value, interactive=state["interactive"])
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {str(exc)}")
         sys.exit(1)
@@ -285,12 +293,12 @@ def key_value_add(key: str, value: str):
 
 @add_app.command("organization")
 def organization_add():
-    test_db.OrganizationView.add(interactive=interactive_views)
+    test_db.OrganizationView.add(interactive=state["interactive"])
 
 
 @add_app.command("person")
 def person_add():
-    test_db.PersonView.add(interactive=interactive_views)
+    test_db.PersonView.add(interactive=state["interactive"])
 
 
 @add_app.command("personal-key-value-secure")
@@ -298,7 +306,7 @@ def personal_key_value_secure_add(person_gid: str, key: str, value: str):
     person = validate_person(person_gid)
     try:
         test_db.PersonalKeyValueSecureView.add(
-            person=person, key=key, value=value, interactive=interactive_views
+            person=person, key=key, value=value, interactive=state["interactive"]
         )
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {str(exc)}")
@@ -572,7 +580,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
-        toml_file=locateTomlFile(),
+        toml_file=locateFile(CONFIG_FILE_NAME),
     )
 
     backup_path: pathlib.Path = Field(

@@ -5,7 +5,8 @@ from test_db.main import main as tdb
 def test_view_address(capsys, monkeypatch, db_file, temporary_db):
     address = db.Address(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "view", "address", str(address.gID)]
+        "sys.argv",
+        ["tdb", "--db-file-path", db_file, "view", "address", str(address.gID)],
     )
 
     try:
@@ -20,7 +21,15 @@ def test_view_address(capsys, monkeypatch, db_file, temporary_db):
 def test_view_bank_account(capsys, monkeypatch, db_file, temporary_db):
     bank_account = db.BankAccount(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "view", "bank-account", str(bank_account.gID)]
+        "sys.argv",
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "view",
+            "bank-account",
+            str(bank_account.gID),
+        ],
     )
 
     try:
@@ -35,7 +44,8 @@ def test_view_bank_account(capsys, monkeypatch, db_file, temporary_db):
 def test_view_debit_card(capsys, monkeypatch, db_file, temporary_db):
     debit_card = db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "view", "debit-card", str(debit_card.gID)]
+        "sys.argv",
+        ["tdb", "--db-file-path", db_file, "view", "debit-card", str(debit_card.gID)],
     )
 
     try:
@@ -53,7 +63,9 @@ def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, pers
         person=person,
         connection=temporary_db.connection,
     )
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "view", "job", str(job.gID)])
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", "--db-file-path", db_file, "view", "job", str(job.gID)]
+    )
 
     try:
         tdb()
@@ -66,7 +78,15 @@ def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, pers
 
 def test_view_organization(capsys, monkeypatch, db_file, organization):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "view", "organization", str(organization.gID)]
+        "sys.argv",
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "view",
+            "organization",
+            str(organization.gID),
+        ],
     )
 
     try:
@@ -79,7 +99,10 @@ def test_view_organization(capsys, monkeypatch, db_file, organization):
 
 
 def test_view_person(capsys, monkeypatch, db_file, person):
-    monkeypatch.setattr("sys.argv", ["tdb", db_file, "view", "person", str(person.gID)])
+    monkeypatch.setattr(
+        "sys.argv",
+        ["tdb", "--db-file-path", db_file, "view", "person", str(person.gID)],
+    )
 
     try:
         tdb()

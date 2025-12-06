@@ -14,6 +14,7 @@ def test_disconnect_address(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "disconnect",
             "address",
@@ -43,6 +44,7 @@ def test_disconnect_address(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "disconnect",
             "address",
@@ -76,6 +78,7 @@ def test_disconnect_bank_account(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "disconnect",
             "bank-account",
@@ -105,6 +108,7 @@ def test_disconnect_bank_account(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "disconnect",
             "bank-account",
@@ -138,6 +142,7 @@ def test_disconnect_debit_card(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "disconnect",
             "debit-card",
@@ -167,6 +172,7 @@ def test_disconnect_debit_card(capsys, monkeypatch, db_file, temporary_db):
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "disconnect",
             "debit-card",

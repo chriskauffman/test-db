@@ -13,7 +13,8 @@ def test_delete_address(capsys, monkeypatch, db_file, temporary_db):
     )
 
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "delete", "address", str(test_address.gID)]
+        "sys.argv",
+        ["tdb", "--db-file-path", db_file, "delete", "address", str(test_address.gID)],
     )
 
     try:
@@ -37,7 +38,14 @@ def test_delete_bank_account(capsys, monkeypatch, db_file, temporary_db):
 
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "delete", "bank-account", str(test_bank_account.gID)],
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "delete",
+            "bank-account",
+            str(test_bank_account.gID),
+        ],
     )
 
     try:
@@ -59,7 +67,15 @@ def test_delete_debit_card(capsys, monkeypatch, db_file, temporary_db):
         is test_debit_card
     )
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "delete", "debit-card", str(test_debit_card.gID)]
+        "sys.argv",
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "delete",
+            "debit-card",
+            str(test_debit_card.gID),
+        ],
     )
 
     try:
@@ -82,6 +98,7 @@ def test_delete_job(capsys, monkeypatch, db_file, person, organization, temporar
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "delete",
             "job",
@@ -112,7 +129,7 @@ def test_delete_key_value(capsys, monkeypatch, db_file, temporary_db):
 
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "delete", "key-value", test_key_value.key],
+        ["tdb", "--db-file-path", db_file, "delete", "key-value", test_key_value.key],
     )
 
     try:
@@ -136,7 +153,14 @@ def test_delete_organization(capsys, monkeypatch, db_file, temporary_db):
 
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", db_file, "delete", "organization", str(test_organization.gID)],
+        [
+            "tdb",
+            "--db-file-path",
+            db_file,
+            "delete",
+            "organization",
+            str(test_organization.gID),
+        ],
     )
 
     try:
@@ -158,7 +182,8 @@ def test_delete_person(capsys, monkeypatch, db_file, temporary_db):
     )
 
     monkeypatch.setattr(
-        "sys.argv", ["tdb", db_file, "delete", "person", str(test_person.gID)]
+        "sys.argv",
+        ["tdb", "--db-file-path", db_file, "delete", "person", str(test_person.gID)],
     )
 
     try:
@@ -192,6 +217,7 @@ def test_delete_personal_key_value_secure(
         "sys.argv",
         [
             "tdb",
+            "--db-file-path",
             db_file,
             "delete",
             "personal-key-value-secure",
