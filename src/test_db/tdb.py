@@ -51,8 +51,10 @@ if not os.path.exists(DEFAULT_BACKUP_PATH):
 CONFIG_FILE_NAME = "test_db.toml"
 pathlib.Path(DEFAULT_CONFIG_PATH, CONFIG_FILE_NAME).touch()
 
-
 logger = logging.getLogger(__name__)
+
+app = typer.Typer()
+state = {"interactive": True}
 
 
 def locateFile(file_name: str) -> Optional[pathlib.Path]:
@@ -63,104 +65,6 @@ def locateFile(file_name: str) -> Optional[pathlib.Path]:
         if file_path.is_file():
             return file_path
     return None
-
-
-app = typer.Typer()
-state = {"interactive": True}
-
-
-@app.callback()
-def app_callback(
-    db_file_path: Annotated[
-        Optional[pathlib.Path], typer.Option(help="path to database file")
-    ] = None,
-    create: Annotated[
-        bool,
-        typer.Option(
-            help="databases are not created by default, creates the database file when True"
-        ),
-    ] = False,
-    interactive: Annotated[
-        bool, typer.Option(help="allow interactive prompts for user input")
-    ] = False,
-    upgrade: Annotated[
-        bool, typer.Option(help="upgrade the database if it is out of date")
-    ] = False,
-):
-    state["interactive"] = interactive
-    settings = Settings()
-    db_file_path = db_file_path or settings.db_file_path or DEFAULT_DB_PATH
-    if db_file_path:
-        if db_file_path.is_file():
-            if settings.backup_path.is_dir():
-                backup_file_path = pathlib.Path(
-                    settings.backup_path,
-                    db_file_path.with_suffix(
-                        f".{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-                        f"{db_file_path.suffix}"
-                    ).name,
-                )
-                shutil.copy2(
-                    db_file_path,
-                    backup_file_path,
-                )
-            else:
-                sys.stderr.write(
-                    f"error: incorrect backup_path {settings.backup_path}, "
-                    "must be existing directory"
-                )
-                sys.exit(1)
-        else:
-            if db_file_path != test_db.IN_MEMORY_DB_FILE and not create:
-                sys.stderr.write(
-                    f"error: DB file {db_file_path} does not exist: "
-                    "check db_file_path in toml, env and command options or use --create"
-                )
-                sys.exit(1)
-    else:
-        sys.stderr.write(
-            "error: DB file path not set: check db_file_path in toml, "
-            "env and command options"
-        )
-        sys.exit(1)
-
-    if not settings.log_path.is_dir():
-        sys.stderr.write(
-            f"error: incorrect log_path {settings.log_path}, must be existing directory"
-        )
-        sys.exit(1)
-
-    root_logger = logging.getLogger("")
-    root_logger.setLevel(logging.DEBUG)
-
-    logging_file_handler = logging.FileHandler(
-        pathlib.Path(settings.log_path, "test_db.log"),
-        mode="w",
-        encoding="utf-8",
-    )
-    logging_file_handler.setLevel(settings.log_level_file)
-    logging_file_handler.setFormatter(
-        logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-    )
-    root_logger.addHandler(logging_file_handler)
-
-    logging_stream_handler = logging.StreamHandler(sys.stdout)
-    logging_stream_handler.setLevel(settings.log_level_screen)
-    logging_stream_handler.setFormatter(
-        logging.Formatter("%(levelname)s - %(message)s")
-    )
-    root_logger.addHandler(logging_stream_handler)
-    logger.debug("settings=%s", settings)
-
-    test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
-    test_db.fernetIterations = settings.database_fernet_iterations
-
-    test_db.DatabaseController(
-        db_file_path,
-        create=create,
-        defaultConnection=True,
-        upgrade=upgrade,
-    )
 
 
 @app.command()
@@ -628,8 +532,98 @@ class Settings(BaseSettings):
         )
 
 
-def main() -> None:
-    app()
+@app.callback()
+def main(
+    db_file_path: Annotated[
+        Optional[pathlib.Path], typer.Option(help="path to database file")
+    ] = None,
+    create: Annotated[
+        bool,
+        typer.Option(
+            help="databases are not created by default, creates the database file when True"
+        ),
+    ] = False,
+    interactive: Annotated[
+        bool, typer.Option(help="allow interactive prompts for user input")
+    ] = False,
+    upgrade: Annotated[
+        bool, typer.Option(help="upgrade the database if it is out of date")
+    ] = False,
+) -> None:
+    state["interactive"] = interactive
+    settings = Settings()
+    db_file_path = db_file_path or settings.db_file_path or DEFAULT_DB_PATH
+    if db_file_path:
+        if db_file_path.is_file():
+            if settings.backup_path.is_dir():
+                backup_file_path = pathlib.Path(
+                    settings.backup_path,
+                    db_file_path.with_suffix(
+                        f".{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+                        f"{db_file_path.suffix}"
+                    ).name,
+                )
+                shutil.copy2(
+                    db_file_path,
+                    backup_file_path,
+                )
+            else:
+                sys.stderr.write(
+                    f"error: incorrect backup_path {settings.backup_path}, "
+                    "must be existing directory"
+                )
+                sys.exit(1)
+        else:
+            if db_file_path != test_db.IN_MEMORY_DB_FILE and not create:
+                sys.stderr.write(
+                    f"error: DB file {db_file_path} does not exist: "
+                    "check db_file_path in toml, env and command options or use --create"
+                )
+                sys.exit(1)
+    else:
+        sys.stderr.write(
+            "error: DB file path not set: check db_file_path in toml, "
+            "env and command options"
+        )
+        sys.exit(1)
+
+    if not settings.log_path.is_dir():
+        sys.stderr.write(
+            f"error: incorrect log_path {settings.log_path}, must be existing directory"
+        )
+        sys.exit(1)
+
+    root_logger = logging.getLogger("")
+    root_logger.setLevel(logging.DEBUG)
+
+    logging_file_handler = logging.FileHandler(
+        pathlib.Path(settings.log_path, "test_db.log"),
+        mode="w",
+        encoding="utf-8",
+    )
+    logging_file_handler.setLevel(settings.log_level_file)
+    logging_file_handler.setFormatter(
+        logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+    )
+    root_logger.addHandler(logging_file_handler)
+
+    logging_stream_handler = logging.StreamHandler(sys.stdout)
+    logging_stream_handler.setLevel(settings.log_level_screen)
+    logging_stream_handler.setFormatter(
+        logging.Formatter("%(levelname)s - %(message)s")
+    )
+    root_logger.addHandler(logging_stream_handler)
+    logger.debug("settings=%s", settings)
+
+    test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
+    test_db.fernetIterations = settings.database_fernet_iterations
+
+    test_db.DatabaseController(
+        db_file_path,
+        create=create,
+        defaultConnection=True,
+        upgrade=upgrade,
+    )
 
 
 if __name__ == "__main__":
