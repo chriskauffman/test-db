@@ -1,5 +1,5 @@
 import test_db as db
-from test_db.main import main as tdb
+from test_db.tdb import app as tdb
 
 
 def test_list_addresses(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):

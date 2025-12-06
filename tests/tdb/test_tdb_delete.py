@@ -2,7 +2,7 @@ import pytest
 from sqlobject import SQLObjectNotFound
 
 import test_db as db
-from test_db.main import main as tdb
+from test_db.tdb import app as tdb
 
 
 def test_delete_address(capsys, monkeypatch, db_file, temporary_db):

@@ -24,7 +24,7 @@ requires = ["uv_build >= 0.7.19, <0.9.0"]
 build-backend = "uv_build"
 
 [project.scripts]
-tdb = "test_db.main:main"
+tdb = "test_db.tdb:app"
 
 [dependency-groups]
 dev = [
