@@ -36,10 +36,14 @@ class DebitCardView(BaseView):
         return debit_card
 
     @classmethod
-    def list(cls, debit_cards: Union[List[DebitCard], SQLObject.select, None] = None):
+    def list(
+        cls,
+        debit_cards: Union[List[DebitCard], SQLObject.select, None] = None,
+        **kwargs,
+    ):
         """List all people"""
         if debit_cards is None:
-            debit_cards = DebitCard.select()
+            debit_cards = DebitCard.select(**kwargs)
         for debit_card in debit_cards:
             DebitCardView(debit_card).view()
 

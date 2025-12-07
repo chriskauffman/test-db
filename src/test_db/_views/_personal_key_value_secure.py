@@ -30,10 +30,11 @@ class PersonalKeyValueSecureView(BaseView):
     def list(
         cls,
         key_values: Union[List[PersonalKeyValueSecure], SQLObject.select, None] = None,
+        **kwargs,
     ):
         """List all people"""
         if key_values is None:
-            key_values = PersonalKeyValueSecure.select()
+            key_values = PersonalKeyValueSecure.select(**kwargs)
         for key_value in key_values:
             PersonalKeyValueSecureView(key_value).view()
 

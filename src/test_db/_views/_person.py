@@ -34,10 +34,10 @@ class PersonView(BaseView):
         return new_person
 
     @classmethod
-    def list(cls, people: Union[List[Person], SQLObject.select, None] = None):
+    def list(cls, people: Union[List[Person], SQLObject.select, None] = None, **kwargs):
         """List all people"""
         if people is None:
-            people = Person.select()
+            people = Person.select(**kwargs)
         for person in people:
             PersonView(person).view()
 

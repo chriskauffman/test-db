@@ -45,10 +45,12 @@ class AddressView(BaseView):
         return address
 
     @classmethod
-    def list(cls, addresses: Union[List[Address], SQLObject.select, None] = None):
+    def list(
+        cls, addresses: Union[List[Address], SQLObject.select, None] = None, **kwargs
+    ):
         """List all organizations"""
         if addresses is None:
-            addresses = Address.select()
+            addresses = Address.select(**kwargs)
         for address in addresses:
             AddressView(address).view()
 

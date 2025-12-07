@@ -34,11 +34,13 @@ class OrganizationView(BaseView):
 
     @classmethod
     def list(
-        cls, organizations: Union[List[Organization], SQLObject.select, None] = None
+        cls,
+        organizations: Union[List[Organization], SQLObject.select, None] = None,
+        **kwargs,
     ):
         """List all organizations"""
         if organizations is None:
-            organizations = Organization.select()
+            organizations = Organization.select(**kwargs)
         for organization in organizations:
             OrganizationView(organization).view()
 

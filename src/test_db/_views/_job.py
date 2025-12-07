@@ -35,10 +35,10 @@ class JobView(BaseView):
         return new_job
 
     @classmethod
-    def list(cls, jobs: Union[List[Job], SQLObject.select, None] = None):
+    def list(cls, jobs: Union[List[Job], SQLObject.select, None] = None, **kwargs):
         """List all jobs"""
         if jobs is None:
-            jobs = Job.select()
+            jobs = Job.select(**kwargs)
         for job in jobs:
             JobView(job).view()
 

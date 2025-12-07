@@ -37,11 +37,13 @@ class BankAccountView(BaseView):
 
     @classmethod
     def list(
-        cls, bank_accounts: Union[List[BankAccount], SQLObject.select, None] = None
+        cls,
+        bank_accounts: Union[List[BankAccount], SQLObject.select, None] = None,
+        **kwargs,
     ):
         """List all people"""
         if bank_accounts is None:
-            bank_accounts = BankAccount.select()
+            bank_accounts = BankAccount.select(**kwargs)
         for bank_account in bank_accounts:
             BankAccountView(bank_account).view()
 
