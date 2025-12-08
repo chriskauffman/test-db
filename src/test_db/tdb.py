@@ -147,7 +147,7 @@ def validate_person(gid: str):
 
 
 @add_app.command("address")
-def address_add(entity_gid: Optional[str] = None):
+def add_address(entity_gid: Optional[str] = None):
     if entity_gid:
         entity = validate_entity(entity_gid)
         test_db.AddressView.add(entity=entity, interactive=state["interactive"])
@@ -156,7 +156,7 @@ def address_add(entity_gid: Optional[str] = None):
 
 
 @add_app.command("bank-account")
-def bank_account_add(entity_gid: Optional[str] = None):
+def add_bank_account(entity_gid: Optional[str] = None):
     if entity_gid:
         entity = validate_entity(entity_gid)
         test_db.BankAccountView.add(entity=entity, interactive=state["interactive"])
@@ -174,7 +174,7 @@ def debit_card_add(entity_gid: Optional[str] = None):
 
 
 @add_app.command("job")
-def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = None):
+def add_job(organization_gid: Optional[str] = None, person_gid: Optional[str] = None):
     organization = None
     person = None
     if organization_gid:
@@ -187,7 +187,7 @@ def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = 
 
 
 @add_app.command("key-value")
-def key_value_add(key: str, value: str):
+def add_key_value(key: str, value: str):
     try:
         test_db.KeyValueView.add(key=key, value=value, interactive=state["interactive"])
     except DuplicateEntryError as exc:
@@ -196,17 +196,17 @@ def key_value_add(key: str, value: str):
 
 
 @add_app.command("organization")
-def organization_add():
+def add_organization():
     test_db.OrganizationView.add(interactive=state["interactive"])
 
 
 @add_app.command("person")
-def person_add():
+def add_person():
     test_db.PersonView.add(interactive=state["interactive"])
 
 
 @add_app.command("personal-key-value-secure")
-def personal_key_value_secure_add(person_gid: str, key: str, value: str):
+def add_personal_key_value_secure(person_gid: str, key: str, value: str):
     person = validate_person(person_gid)
     try:
         test_db.PersonalKeyValueSecureView.add(
@@ -222,7 +222,7 @@ app.add_typer(connect_app, name="connect")
 
 
 @connect_app.command("address")
-def address_connect(gid: str, entity_gid: str):
+def connect_address(gid: str, entity_gid: str):
     address = validate_address(gid)
     entity = validate_entity(entity_gid)
     try:
@@ -232,7 +232,7 @@ def address_connect(gid: str, entity_gid: str):
 
 
 @connect_app.command("bank-account")
-def bank_account_connect(gid: str, entity_gid: str):
+def connect_bank_account(gid: str, entity_gid: str):
     bank_account = validate_bank_account(gid)
     entity = validate_entity(entity_gid)
     try:
@@ -242,7 +242,7 @@ def bank_account_connect(gid: str, entity_gid: str):
 
 
 @connect_app.command("debit-card")
-def debit_card_connect(gid: str, entity_gid: str):
+def connect_debit_card(gid: str, entity_gid: str):
     debit_card = validate_debit_card(gid)
     entity = validate_entity(entity_gid)
     try:
@@ -256,31 +256,31 @@ app.add_typer(delete_app, name="delete")
 
 
 @delete_app.command("address")
-def address_delete(gid: str):
+def delete_address(gid: str):
     address = validate_address(gid)
     address.destroySelf()
 
 
 @delete_app.command("bank-account")
-def bank_account_delete(gid: str):
+def delete_bank_account(gid: str):
     bank_account = validate_bank_account(gid)
     bank_account.destroySelf()
 
 
 @delete_app.command("debit-card")
-def debit_card_delete(gid: str):
+def delete_debit_card(gid: str):
     debit_card = validate_debit_card(gid)
     debit_card.destroySelf()
 
 
 @delete_app.command("job")
-def job_delete(gid: str):
+def delete_job(gid: str):
     job = validate_job(gid)
     job.destroySelf()
 
 
 @delete_app.command("key-value")
-def key_value_delete(key: str):
+def delete_key_value(key: str):
     if key in test_db.RESTRICTED_KEYS:
         sys.stderr.write(f"error: key '{key}' is restricted and cannot be deleted")
         sys.exit(1)
@@ -289,19 +289,19 @@ def key_value_delete(key: str):
 
 
 @delete_app.command("organization")
-def organization_delete(gid: str):
+def delete_organization(gid: str):
     organization = validate_orgnization(gid)
     organization.destroySelf()
 
 
 @delete_app.command("person")
-def person_delete(gid: str):
+def delete_person(gid: str):
     person = validate_person(gid)
     person.destroySelf()
 
 
 @delete_app.command("personal-key-value-secure")
-def personal_key_value_secure_delete(person_gid: str, key: str):
+def delete_personal_key_value_secure(person_gid: str, key: str):
     person = validate_person(person_gid)
     key_value = person.getPersonalKeyValueSecureByKey(key)
     if key_value:
@@ -313,21 +313,21 @@ app.add_typer(disconnect_app, name="disconnect")
 
 
 @disconnect_app.command("address")
-def address_disconnect(gid: str, entity_gid: str):
+def disconnect_address(gid: str, entity_gid: str):
     address = validate_address(gid)
     entity = validate_entity(entity_gid)
     entity.removeAddress(address)
 
 
 @disconnect_app.command("bank-account")
-def bank_account_disconnect(gid: str, entity_gid: str):
+def disconnect_bank_account(gid: str, entity_gid: str):
     bank_account = validate_bank_account(gid)
     entity = validate_entity(entity_gid)
     entity.removeBankAccount(bank_account)
 
 
 @disconnect_app.command("debit-card")
-def debit_card_disconnect(gid: str, entity_gid: str):
+def disconnect_debit_card(gid: str, entity_gid: str):
     debit_card = validate_debit_card(gid)
     entity = validate_entity(entity_gid)
     entity.removeDebitCard(debit_card)
@@ -338,31 +338,31 @@ app.add_typer(edit_app, name="edit")
 
 
 @edit_app.command("address")
-def address_edit(gid: str):
+def edit_address(gid: str):
     address = validate_address(gid)
     test_db.AddressView(address).edit()
 
 
 @edit_app.command("bank-account")
-def bank_account_edit(gid: str):
+def edit_bank_account(gid: str):
     bank_account = validate_bank_account(gid)
     test_db.BankAccountView(bank_account).edit()
 
 
 @edit_app.command("debit-card")
-def debit_card_edit(gid: str):
+def edit_debit_card(gid: str):
     debit_card = validate_debit_card(gid)
     test_db.DebitCardView(debit_card).edit()
 
 
 @edit_app.command("job")
-def job_edit(gid: str):
+def edit_job(gid: str):
     job = validate_job(gid)
     test_db.JobView(job).edit()
 
 
 @edit_app.command("key-value")
-def key_value_edit(key: str):
+def edit_key_value(key: str):
     if key in test_db.RESTRICTED_KEYS:
         sys.stderr.write(f"error: key '{key}' is restricted and cannot be edited")
         sys.exit(1)
@@ -371,13 +371,13 @@ def key_value_edit(key: str):
 
 
 @edit_app.command("organization")
-def organization_edit(gid: str):
+def edit_organization(gid: str):
     organization = validate_orgnization(gid)
     test_db.OrganizationView(organization).edit()
 
 
 @edit_app.command("person")
-def person_edit(gid: str):
+def edit_person(gid: str):
     person = validate_person(gid)
     test_db.PersonView(person).edit()
 
@@ -387,42 +387,42 @@ app.add_typer(list_app, name="list")
 
 
 @list_app.command("addresses")
-def address_list():
+def list_address():
     test_db.AddressView.list()
 
 
 @list_app.command("bank-accounts")
-def bank_account_list():
+def list_bank_account():
     test_db.BankAccountView.list()
 
 
 @list_app.command("debit-cards")
-def debit_card_list():
+def list_debit_card():
     test_db.DebitCardView.list()
 
 
 @list_app.command("jobs")
-def job_list():
+def list_job():
     test_db.JobView.list()
 
 
 @list_app.command("key-value")
-def key_value_list():
+def list_key_value():
     test_db.KeyValueView.list()
 
 
 @list_app.command("organizations")
-def organizations_list():
+def list_organizations():
     test_db.OrganizationView.list()
 
 
 @list_app.command("people")
-def people_list():
+def list_people():
     test_db.PersonView.list()
 
 
 @list_app.command("personal-key-value-secure")
-def personal_key_value_secure_list():
+def list_personal_key_value_secure():
     test_db.PersonalKeyValueSecureView.list()
 
 
@@ -431,49 +431,49 @@ app.add_typer(view_app, name="view")
 
 
 @view_app.command("address")
-def address_view(gid: str):
+def view_address(gid: str):
     address = validate_address(gid)
     test_db.AddressView(address).viewDetails()
 
 
 @view_app.command("bank-account")
-def bank_account_view(gid: str):
+def view_bank_account(gid: str):
     bank_account = validate_bank_account(gid)
     test_db.BankAccountView(bank_account).viewDetails()
 
 
 @view_app.command("debit-card")
-def debit_card_view(gid: str):
+def view_debit_card(gid: str):
     debit_card = validate_debit_card(gid)
     test_db.DebitCardView(debit_card).viewDetails()
 
 
 @view_app.command("job")
-def job_view(gid: str):
+def view_job(gid: str):
     job = validate_job(gid)
     test_db.JobView(job).viewDetails()
 
 
 @view_app.command("key-value")
-def key_value_view(key: str):
+def view_key_value(key: str):
     key_value = validate_key(key)
     test_db.KeyValueView(key_value).viewDetails()
 
 
 @view_app.command("organization")
-def organization_view(gid: str):
+def view_organization(gid: str):
     organization = validate_orgnization(gid)
     test_db.OrganizationView(organization).viewDetails()
 
 
 @view_app.command("person")
-def person_view(gid: str):
+def view_person(gid: str):
     person = validate_person(gid)
     test_db.PersonView(person).viewDetails()
 
 
 @view_app.command("personal-key-value-secure")
-def personal_key_value_secure_view(person_gid: str, key: str):
+def view_personal_key_value_secure(person_gid: str, key: str):
     person = validate_person(person_gid)
     key_value = person.getPersonalKeyValueSecureByKey(key)
     if key_value:
