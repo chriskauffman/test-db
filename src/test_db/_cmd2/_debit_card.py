@@ -31,7 +31,7 @@ class DebitCardCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_add_debit_card(self, args):
+    def do_tdb_debit_card_add(self, args):
         readline.set_auto_history(False)
         if args.entity_gid:
             entity = self.validate_entity(args.entity_gid)
@@ -53,7 +53,7 @@ class DebitCardCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(connect_parser)
-    def do_tdb_connect_debit_card(self, args):
+    def do_tdb_debit_card_connect(self, args):
         debit_card = self.validate_debit_card(args.gid)
         entity = self.validate_entity(args.entity_gid)
         try:
@@ -68,27 +68,27 @@ class DebitCardCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_delete_debit_card(self, args):
+    def do_tdb_debit_card_delete(self, args):
         debit_card = self.validate_debit_card(args.gid)
         debit_card.destroySelf()
 
     @cmd2.with_argparser(connect_parser)
-    def do_tdb_disconnect_debit_card(self, args):
+    def do_tdb_debit_card_disconnect(self, args):
         debit_card = self.validate_debit_card(args.gid)
         entity = self.validate_entity(args.entity_gid)
         entity.removeDebitCard(debit_card)
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_edit_debit_card(self, args):
+    def do_tdb_debit_card_edit(self, args):
         readline.set_auto_history(False)
         debit_card = self.validate_debit_card(args.gid)
         test_db.DebitCardView(debit_card).edit()
         readline.set_auto_history(True)
 
-    def do_tdb_list_debit_cards(self, args):
+    def do_tdb_debit_card_list(self, args):
         test_db.DebitCardView.list()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_view_debit_card(self, args):
+    def do_tdb_debit_card_view(self, args):
         debit_card = self.validate_debit_card(args.gid)
         test_db.DebitCardView(debit_card).viewDetails()

@@ -31,7 +31,7 @@ class AddressCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_add_address(self, args):
+    def do_tdb_address_add(self, args):
         readline.set_auto_history(False)
         if args.entity_gid:
             entity = self.validate_entity(args.gid)
@@ -53,7 +53,7 @@ class AddressCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(connect_parser)
-    def do_tdb_connect_address(self, args):
+    def do_tdb_address_connect(self, args):
         address = self.validate_address(args.gid)
         entity = self.validate_entity(args.entity_gid)
         try:
@@ -68,27 +68,27 @@ class AddressCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_delete_address(self, args):
+    def do_tdb_address_delete(self, args):
         address = self.validate_address(args.gid)
         address.destroySelf()
 
     @cmd2.with_argparser(connect_parser)
-    def do_tdb_disconnect_address(self, args):
+    def do_tdb_address_disconnect(self, args):
         address = self.validate_address(args.gid)
         entity = self.validate_entity(args.entity_gid)
         entity.removeAddress(address)
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_edit_address(self, args):
+    def do_tdb_address_edit(self, args):
         readline.set_auto_history(False)
         address = self.validate_address(args.gid)
         test_db.AddressView(address).edit()
         readline.set_auto_history(True)
 
-    def do_tdb_list_addresses(self, args):
+    def do_tdb_address_list(self, args):
         test_db.AddressView.list()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_view_address(self, args):
+    def do_tdb_address_view(self, args):
         address = self.validate_address(args.gid)
         test_db.AddressView(address).viewDetails()

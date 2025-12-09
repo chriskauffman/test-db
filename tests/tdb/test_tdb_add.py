@@ -2,7 +2,7 @@ import test_db as db
 from test_db.tdb import app as tdb
 
 
-def test_add_address(capsys, monkeypatch, db_file):
+def test_address_add(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--db-file-path", db_file, "add", "address"]
     )
@@ -16,7 +16,7 @@ def test_add_address(capsys, monkeypatch, db_file):
     assert captured.out.startswith("addr_")
 
 
-def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
+def test_address_add_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -39,7 +39,7 @@ def test_add_address_with_owner(capsys, monkeypatch, db_file, person):
     assert captured.out.startswith("addr_")
 
 
-def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
+def test_address_add_with_bad_owner(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -62,7 +62,7 @@ def test_add_address_with_bad_owner(capsys, monkeypatch, db_file):
     assert "not found" in captured.err
 
 
-def test_add_bank_account(capsys, monkeypatch, db_file):
+def test_bank_account_add(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--db-file-path", db_file, "add", "bank-account"]
     )
@@ -76,7 +76,7 @@ def test_add_bank_account(capsys, monkeypatch, db_file):
     assert captured.out.startswith("ba_")
 
 
-def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
+def test_bank_account_add_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -99,7 +99,7 @@ def test_add_bank_account_with_owner(capsys, monkeypatch, db_file, person):
     assert captured.out.startswith("ba_")
 
 
-def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
+def test_bank_account_add_with_bad_owner(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -122,7 +122,7 @@ def test_add_bank_account_with_bad_owner(capsys, monkeypatch, db_file):
     assert "not found" in captured.err
 
 
-def test_add_debit_card(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_add(capsys, monkeypatch, db_file, temporary_db):
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--db-file-path", db_file, "add", "debit-card"]
     )
@@ -136,7 +136,7 @@ def test_add_debit_card(capsys, monkeypatch, db_file, temporary_db):
     assert captured.out.startswith("dc_")
 
 
-def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
+def test_debit_card_add_with_owner(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -159,7 +159,7 @@ def test_add_debit_card_with_owner(capsys, monkeypatch, db_file, person):
     assert captured.out.startswith("dc_")
 
 
-def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
+def test_debit_card_add_with_bad_owner(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -182,7 +182,7 @@ def test_add_debit_card_with_bad_owner(capsys, monkeypatch, db_file):
     assert "not found" in captured.err
 
 
-def test_add_job(capsys, monkeypatch, db_file, person, organization):
+def test_job_add(capsys, monkeypatch, db_file, person, organization):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -207,7 +207,7 @@ def test_add_job(capsys, monkeypatch, db_file, person, organization):
     assert captured.out.startswith("j_")
 
 
-def test_add_job_bad_org(capsys, monkeypatch, db_file, person):
+def test_job_add_bad_org(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -232,7 +232,7 @@ def test_add_job_bad_org(capsys, monkeypatch, db_file, person):
     assert "does not exist" in captured.err
 
 
-def test_add_job_bad_person(capsys, monkeypatch, db_file, organization):
+def test_job_add_bad_person(capsys, monkeypatch, db_file, organization):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -308,7 +308,7 @@ def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
     assert "UNIQUE constraint failed" in captured.err
 
 
-def test_add_organization(capsys, monkeypatch, db_file):
+def test_organization_add(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--db-file-path", db_file, "add", "organization"]
     )
@@ -322,7 +322,7 @@ def test_add_organization(capsys, monkeypatch, db_file):
     assert captured.out.startswith("o_")
 
 
-def test_add_person(capsys, monkeypatch, db_file):
+def test_person_add(capsys, monkeypatch, db_file):
     monkeypatch.setattr("sys.argv", ["tdb", "--db-file-path", db_file, "add", "person"])
 
     try:
@@ -334,7 +334,7 @@ def test_add_person(capsys, monkeypatch, db_file):
     assert captured.out.startswith("p_")
 
 
-def test_add_personal_key_value_secure(capsys, monkeypatch, db_file, person):
+def test_person_addal_key_value_secure(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -358,7 +358,7 @@ def test_add_personal_key_value_secure(capsys, monkeypatch, db_file, person):
     assert not captured.out
 
 
-def test_add_personal_key_value_secure_bad_person(capsys, monkeypatch, db_file):
+def test_personal_key_value_secure_add_bad_person(capsys, monkeypatch, db_file):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -382,7 +382,7 @@ def test_add_personal_key_value_secure_bad_person(capsys, monkeypatch, db_file):
     assert "does not exist" in captured.err
 
 
-def test_add_personal_key_value_secure_duplicate(capsys, monkeypatch, db_file, person):
+def test_personal_key_value_secure_add_duplicate(capsys, monkeypatch, db_file, person):
     person.getPersonalKeyValueSecureByKey("secret2", value="test value")
     monkeypatch.setattr(
         "sys.argv",

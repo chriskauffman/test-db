@@ -64,7 +64,7 @@ class KeyValueCommandSet(BaseCommandSet):
         key_value.destroySelf()
 
     @cmd2.with_argparser(key_parser)
-    def do_tdb_edit_key_value(self, args):
+    def do_tdb_key_value_edit(self, args):
         readline.set_auto_history(False)
         if args.key in test_db.RESTRICTED_KEYS:
             self._cmd.perror(
@@ -75,10 +75,10 @@ class KeyValueCommandSet(BaseCommandSet):
         test_db.KeyValueView(key_value).edit()
         readline.set_auto_history(True)
 
-    def do_tdb_list_key_values(self, args):
+    def do_tdb_key_value_list(self, args):
         test_db.KeyValueView.list()
 
     @cmd2.with_argparser(key_parser)
-    def do_tdb_view_key_value(self, args):
+    def do_tdb_key_value_view(self, args):
         key_value = self.validate_key(args.key)
         test_db.KeyValueView(key_value).viewDetails()

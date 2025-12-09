@@ -2,7 +2,7 @@ import test_db as db
 from test_db.tdb import app as tdb
 
 
-def test_connect_address(capsys, monkeypatch, db_file, temporary_db):
+def test_address_connect(capsys, monkeypatch, db_file, temporary_db):
     test_address = db.Address(connection=temporary_db.connection)
 
     test_person = db.Person(connection=temporary_db.connection)
@@ -60,7 +60,7 @@ def test_connect_address(capsys, monkeypatch, db_file, temporary_db):
     assert test_address in test_organization.addresses
 
 
-def test_connect_bank_account(capsys, monkeypatch, db_file, temporary_db):
+def test_bank_account_connect(capsys, monkeypatch, db_file, temporary_db):
     test_bank_account = db.BankAccount(connection=temporary_db.connection)
 
     test_person = db.Person(connection=temporary_db.connection)
@@ -118,7 +118,7 @@ def test_connect_bank_account(capsys, monkeypatch, db_file, temporary_db):
     assert test_bank_account in test_organization.bankAccounts
 
 
-def test_connect_debit_card(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_connect(capsys, monkeypatch, db_file, temporary_db):
     test_debit_card = db.DebitCard(connection=temporary_db.connection)
 
     test_person = db.Person(connection=temporary_db.connection)

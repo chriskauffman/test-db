@@ -5,7 +5,7 @@ import test_db as db
 from test_db.tdb import app as tdb
 
 
-def test_delete_address(capsys, monkeypatch, db_file, temporary_db):
+def test_address_delete(capsys, monkeypatch, db_file, temporary_db):
     test_address = db.Address(connection=temporary_db.connection)
     assert (
         db.Address.get(test_address.id, connection=temporary_db.connection)
@@ -29,7 +29,7 @@ def test_delete_address(capsys, monkeypatch, db_file, temporary_db):
         db.Address.get(test_address.id, connection=temporary_db.connection)
 
 
-def test_delete_bank_account(capsys, monkeypatch, db_file, temporary_db):
+def test_bank_account_delete(capsys, monkeypatch, db_file, temporary_db):
     test_bank_account = db.BankAccount(connection=temporary_db.connection)
     assert (
         db.BankAccount.get(test_bank_account.id, connection=temporary_db.connection)
@@ -60,7 +60,7 @@ def test_delete_bank_account(capsys, monkeypatch, db_file, temporary_db):
         db.BankAccount.get(test_bank_account.id, connection=temporary_db.connection)
 
 
-def test_delete_debit_card(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_delete(capsys, monkeypatch, db_file, temporary_db):
     test_debit_card = db.DebitCard(connection=temporary_db.connection)
     assert (
         db.DebitCard.get(test_debit_card.id, connection=temporary_db.connection)
@@ -90,7 +90,7 @@ def test_delete_debit_card(capsys, monkeypatch, db_file, temporary_db):
         db.DebitCard.get(test_debit_card.id, connection=temporary_db.connection)
 
 
-def test_delete_job(capsys, monkeypatch, db_file, person, organization, temporary_db):
+def test_job_delete(capsys, monkeypatch, db_file, person, organization, temporary_db):
     test_job = db.Job(connection=temporary_db.connection)
     assert db.Job.get(test_job.id, connection=temporary_db.connection) is test_job
 
@@ -118,7 +118,7 @@ def test_delete_job(capsys, monkeypatch, db_file, person, organization, temporar
         db.Job.get(test_job.id, connection=temporary_db.connection)
 
 
-def test_delete_key_value(capsys, monkeypatch, db_file, temporary_db):
+def test_key_value_delete(capsys, monkeypatch, db_file, temporary_db):
     test_key_value = db.KeyValue(
         connection=temporary_db.connection, key="test_delete_key_value"
     )
@@ -144,7 +144,7 @@ def test_delete_key_value(capsys, monkeypatch, db_file, temporary_db):
         db.KeyValue.get(test_key_value.id, connection=temporary_db.connection)
 
 
-def test_delete_organization(capsys, monkeypatch, db_file, temporary_db):
+def test_organization_delete(capsys, monkeypatch, db_file, temporary_db):
     test_organization = db.Organization(connection=temporary_db.connection)
     assert (
         db.Organization.get(test_organization.id, connection=temporary_db.connection)
@@ -175,7 +175,7 @@ def test_delete_organization(capsys, monkeypatch, db_file, temporary_db):
         db.Organization.get(test_organization.id, connection=temporary_db.connection)
 
 
-def test_delete_person(capsys, monkeypatch, db_file, temporary_db):
+def test_person_delete(capsys, monkeypatch, db_file, temporary_db):
     test_person = db.Person(connection=temporary_db.connection)
     assert (
         db.Person.get(test_person.id, connection=temporary_db.connection) is test_person
@@ -198,7 +198,7 @@ def test_delete_person(capsys, monkeypatch, db_file, temporary_db):
         db.Person.get(test_person.id, connection=temporary_db.connection)
 
 
-def test_delete_personal_key_value_secure(
+def test_personal_key_value_secure_delete(
     capsys, monkeypatch, db_file, person, temporary_db
 ):
     test_personal_key_value_secure = db.PersonalKeyValueSecure(

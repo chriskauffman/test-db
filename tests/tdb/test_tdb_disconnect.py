@@ -2,7 +2,7 @@ import test_db as db
 from test_db.tdb import app as tdb
 
 
-def test_disconnect_address(capsys, monkeypatch, db_file, temporary_db):
+def test_address_disconnect(capsys, monkeypatch, db_file, temporary_db):
     test_address = db.Address(connection=temporary_db.connection)
 
     test_person = db.Person(connection=temporary_db.connection)
@@ -66,7 +66,7 @@ def test_disconnect_address(capsys, monkeypatch, db_file, temporary_db):
     assert test_address not in test_organization.addresses
 
 
-def test_disconnect_bank_account(capsys, monkeypatch, db_file, temporary_db):
+def test_bank_account_disconnect(capsys, monkeypatch, db_file, temporary_db):
     test_bank_account = db.BankAccount(connection=temporary_db.connection)
 
     test_person = db.Person(connection=temporary_db.connection)
@@ -130,7 +130,7 @@ def test_disconnect_bank_account(capsys, monkeypatch, db_file, temporary_db):
     assert test_bank_account not in test_organization.bankAccounts
 
 
-def test_disconnect_debit_card(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_disconnect(capsys, monkeypatch, db_file, temporary_db):
     test_debit_card = db.DebitCard(connection=temporary_db.connection)
 
     test_person = db.Person(connection=temporary_db.connection)

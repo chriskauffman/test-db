@@ -53,7 +53,7 @@ class BankAccountCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(connect_parser)
-    def do_tdb_connect_bank_account(self, args):
+    def do_tdb_bank_account_connect(self, args):
         bank_account = self.validate_bank_account(args.gid)
         entity = self.validate_entity(args.entity_gid)
         try:
@@ -68,27 +68,27 @@ class BankAccountCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_delete_bank_account(self, args):
+    def do_tdb_bank_account_delete(self, args):
         bank_account = self.validate_bank_account(args.gid)
         bank_account.destroySelf()
 
     @cmd2.with_argparser(connect_parser)
-    def do_tdb_disconnect_bank_account(self, args):
+    def do_tdb_bank_account_disconnect(self, args):
         bank_account = self.validate_bank_account(args.gid)
         entity = self.validate_entity(args.entity_gid)
         entity.removeBankAccount(bank_account)
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_edit_bank_account(self, args):
+    def do_tdb_bank_account_edit(self, args):
         readline.set_auto_history(False)
         bank_account = self.validate_bank_account(args.gid)
         test_db.BankAccountView(bank_account).edit()
         readline.set_auto_history(True)
 
-    def do_tdb_list_bank_accounts(self, args):
+    def do_tdb_bank_account_list(self, args):
         test_db.BankAccountView.list()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_view_bank_account(self, args):
+    def do_tdb_bank_account_view(self, args):
         bank_account = self.validate_bank_account(args.gid)
         test_db.BankAccountView(bank_account).viewDetails()

@@ -2,8 +2,8 @@ import test_db as db
 from test_db.tdb import app as tdb
 
 
-def test_list_addresses(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
-    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
+def test_address_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
+    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
         ["tdb", "--create", "--db-file-path", empty_db_file, "list", "addresses"],
@@ -31,10 +31,10 @@ def test_list_addresses(capsys, monkeypatch, db_file, temporary_db, tmp_path_fac
     assert captured.out.count("addr_") >= 1
 
 
-def test_list_bank_accounts(
+def test_bank_account_list(
     capsys, monkeypatch, db_file, temporary_db, tmp_path_factory
 ):
-    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
+    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
         ["tdb", "--create", "--db-file-path", empty_db_file, "list", "bank-accounts"],
@@ -62,8 +62,8 @@ def test_list_bank_accounts(
     assert captured.out.count("ba_") >= 1
 
 
-def test_list_debit_cards(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
-    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
+def test_debit_card_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
+    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
         ["tdb", "--create", "--db-file-path", empty_db_file, "list", "debit-cards"],
@@ -91,10 +91,10 @@ def test_list_debit_cards(capsys, monkeypatch, db_file, temporary_db, tmp_path_f
     assert captured.out.count("dc_") >= 1
 
 
-def test_list_jobs(
+def test_job_list(
     capsys, monkeypatch, db_file, temporary_db, tmp_path_factory, organization, person
 ):
-    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
+    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--create", "--db-file-path", empty_db_file, "list", "jobs"]
     )
@@ -123,10 +123,10 @@ def test_list_jobs(
     assert captured.out.count("j_") >= 1
 
 
-def test_list_organizations(
+def test_organization_list(
     capsys, monkeypatch, db_file, temporary_db, tmp_path_factory
 ):
-    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
+    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
         ["tdb", "--create", "--db-file-path", empty_db_file, "list", "organizations"],
@@ -154,8 +154,8 @@ def test_list_organizations(
     assert captured.out.count("o_") >= 1
 
 
-def test_list_people(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
-    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_list_addresses.sqlite")
+def test_person_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
+    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
         ["tdb", "--create", "--db-file-path", empty_db_file, "list", "people"],

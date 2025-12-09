@@ -23,18 +23,18 @@ class JobCommandSet(BaseCommandSet):
         except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
 
-    tdb_add_job_parser = cmd2.Cmd2ArgumentParser(add_help=False)
-    tdb_add_job_parser.add_argument(
+    tdb_job_add_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    tdb_job_add_parser.add_argument(
         "--organization_gid",
         help="related organization's gID",
     )
-    tdb_add_job_parser.add_argument(
+    tdb_job_add_parser.add_argument(
         "--person_gid",
         help="related person's gID",
     )
 
-    @cmd2.with_argparser(tdb_add_job_parser)
-    def do_tdb_add_job(self, args):
+    @cmd2.with_argparser(tdb_job_add_parser)
+    def do_tdb_job_add(self, args):
         readline.set_auto_history(False)
         organization = None
         person = None
@@ -56,21 +56,21 @@ class JobCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_delete_job(self, args):
+    def do_tdb_job_delete(self, args):
         job = self.validate_job(args.gid)
         job.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_edit_job(self, args):
+    def do_tdb_job_edit(self, args):
         readline.set_auto_history(False)
         job = self.validate_job(args.gid)
         test_db.JobView(job).edit()
         readline.set_auto_history(True)
 
-    def do_tdb_list_jobs(self, args):
+    def do_tdb_job_list(self, args):
         test_db.JobView.list()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_view_job(self, args):
+    def do_tdb_job_view(self, args):
         job = self.validate_job(args.gid)
         test_db.JobView(job).viewDetails()

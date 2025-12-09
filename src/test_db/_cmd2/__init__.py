@@ -5,3 +5,6 @@ from ._job import JobCommandSet as JobCommandSet
 from ._key_value import KeyValueCommandSet as KeyValueCommandSet
 from ._organization import OrgnizationCommandSet as OrgnizationCommandSet
 from ._person import PersonCommandSet as PersonCommandSet
+from ._personal_key_value_secure import (
+    PersonalKeyValueSecureCommandSet as PersonalKeyValueSecureCommandSet,
+)

@@ -2,7 +2,7 @@ import test_db as db
 from test_db.tdb import app as tdb
 
 
-def test_view_address(capsys, monkeypatch, db_file, temporary_db):
+def test_address_view(capsys, monkeypatch, db_file, temporary_db):
     address = db.Address(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
@@ -18,7 +18,7 @@ def test_view_address(capsys, monkeypatch, db_file, temporary_db):
     assert captured.out.startswith("\nAddress ID: addr_")
 
 
-def test_view_bank_account(capsys, monkeypatch, db_file, temporary_db):
+def test_bank_account_view(capsys, monkeypatch, db_file, temporary_db):
     bank_account = db.BankAccount(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
@@ -41,7 +41,7 @@ def test_view_bank_account(capsys, monkeypatch, db_file, temporary_db):
     assert captured.out.startswith("ba_")
 
 
-def test_view_debit_card(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_view(capsys, monkeypatch, db_file, temporary_db):
     debit_card = db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
@@ -57,7 +57,7 @@ def test_view_debit_card(capsys, monkeypatch, db_file, temporary_db):
     assert captured.out.startswith("dc_")
 
 
-def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, person):
+def test_job_view(capsys, monkeypatch, db_file, temporary_db, organization, person):
     job = db.Job(
         organization=organization,
         person=person,
@@ -76,7 +76,7 @@ def test_view_job(capsys, monkeypatch, db_file, temporary_db, organization, pers
     assert captured.out.startswith("\nJob ID: j_")
 
 
-def test_view_organization(capsys, monkeypatch, db_file, organization):
+def test_organization_view(capsys, monkeypatch, db_file, organization):
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -98,7 +98,7 @@ def test_view_organization(capsys, monkeypatch, db_file, organization):
     assert captured.out.startswith("\nOrganization ID: o_")
 
 
-def test_view_person(capsys, monkeypatch, db_file, person):
+def test_person_view(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
         ["tdb", "--db-file-path", db_file, "view", "person", str(person.gID)],
