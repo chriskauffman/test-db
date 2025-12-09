@@ -27,7 +27,15 @@ from pydantic_settings import (
 from typing_extensions import Literal, Optional, Union
 
 import test_db
-from test_db._cmd2 import TestDBCommandSet
+from test_db._cmd2 import (
+    AddressCommandSet,
+    BankAccountCommandSet,
+    DebitCardCommandSet,
+    JobCommandSet,
+    KeyValueCommandSet,
+    OrgnizationCommandSet,
+    PersonCommandSet,
+)
 
 # OK to make dirs as default directory is "owned" by project
 DEFAULT_CONFIG_PATH = pathlib.Path(pathlib.Path.home(), ".test_db")
@@ -155,8 +163,10 @@ class Console(cmd2.Cmd):
         self._reset_db()
         self._set_prompt()
 
-        self._database_commands = TestDBCommandSet()
-        self.register_command_set(self._database_commands)
+        # self._address_commands = AddressCommandSet()
+        # self.register_command_set(self._address_commands)
+        # self._database_commands = PersonCommandSet()
+        # self.register_command_set(self._database_commands)
 
     def _onchange_db_file_path(self, param_name, old, new):
         """Execute when db_file_path setting changed"""
@@ -262,7 +272,19 @@ def main() -> None:
     test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
     test_db.fernetIterations = settings.database_fernet_iterations
 
-    console = Console(settings, log_file)
+    console = Console(
+        settings,
+        log_file,
+        command_sets=[
+            AddressCommandSet(),
+            BankAccountCommandSet(),
+            DebitCardCommandSet(),
+            JobCommandSet(),
+            KeyValueCommandSet(),
+            OrgnizationCommandSet(),
+            PersonCommandSet(),
+        ],
+    )
     sys.exit(console.cmdloop())
 
 
