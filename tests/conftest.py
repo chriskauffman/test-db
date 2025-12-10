@@ -6,13 +6,6 @@ TEST_ENCRYPTION_KEY = "a test encryption key"
 
 
 @pytest.fixture(scope="module")
-def memory_db():
-    test_db.autoCreateDependents = True
-    test_db.databaseEncryptionKey = TEST_ENCRYPTION_KEY
-    return test_db.DatabaseController(test_db.IN_MEMORY_DB_FILE, create=True)
-
-
-@pytest.fixture(scope="module")
 def temporary_db(tmp_path_factory):
     test_db.autoCreateDependents = True
     test_db.databaseEncryptionKey = TEST_ENCRYPTION_KEY
