@@ -16,10 +16,7 @@ import test_db
 
 @with_default_category("Database")
 class TestDBCommandSet(CommandSet):
-    def __init__(self):
-        super().__init__()
-
-        # Parent Cmd should be self._cmd
+    # Parent Cmd should be self._cmd
 
     def validate_address(self, gid: str):
         try:

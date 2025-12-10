@@ -5,11 +5,6 @@ import test_db
 
 
 @pytest.fixture(scope="module")
-def db_file(temporary_db):
-    return str(temporary_db.filePath)
-
-
-@pytest.fixture(scope="module")
 def person(temporary_db):
     return test_db.Person(connection=temporary_db.connection)
 

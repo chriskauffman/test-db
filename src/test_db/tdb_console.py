@@ -161,6 +161,8 @@ class Console(cmd2.Cmd):
             )
         )
 
+        self._db: Optional[test_db.DatabaseController] = None
+
         self._reset_db()
         self._set_prompt()
 
@@ -184,12 +186,12 @@ class Console(cmd2.Cmd):
                 raise ValueError(f"db_file_path {new} invalid")
         return pathlib.Path(new)
 
-    def _reset_db(self):
+    def _reset_db(self, create: bool = False):
         # backup_file(self.db_file_path, self._settings.backup_path)
 
         try:
             self._db = test_db.DatabaseController(
-                str(self.db_file_path), defaultConnection=True
+                str(self.db_file_path), create=create, defaultConnection=True
             )
         except ValueError:
             self._db = None
@@ -197,6 +199,9 @@ class Console(cmd2.Cmd):
     def _set_prompt(self):
         """Set Prompt"""
         self.prompt = f"{self._prompt}: "
+
+    def do_create(self, args):
+        self._reset_db(create=True)
 
     def do_version(self, args):
         print(get_version(__package__))

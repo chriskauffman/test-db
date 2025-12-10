@@ -2,13 +2,13 @@ import test_db
 from test_db.tdb_console import main as tdb
 
 
-def test_person_view(capsys, monkeypatch, db_file, temporary_db):
+def test_person_view(capsys, monkeypatch, temporary_db):
     person = test_db.Person(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
-            f"set db_file_path {db_file}",
+            f"set db_file_path {temporary_db.filePath}",
             f"tdb_person_view {person.gID}",
             "quit",
         ],

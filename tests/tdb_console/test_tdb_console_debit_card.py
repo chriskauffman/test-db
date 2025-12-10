@@ -2,13 +2,13 @@ import test_db
 from test_db.tdb_console import main as tdb
 
 
-def test_debit_card_view(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_view(capsys, monkeypatch, temporary_db):
     debit_card = test_db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
-            f"set db_file_path {db_file}",
+            f"set db_file_path {temporary_db.filePath}",
             f"tdb_debit_card_view {debit_card.gID}",
             "quit",
         ],
