@@ -170,9 +170,10 @@ class Console(cmd2.Cmd):
         # self._database_commands = PersonCommandSet()
         # self.register_command_set(self._database_commands)
 
-    def _onchange_db_file_path(self, param_name, old, new):
+    def _onchange_db_file_path(self, _param_name, _old, new) -> None:
         """Execute when db_file_path setting changed"""
-        if self._db.connection:
+        self.logger.debug("_param_name=%s, _old=%s, new=%s", _param_name, _old, new)
+        if self._db is not None and self._db.connection:
             self._db.close()
         self._reset_db()
         self._set_prompt()
