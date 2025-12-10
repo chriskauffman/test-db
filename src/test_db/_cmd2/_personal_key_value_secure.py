@@ -6,7 +6,10 @@ try:
 except ImportError:
     import readline
 
+from sqlobject import SQLObjectNotFound  # type: ignore
 from sqlobject.dberrors import DuplicateEntryError  # type: ignore
+
+from formencode.validators import Invalid  # type: ignore
 
 import test_db
 
@@ -15,6 +18,12 @@ from ._base_command_set import BaseCommandSet
 
 @with_default_category("Database")
 class PersonalKeyValueSecureCommandSet(BaseCommandSet):
+    def validate_person(self, gid: str):
+        try:
+            return test_db.Person.byGID(gid)
+        except (Invalid, SQLObjectNotFound) as exc:
+            self._cmd.perror(f"error: {str(exc)}")
+
     tdb_personal_key_value_secure_add_parser = cmd2.Cmd2ArgumentParser(add_help=False)
     tdb_personal_key_value_secure_add_parser.add_argument(
         "person_gid",

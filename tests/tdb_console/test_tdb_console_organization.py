@@ -2,14 +2,14 @@ import test_db as db
 from test_db.tdb_console import main as tdb
 
 
-def test_address_view(capsys, monkeypatch, db_file, temporary_db):
-    address = db.Address(connection=temporary_db.connection)
+def test_organization_view(capsys, monkeypatch, db_file, temporary_db):
+    organization = db.Organization(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             f"set db_file_path {db_file}",
-            f"tdb_address_view {address.gID}",
+            f"tdb_organization_view {organization.gID}",
             "quit",
         ],
     )
@@ -20,4 +20,4 @@ def test_address_view(capsys, monkeypatch, db_file, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert f"\nAddress ID: {db.Address._gIDPrefix}" in captured.out
+    assert f"\nOrganization ID: {db.Organization._gIDPrefix}" in captured.out

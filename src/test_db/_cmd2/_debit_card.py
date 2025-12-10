@@ -20,7 +20,7 @@ from ._base_command_set import BaseCommandSet
 class DebitCardCommandSet(BaseCommandSet):
     def validate_debit_card(self, gid: str):
         try:
-            return test_db.DebitCard.byGID(self, gid)
+            return test_db.DebitCard.byGID(gid)
         except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
 

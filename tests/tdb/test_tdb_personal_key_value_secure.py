@@ -5,7 +5,7 @@ import test_db as db
 from test_db.tdb import app as tdb
 
 
-def test_personal_key_value_secure(capsys, monkeypatch, db_file, person):
+def test_personal_key_value_secure_add(capsys, monkeypatch, db_file, person):
     monkeypatch.setattr(
         "sys.argv",
         [
