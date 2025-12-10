@@ -5,9 +5,9 @@ import test_db
 from test_db.tdb import app as tdb
 
 
-def test_address_add(capsys, monkeypatch, db_file):
+def test_address_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", db_file, "address", "add"]
+        "sys.argv", ["tdb", "--db-file-path", temporary_db.filePath, "address", "add"]
     )
 
     try:
@@ -19,13 +19,13 @@ def test_address_add(capsys, monkeypatch, db_file):
     assert captured.out.startswith("addr_")
 
 
-def test_address_add_with_owner(capsys, monkeypatch, db_file, person):
+def test_address_add_with_owner(capsys, monkeypatch, person, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "address",
             "add",
             "--entity-gid",
@@ -42,13 +42,13 @@ def test_address_add_with_owner(capsys, monkeypatch, db_file, person):
     assert captured.out.startswith("addr_")
 
 
-def test_address_add_with_bad_owner(capsys, monkeypatch, db_file):
+def test_address_add_with_bad_owner(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "address",
             "add",
             "--entity-gid",
@@ -65,7 +65,7 @@ def test_address_add_with_bad_owner(capsys, monkeypatch, db_file):
     assert "not found" in captured.err
 
 
-def test_address_connect(capsys, monkeypatch, db_file, temporary_db):
+def test_address_connect(capsys, monkeypatch, temporary_db):
     test_address = test_db.Address(connection=temporary_db.connection)
 
     test_person = test_db.Person(connection=temporary_db.connection)
@@ -75,7 +75,7 @@ def test_address_connect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "address",
             "connect",
             str(test_address.gID),
@@ -102,7 +102,7 @@ def test_address_connect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "address",
             "connect",
             str(test_address.gID),
@@ -123,7 +123,7 @@ def test_address_connect(capsys, monkeypatch, db_file, temporary_db):
     assert test_address in test_organization.addresses
 
 
-def test_address_delete(capsys, monkeypatch, db_file, temporary_db):
+def test_address_delete(capsys, monkeypatch, temporary_db):
     test_address = test_db.Address(connection=temporary_db.connection)
     assert (
         test_db.Address.get(test_address.id, connection=temporary_db.connection)
@@ -132,7 +132,14 @@ def test_address_delete(capsys, monkeypatch, db_file, temporary_db):
 
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", db_file, "address", "delete", str(test_address.gID)],
+        [
+            "tdb",
+            "--db-file-path",
+            temporary_db.filePath,
+            "address",
+            "delete",
+            str(test_address.gID),
+        ],
     )
 
     try:
@@ -147,7 +154,7 @@ def test_address_delete(capsys, monkeypatch, db_file, temporary_db):
         test_db.Address.get(test_address.id, connection=temporary_db.connection)
 
 
-def test_address_disconnect(capsys, monkeypatch, db_file, temporary_db):
+def test_address_disconnect(capsys, monkeypatch, temporary_db):
     test_address = test_db.Address(connection=temporary_db.connection)
 
     test_person = test_db.Person(connection=temporary_db.connection)
@@ -160,7 +167,7 @@ def test_address_disconnect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "address",
             "disconnect",
             str(test_address.gID),
@@ -190,7 +197,7 @@ def test_address_disconnect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "address",
             "disconnect",
             str(test_address.gID),
@@ -211,11 +218,18 @@ def test_address_disconnect(capsys, monkeypatch, db_file, temporary_db):
     assert test_address not in test_organization.addresses
 
 
-def test_address_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
+def test_address_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--create", "--db-file-path", empty_db_file, "address", "list"],
+        [
+            "tdb",
+            "--create",
+            "--db-file-path",
+            empty_db_file,
+            "address",
+            "list",
+        ],
     )
 
     try:
@@ -229,7 +243,7 @@ def test_address_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_facto
 
     test_db.Address(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", db_file, "address", "list"]
+        "sys.argv", ["tdb", "--db-file-path", temporary_db.filePath, "address", "list"]
     )
     try:
         tdb()
@@ -240,14 +254,14 @@ def test_address_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_facto
     assert captured.out.count("addr_") >= 1
 
 
-def test_address_view(capsys, monkeypatch, db_file, temporary_db):
+def test_address_view(capsys, monkeypatch, temporary_db):
     address = test_db.Address(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "address",
             "view",
             str(address.gID),

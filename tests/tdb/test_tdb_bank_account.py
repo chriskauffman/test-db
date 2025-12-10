@@ -5,9 +5,10 @@ import test_db
 from test_db.tdb import app as tdb
 
 
-def test_bank_account_add(capsys, monkeypatch, db_file):
+def test_bank_account_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", db_file, "bank-account", "add"]
+        "sys.argv",
+        ["tdb", "--db-file-path", temporary_db.filePath, "bank-account", "add"],
     )
 
     try:
@@ -19,13 +20,13 @@ def test_bank_account_add(capsys, monkeypatch, db_file):
     assert captured.out.startswith("ba_")
 
 
-def test_bank_account_add_with_owner(capsys, monkeypatch, db_file, person):
+def test_bank_account_add_with_owner(capsys, monkeypatch, person, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "bank-account",
             "add",
             "--entity-gid",
@@ -42,13 +43,13 @@ def test_bank_account_add_with_owner(capsys, monkeypatch, db_file, person):
     assert captured.out.startswith("ba_")
 
 
-def test_bank_account_add_with_bad_owner(capsys, monkeypatch, db_file):
+def test_bank_account_add_with_bad_owner(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "bank-account",
             "add",
             "--entity-gid",
@@ -65,7 +66,7 @@ def test_bank_account_add_with_bad_owner(capsys, monkeypatch, db_file):
     assert "not found" in captured.err
 
 
-def test_bank_account_connect(capsys, monkeypatch, db_file, temporary_db):
+def test_bank_account_connect(capsys, monkeypatch, temporary_db):
     test_bank_account = test_db.BankAccount(connection=temporary_db.connection)
 
     test_person = test_db.Person(connection=temporary_db.connection)
@@ -75,7 +76,7 @@ def test_bank_account_connect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "bank-account",
             "connect",
             str(test_bank_account.gID),
@@ -102,7 +103,7 @@ def test_bank_account_connect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "bank-account",
             "connect",
             str(test_bank_account.gID),
@@ -123,7 +124,7 @@ def test_bank_account_connect(capsys, monkeypatch, db_file, temporary_db):
     assert test_bank_account in test_organization.bankAccounts
 
 
-def test_bank_account_delete(capsys, monkeypatch, db_file, temporary_db):
+def test_bank_account_delete(capsys, monkeypatch, temporary_db):
     test_bank_account = test_db.BankAccount(connection=temporary_db.connection)
     assert (
         test_db.BankAccount.get(
@@ -137,7 +138,7 @@ def test_bank_account_delete(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "bank-account",
             "delete",
             str(test_bank_account.gID),
@@ -158,7 +159,7 @@ def test_bank_account_delete(capsys, monkeypatch, db_file, temporary_db):
         )
 
 
-def test_bank_account_disconnect(capsys, monkeypatch, db_file, temporary_db):
+def test_bank_account_disconnect(capsys, monkeypatch, temporary_db):
     test_bank_account = test_db.BankAccount(connection=temporary_db.connection)
 
     test_person = test_db.Person(connection=temporary_db.connection)
@@ -171,7 +172,7 @@ def test_bank_account_disconnect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "bank-account",
             "disconnect",
             str(test_bank_account.gID),
@@ -201,7 +202,7 @@ def test_bank_account_disconnect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "bank-account",
             "disconnect",
             str(test_bank_account.gID),
@@ -222,9 +223,7 @@ def test_bank_account_disconnect(capsys, monkeypatch, db_file, temporary_db):
     assert test_bank_account not in test_organization.bankAccounts
 
 
-def test_bank_account_list(
-    capsys, monkeypatch, db_file, temporary_db, tmp_path_factory
-):
+def test_bank_account_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
@@ -242,7 +241,8 @@ def test_bank_account_list(
 
     test_db.BankAccount(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", db_file, "bank-account", "list"]
+        "sys.argv",
+        ["tdb", "--db-file-path", temporary_db.filePath, "bank-account", "list"],
     )
     try:
         tdb()
@@ -253,14 +253,14 @@ def test_bank_account_list(
     assert captured.out.count("ba_") >= 1
 
 
-def test_bank_account_view(capsys, monkeypatch, db_file, temporary_db):
+def test_bank_account_view(capsys, monkeypatch, temporary_db):
     bank_account = test_db.BankAccount(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "bank-account",
             "view",
             str(bank_account.gID),

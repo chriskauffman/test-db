@@ -5,9 +5,10 @@ import test_db
 from test_db.tdb import app as tdb
 
 
-def test_organization_add(capsys, monkeypatch, db_file):
+def test_organization_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", db_file, "organization", "add"]
+        "sys.argv",
+        ["tdb", "--db-file-path", temporary_db.filePath, "organization", "add"],
     )
 
     try:
@@ -19,7 +20,7 @@ def test_organization_add(capsys, monkeypatch, db_file):
     assert captured.out.startswith("o_")
 
 
-def test_organization_delete(capsys, monkeypatch, db_file, temporary_db):
+def test_organization_delete(capsys, monkeypatch, temporary_db):
     test_organization = test_db.Organization(connection=temporary_db.connection)
     assert (
         test_db.Organization.get(
@@ -33,7 +34,7 @@ def test_organization_delete(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "organization",
             "delete",
             str(test_organization.gID),
@@ -54,9 +55,7 @@ def test_organization_delete(capsys, monkeypatch, db_file, temporary_db):
         )
 
 
-def test_organization_list(
-    capsys, monkeypatch, db_file, temporary_db, tmp_path_factory
-):
+def test_organization_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
@@ -74,7 +73,8 @@ def test_organization_list(
 
     test_db.Organization(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", db_file, "organization", "list"]
+        "sys.argv",
+        ["tdb", "--db-file-path", temporary_db.filePath, "organization", "list"],
     )
     try:
         tdb()
@@ -85,13 +85,13 @@ def test_organization_list(
     assert captured.out.count("o_") >= 1
 
 
-def test_organization_view(capsys, monkeypatch, db_file, organization):
+def test_organization_view(capsys, monkeypatch, organization, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "organization",
             "view",
             str(organization.gID),

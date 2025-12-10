@@ -5,13 +5,13 @@ import test_db
 from test_db.tdb import app as tdb
 
 
-def test_personal_key_value_secure_add(capsys, monkeypatch, db_file, person):
+def test_personal_key_value_secure_add(capsys, monkeypatch, person, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "personal-key-value-secure",
             "add",
             str(person.gID),
@@ -29,13 +29,13 @@ def test_personal_key_value_secure_add(capsys, monkeypatch, db_file, person):
     assert not captured.out
 
 
-def test_personal_key_value_secure_add_bad_person(capsys, monkeypatch, db_file):
+def test_personal_key_value_secure_add_bad_person(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "personal-key-value-secure",
             "add",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
@@ -53,14 +53,16 @@ def test_personal_key_value_secure_add_bad_person(capsys, monkeypatch, db_file):
     assert "does not exist" in captured.err
 
 
-def test_personal_key_value_secure_add_duplicate(capsys, monkeypatch, db_file, person):
+def test_personal_key_value_secure_add_duplicate(
+    capsys, monkeypatch, person, temporary_db
+):
     person.getPersonalKeyValueSecureByKey("secret2", value="test value")
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "personal-key-value-secure",
             "add",
             str(person.gID),
@@ -78,9 +80,7 @@ def test_personal_key_value_secure_add_duplicate(capsys, monkeypatch, db_file, p
     assert "UNIQUE constraint failed" in captured.err
 
 
-def test_personal_key_value_secure_delete(
-    capsys, monkeypatch, db_file, person, temporary_db
-):
+def test_personal_key_value_secure_delete(capsys, monkeypatch, person, temporary_db):
     test_personal_key_value_secure = test_db.PersonalKeyValueSecure(
         connection=temporary_db.connection,
         key="test_delete_personal_key_value_secure",
@@ -98,7 +98,7 @@ def test_personal_key_value_secure_delete(
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "personal-key-value-secure",
             "delete",
             str(person.gID),

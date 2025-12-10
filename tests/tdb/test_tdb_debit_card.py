@@ -5,9 +5,10 @@ import test_db
 from test_db.tdb import app as tdb
 
 
-def test_debit_card_add(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", db_file, "debit-card", "add"]
+        "sys.argv",
+        ["tdb", "--db-file-path", temporary_db.filePath, "debit-card", "add"],
     )
 
     try:
@@ -19,13 +20,13 @@ def test_debit_card_add(capsys, monkeypatch, db_file, temporary_db):
     assert captured.out.startswith("dc_")
 
 
-def test_debit_card_add_with_owner(capsys, monkeypatch, db_file, person):
+def test_debit_card_add_with_owner(capsys, monkeypatch, person, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "debit-card",
             "add",
             "--entity-gid",
@@ -42,13 +43,13 @@ def test_debit_card_add_with_owner(capsys, monkeypatch, db_file, person):
     assert captured.out.startswith("dc_")
 
 
-def test_debit_card_add_with_bad_owner(capsys, monkeypatch, db_file):
+def test_debit_card_add_with_bad_owner(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "debit-card",
             "add",
             "--entity-gid",
@@ -65,7 +66,7 @@ def test_debit_card_add_with_bad_owner(capsys, monkeypatch, db_file):
     assert "not found" in captured.err
 
 
-def test_debit_card_connect(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_connect(capsys, monkeypatch, temporary_db):
     test_debit_card = test_db.DebitCard(connection=temporary_db.connection)
 
     test_person = test_db.Person(connection=temporary_db.connection)
@@ -75,7 +76,7 @@ def test_debit_card_connect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "debit-card",
             "connect",
             str(test_debit_card.gID),
@@ -102,7 +103,7 @@ def test_debit_card_connect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "debit-card",
             "connect",
             str(test_debit_card.gID),
@@ -123,7 +124,7 @@ def test_debit_card_connect(capsys, monkeypatch, db_file, temporary_db):
     assert test_debit_card in test_organization.debitCards
 
 
-def test_debit_card_delete(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_delete(capsys, monkeypatch, temporary_db):
     test_debit_card = test_db.DebitCard(connection=temporary_db.connection)
     assert (
         test_db.DebitCard.get(test_debit_card.id, connection=temporary_db.connection)
@@ -134,7 +135,7 @@ def test_debit_card_delete(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "debit-card",
             "delete",
             str(test_debit_card.gID),
@@ -153,7 +154,7 @@ def test_debit_card_delete(capsys, monkeypatch, db_file, temporary_db):
         test_db.DebitCard.get(test_debit_card.id, connection=temporary_db.connection)
 
 
-def test_debit_card_disconnect(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_disconnect(capsys, monkeypatch, temporary_db):
     test_debit_card = test_db.DebitCard(connection=temporary_db.connection)
 
     test_person = test_db.Person(connection=temporary_db.connection)
@@ -166,7 +167,7 @@ def test_debit_card_disconnect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "debit-card",
             "disconnect",
             str(test_debit_card.gID),
@@ -196,7 +197,7 @@ def test_debit_card_disconnect(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "debit-card",
             "disconnect",
             str(test_debit_card.gID),
@@ -217,11 +218,18 @@ def test_debit_card_disconnect(capsys, monkeypatch, db_file, temporary_db):
     assert test_debit_card not in test_organization.debitCards
 
 
-def test_debit_card_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_factory):
+def test_debit_card_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--create", "--db-file-path", empty_db_file, "debit-card", "list"],
+        [
+            "tdb",
+            "--create",
+            "--db-file-path",
+            empty_db_file,
+            "debit-card",
+            "list",
+        ],
     )
 
     try:
@@ -235,7 +243,8 @@ def test_debit_card_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_fa
 
     test_db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", db_file, "debit-card", "list"]
+        "sys.argv",
+        ["tdb", "--db-file-path", temporary_db.filePath, "debit-card", "list"],
     )
     try:
         tdb()
@@ -246,11 +255,18 @@ def test_debit_card_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_fa
     assert captured.out.count("dc_") >= 1
 
 
-def test_debit_card_view(capsys, monkeypatch, db_file, temporary_db):
+def test_debit_card_view(capsys, monkeypatch, temporary_db):
     debit_card = test_db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", db_file, "debit-card", "view", str(debit_card.gID)],
+        [
+            "tdb",
+            "--db-file-path",
+            temporary_db.filePath,
+            "debit-card",
+            "view",
+            str(debit_card.gID),
+        ],
     )
 
     try:

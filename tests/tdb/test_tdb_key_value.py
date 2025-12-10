@@ -5,13 +5,13 @@ import test_db
 from test_db.tdb import app as tdb
 
 
-def test_add_key_value(capsys, monkeypatch, db_file):
+def test_key_value_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "key-value",
             "add",
             "test_add_key_value",
@@ -28,7 +28,7 @@ def test_add_key_value(capsys, monkeypatch, db_file):
     assert not captured.out
 
 
-def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
+def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
     test_db.KeyValue(
         key="test_add_key_value_duplicate",
         value="test_value",
@@ -39,7 +39,7 @@ def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
         [
             "tdb",
             "--db-file-path",
-            db_file,
+            temporary_db.filePath,
             "key-value",
             "add",
             "test_add_key_value_duplicate",
@@ -56,7 +56,7 @@ def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
     assert "UNIQUE constraint failed" in captured.err
 
 
-def test_key_value_delete(capsys, monkeypatch, db_file, temporary_db):
+def test_key_value_delete(capsys, monkeypatch, temporary_db):
     test_key_value = test_db.KeyValue(
         connection=temporary_db.connection, key="test_delete_key_value"
     )
@@ -67,7 +67,14 @@ def test_key_value_delete(capsys, monkeypatch, db_file, temporary_db):
 
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", db_file, "key-value", "delete", test_key_value.key],
+        [
+            "tdb",
+            "--db-file-path",
+            temporary_db.filePath,
+            "key-value",
+            "delete",
+            test_key_value.key,
+        ],
     )
 
     try:
