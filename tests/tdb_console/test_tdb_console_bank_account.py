@@ -1,9 +1,9 @@
-import test_db as db
+import test_db
 from test_db.tdb_console import main as tdb
 
 
 def test_bank_account_view(capsys, monkeypatch, db_file, temporary_db):
-    bank_account = db.BankAccount(connection=temporary_db.connection)
+    bank_account = test_db.BankAccount(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [

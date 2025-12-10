@@ -1,9 +1,9 @@
-import test_db as db
+import test_db
 from test_db.tdb_console import main as tdb
 
 
 def test_debit_card_view(capsys, monkeypatch, db_file, temporary_db):
-    debit_card = db.DebitCard(connection=temporary_db.connection)
+    debit_card = test_db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [

@@ -1,9 +1,9 @@
-import test_db as db
+import test_db
 from test_db.tdb_console import main as tdb
 
 
 def test_person_view(capsys, monkeypatch, db_file, temporary_db):
-    person = db.Person(connection=temporary_db.connection)
+    person = test_db.Person(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -20,4 +20,4 @@ def test_person_view(capsys, monkeypatch, db_file, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert f"\nPerson ID: {db.Person._gIDPrefix}" in captured.out
+    assert f"\nPerson ID: {test_db.Person._gIDPrefix}" in captured.out

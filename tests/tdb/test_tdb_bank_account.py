@@ -1,7 +1,7 @@
 import pytest
 from sqlobject import SQLObjectNotFound
 
-import test_db as db
+import test_db
 from test_db.tdb import app as tdb
 
 
@@ -66,9 +66,9 @@ def test_bank_account_add_with_bad_owner(capsys, monkeypatch, db_file):
 
 
 def test_bank_account_connect(capsys, monkeypatch, db_file, temporary_db):
-    test_bank_account = db.BankAccount(connection=temporary_db.connection)
+    test_bank_account = test_db.BankAccount(connection=temporary_db.connection)
 
-    test_person = db.Person(connection=temporary_db.connection)
+    test_person = test_db.Person(connection=temporary_db.connection)
 
     monkeypatch.setattr(
         "sys.argv",
@@ -91,11 +91,11 @@ def test_bank_account_connect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.BankAccount.get(test_bank_account.id)
-    assert db.Person.get(test_person.id)
+    assert test_db.BankAccount.get(test_bank_account.id)
+    assert test_db.Person.get(test_person.id)
     assert test_bank_account in test_person.bankAccounts
 
-    test_organization = db.Organization(connection=temporary_db.connection)
+    test_organization = test_db.Organization(connection=temporary_db.connection)
 
     monkeypatch.setattr(
         "sys.argv",
@@ -118,15 +118,17 @@ def test_bank_account_connect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.BankAccount.get(test_bank_account.id)
-    assert db.Organization.get(test_organization.id)
+    assert test_db.BankAccount.get(test_bank_account.id)
+    assert test_db.Organization.get(test_organization.id)
     assert test_bank_account in test_organization.bankAccounts
 
 
 def test_bank_account_delete(capsys, monkeypatch, db_file, temporary_db):
-    test_bank_account = db.BankAccount(connection=temporary_db.connection)
+    test_bank_account = test_db.BankAccount(connection=temporary_db.connection)
     assert (
-        db.BankAccount.get(test_bank_account.id, connection=temporary_db.connection)
+        test_db.BankAccount.get(
+            test_bank_account.id, connection=temporary_db.connection
+        )
         is test_bank_account
     )
 
@@ -151,13 +153,15 @@ def test_bank_account_delete(capsys, monkeypatch, db_file, temporary_db):
     assert not captured.out
 
     with pytest.raises(SQLObjectNotFound):
-        db.BankAccount.get(test_bank_account.id, connection=temporary_db.connection)
+        test_db.BankAccount.get(
+            test_bank_account.id, connection=temporary_db.connection
+        )
 
 
 def test_bank_account_disconnect(capsys, monkeypatch, db_file, temporary_db):
-    test_bank_account = db.BankAccount(connection=temporary_db.connection)
+    test_bank_account = test_db.BankAccount(connection=temporary_db.connection)
 
-    test_person = db.Person(connection=temporary_db.connection)
+    test_person = test_db.Person(connection=temporary_db.connection)
     test_person.addBankAccount(test_bank_account)
 
     assert test_bank_account in test_person.bankAccounts
@@ -183,11 +187,11 @@ def test_bank_account_disconnect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.BankAccount.get(test_bank_account.id)
-    assert db.Person.get(test_person.id)
+    assert test_db.BankAccount.get(test_bank_account.id)
+    assert test_db.Person.get(test_person.id)
     assert test_bank_account not in test_person.bankAccounts
 
-    test_organization = db.Organization(connection=temporary_db.connection)
+    test_organization = test_db.Organization(connection=temporary_db.connection)
     test_organization.addBankAccount(test_bank_account)
 
     assert test_bank_account in test_organization.bankAccounts
@@ -213,8 +217,8 @@ def test_bank_account_disconnect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.BankAccount.get(test_bank_account.id)
-    assert db.Organization.get(test_organization.id)
+    assert test_db.BankAccount.get(test_bank_account.id)
+    assert test_db.Organization.get(test_organization.id)
     assert test_bank_account not in test_organization.bankAccounts
 
 
@@ -236,7 +240,7 @@ def test_bank_account_list(
     assert not captured.out
     assert not captured.err
 
-    db.BankAccount(connection=temporary_db.connection)
+    test_db.BankAccount(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--db-file-path", db_file, "bank-account", "list"]
     )
@@ -250,7 +254,7 @@ def test_bank_account_list(
 
 
 def test_bank_account_view(capsys, monkeypatch, db_file, temporary_db):
-    bank_account = db.BankAccount(connection=temporary_db.connection)
+    bank_account = test_db.BankAccount(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [

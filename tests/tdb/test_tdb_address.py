@@ -1,7 +1,7 @@
 import pytest
 from sqlobject import SQLObjectNotFound
 
-import test_db as db
+import test_db
 from test_db.tdb import app as tdb
 
 
@@ -66,9 +66,9 @@ def test_address_add_with_bad_owner(capsys, monkeypatch, db_file):
 
 
 def test_address_connect(capsys, monkeypatch, db_file, temporary_db):
-    test_address = db.Address(connection=temporary_db.connection)
+    test_address = test_db.Address(connection=temporary_db.connection)
 
-    test_person = db.Person(connection=temporary_db.connection)
+    test_person = test_db.Person(connection=temporary_db.connection)
 
     monkeypatch.setattr(
         "sys.argv",
@@ -91,11 +91,11 @@ def test_address_connect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.Address.get(test_address.id)
-    assert db.Person.get(test_person.id)
+    assert test_db.Address.get(test_address.id)
+    assert test_db.Person.get(test_person.id)
     assert test_address in test_person.addresses
 
-    test_organization = db.Organization(connection=temporary_db.connection)
+    test_organization = test_db.Organization(connection=temporary_db.connection)
 
     monkeypatch.setattr(
         "sys.argv",
@@ -118,15 +118,15 @@ def test_address_connect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.Address.get(test_address.id)
-    assert db.Organization.get(test_organization.id)
+    assert test_db.Address.get(test_address.id)
+    assert test_db.Organization.get(test_organization.id)
     assert test_address in test_organization.addresses
 
 
 def test_address_delete(capsys, monkeypatch, db_file, temporary_db):
-    test_address = db.Address(connection=temporary_db.connection)
+    test_address = test_db.Address(connection=temporary_db.connection)
     assert (
-        db.Address.get(test_address.id, connection=temporary_db.connection)
+        test_db.Address.get(test_address.id, connection=temporary_db.connection)
         is test_address
     )
 
@@ -144,13 +144,13 @@ def test_address_delete(capsys, monkeypatch, db_file, temporary_db):
     assert not captured.out
 
     with pytest.raises(SQLObjectNotFound):
-        db.Address.get(test_address.id, connection=temporary_db.connection)
+        test_db.Address.get(test_address.id, connection=temporary_db.connection)
 
 
 def test_address_disconnect(capsys, monkeypatch, db_file, temporary_db):
-    test_address = db.Address(connection=temporary_db.connection)
+    test_address = test_db.Address(connection=temporary_db.connection)
 
-    test_person = db.Person(connection=temporary_db.connection)
+    test_person = test_db.Person(connection=temporary_db.connection)
     test_person.addAddress(test_address)
 
     assert test_address in test_person.addresses
@@ -176,11 +176,11 @@ def test_address_disconnect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.Address.get(test_address.id)
-    assert db.Person.get(test_person.id)
+    assert test_db.Address.get(test_address.id)
+    assert test_db.Person.get(test_person.id)
     assert test_address not in test_person.addresses
 
-    test_organization = db.Organization(connection=temporary_db.connection)
+    test_organization = test_db.Organization(connection=temporary_db.connection)
     test_organization.addAddress(test_address)
 
     assert test_address in test_organization.addresses
@@ -206,8 +206,8 @@ def test_address_disconnect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.Address.get(test_address.id)
-    assert db.Organization.get(test_organization.id)
+    assert test_db.Address.get(test_address.id)
+    assert test_db.Organization.get(test_organization.id)
     assert test_address not in test_organization.addresses
 
 
@@ -227,7 +227,7 @@ def test_address_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_facto
     assert not captured.out
     assert not captured.err
 
-    db.Address(connection=temporary_db.connection)
+    test_db.Address(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--db-file-path", db_file, "address", "list"]
     )
@@ -241,7 +241,7 @@ def test_address_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_facto
 
 
 def test_address_view(capsys, monkeypatch, db_file, temporary_db):
-    address = db.Address(connection=temporary_db.connection)
+    address = test_db.Address(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [

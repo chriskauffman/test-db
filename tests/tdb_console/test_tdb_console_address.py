@@ -1,9 +1,9 @@
-import test_db as db
+import test_db
 from test_db.tdb_console import main as tdb
 
 
 def test_address_view(capsys, monkeypatch, db_file, temporary_db):
-    address = db.Address(connection=temporary_db.connection)
+    address = test_db.Address(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -20,4 +20,4 @@ def test_address_view(capsys, monkeypatch, db_file, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert f"\nAddress ID: {db.Address._gIDPrefix}" in captured.out
+    assert f"\nAddress ID: {test_db.Address._gIDPrefix}" in captured.out

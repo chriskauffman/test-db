@@ -1,7 +1,7 @@
 import pytest
 from sqlobject import SQLObjectNotFound
 
-import test_db as db
+import test_db
 from test_db.tdb import app as tdb
 
 
@@ -81,8 +81,8 @@ def test_job_add_bad_person(capsys, monkeypatch, db_file, organization):
 
 
 def test_job_delete(capsys, monkeypatch, db_file, person, organization, temporary_db):
-    test_job = db.Job(connection=temporary_db.connection)
-    assert db.Job.get(test_job.id, connection=temporary_db.connection) is test_job
+    test_job = test_db.Job(connection=temporary_db.connection)
+    assert test_db.Job.get(test_job.id, connection=temporary_db.connection) is test_job
 
     monkeypatch.setattr(
         "sys.argv",
@@ -105,7 +105,7 @@ def test_job_delete(capsys, monkeypatch, db_file, person, organization, temporar
     assert not captured.out
 
     with pytest.raises(SQLObjectNotFound):
-        db.Job.get(test_job.id, connection=temporary_db.connection)
+        test_db.Job.get(test_job.id, connection=temporary_db.connection)
 
 
 def test_job_list(
@@ -125,7 +125,7 @@ def test_job_list(
     assert not captured.out
     assert not captured.err
 
-    db.Job(
+    test_db.Job(
         connection=temporary_db.connection,
         organization=organization,
         person=person,
@@ -141,7 +141,7 @@ def test_job_list(
 
 
 def test_job_view(capsys, monkeypatch, db_file, temporary_db, organization, person):
-    job = db.Job(
+    job = test_db.Job(
         organization=organization,
         person=person,
         connection=temporary_db.connection,

@@ -1,9 +1,9 @@
-import test_db as db
+import test_db
 from test_db.tdb_console import main as tdb
 
 
 def test_organization_view(capsys, monkeypatch, db_file, temporary_db):
-    organization = db.Organization(connection=temporary_db.connection)
+    organization = test_db.Organization(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -20,4 +20,4 @@ def test_organization_view(capsys, monkeypatch, db_file, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert f"\nOrganization ID: {db.Organization._gIDPrefix}" in captured.out
+    assert f"\nOrganization ID: {test_db.Organization._gIDPrefix}" in captured.out

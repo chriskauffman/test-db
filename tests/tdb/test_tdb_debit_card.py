@@ -1,7 +1,7 @@
 import pytest
 from sqlobject import SQLObjectNotFound
 
-import test_db as db
+import test_db
 from test_db.tdb import app as tdb
 
 
@@ -66,9 +66,9 @@ def test_debit_card_add_with_bad_owner(capsys, monkeypatch, db_file):
 
 
 def test_debit_card_connect(capsys, monkeypatch, db_file, temporary_db):
-    test_debit_card = db.DebitCard(connection=temporary_db.connection)
+    test_debit_card = test_db.DebitCard(connection=temporary_db.connection)
 
-    test_person = db.Person(connection=temporary_db.connection)
+    test_person = test_db.Person(connection=temporary_db.connection)
 
     monkeypatch.setattr(
         "sys.argv",
@@ -91,11 +91,11 @@ def test_debit_card_connect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.DebitCard.get(test_debit_card.id)
-    assert db.Person.get(test_person.id)
+    assert test_db.DebitCard.get(test_debit_card.id)
+    assert test_db.Person.get(test_person.id)
     assert test_debit_card in test_person.debitCards
 
-    test_organization = db.Organization(connection=temporary_db.connection)
+    test_organization = test_db.Organization(connection=temporary_db.connection)
 
     monkeypatch.setattr(
         "sys.argv",
@@ -118,15 +118,15 @@ def test_debit_card_connect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.DebitCard.get(test_debit_card.id)
-    assert db.Organization.get(test_organization.id)
+    assert test_db.DebitCard.get(test_debit_card.id)
+    assert test_db.Organization.get(test_organization.id)
     assert test_debit_card in test_organization.debitCards
 
 
 def test_debit_card_delete(capsys, monkeypatch, db_file, temporary_db):
-    test_debit_card = db.DebitCard(connection=temporary_db.connection)
+    test_debit_card = test_db.DebitCard(connection=temporary_db.connection)
     assert (
-        db.DebitCard.get(test_debit_card.id, connection=temporary_db.connection)
+        test_db.DebitCard.get(test_debit_card.id, connection=temporary_db.connection)
         is test_debit_card
     )
     monkeypatch.setattr(
@@ -150,13 +150,13 @@ def test_debit_card_delete(capsys, monkeypatch, db_file, temporary_db):
     assert not captured.out
 
     with pytest.raises(SQLObjectNotFound):
-        db.DebitCard.get(test_debit_card.id, connection=temporary_db.connection)
+        test_db.DebitCard.get(test_debit_card.id, connection=temporary_db.connection)
 
 
 def test_debit_card_disconnect(capsys, monkeypatch, db_file, temporary_db):
-    test_debit_card = db.DebitCard(connection=temporary_db.connection)
+    test_debit_card = test_db.DebitCard(connection=temporary_db.connection)
 
-    test_person = db.Person(connection=temporary_db.connection)
+    test_person = test_db.Person(connection=temporary_db.connection)
     test_person.addDebitCard(test_debit_card)
 
     assert test_debit_card in test_person.debitCards
@@ -182,11 +182,11 @@ def test_debit_card_disconnect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.DebitCard.get(test_debit_card.id)
-    assert db.Person.get(test_person.id)
+    assert test_db.DebitCard.get(test_debit_card.id)
+    assert test_db.Person.get(test_person.id)
     assert test_debit_card not in test_person.debitCards
 
-    test_organization = db.Organization(connection=temporary_db.connection)
+    test_organization = test_db.Organization(connection=temporary_db.connection)
     test_organization.addDebitCard(test_debit_card)
 
     assert test_debit_card in test_organization.debitCards
@@ -212,8 +212,8 @@ def test_debit_card_disconnect(capsys, monkeypatch, db_file, temporary_db):
     captured = capsys.readouterr()
     assert not captured.out
 
-    assert db.DebitCard.get(test_debit_card.id)
-    assert db.Organization.get(test_organization.id)
+    assert test_db.DebitCard.get(test_debit_card.id)
+    assert test_db.Organization.get(test_organization.id)
     assert test_debit_card not in test_organization.debitCards
 
 
@@ -233,7 +233,7 @@ def test_debit_card_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_fa
     assert not captured.out
     assert not captured.err
 
-    db.DebitCard(connection=temporary_db.connection)
+    test_db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--db-file-path", db_file, "debit-card", "list"]
     )
@@ -247,7 +247,7 @@ def test_debit_card_list(capsys, monkeypatch, db_file, temporary_db, tmp_path_fa
 
 
 def test_debit_card_view(capsys, monkeypatch, db_file, temporary_db):
-    debit_card = db.DebitCard(connection=temporary_db.connection)
+    debit_card = test_db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         ["tdb", "--db-file-path", db_file, "debit-card", "view", str(debit_card.gID)],

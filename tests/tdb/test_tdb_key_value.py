@@ -1,7 +1,7 @@
 import pytest
 from sqlobject import SQLObjectNotFound
 
-import test_db as db
+import test_db
 from test_db.tdb import app as tdb
 
 
@@ -29,7 +29,7 @@ def test_add_key_value(capsys, monkeypatch, db_file):
 
 
 def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
-    db.KeyValue(
+    test_db.KeyValue(
         key="test_add_key_value_duplicate",
         value="test_value",
         connection=temporary_db.connection,
@@ -57,11 +57,11 @@ def test_add_key_value_duplicate(capsys, monkeypatch, db_file, temporary_db):
 
 
 def test_key_value_delete(capsys, monkeypatch, db_file, temporary_db):
-    test_key_value = db.KeyValue(
+    test_key_value = test_db.KeyValue(
         connection=temporary_db.connection, key="test_delete_key_value"
     )
     assert (
-        db.KeyValue.get(test_key_value.id, connection=temporary_db.connection)
+        test_db.KeyValue.get(test_key_value.id, connection=temporary_db.connection)
         is test_key_value
     )
 
@@ -79,4 +79,4 @@ def test_key_value_delete(capsys, monkeypatch, db_file, temporary_db):
     assert not captured.out
 
     with pytest.raises(SQLObjectNotFound):
-        db.KeyValue.get(test_key_value.id, connection=temporary_db.connection)
+        test_db.KeyValue.get(test_key_value.id, connection=temporary_db.connection)

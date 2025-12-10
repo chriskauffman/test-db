@@ -1,7 +1,7 @@
 import pytest
 from sqlobject import SQLObjectNotFound
 
-import test_db as db
+import test_db
 from test_db.tdb import app as tdb
 
 
@@ -20,9 +20,11 @@ def test_organization_add(capsys, monkeypatch, db_file):
 
 
 def test_organization_delete(capsys, monkeypatch, db_file, temporary_db):
-    test_organization = db.Organization(connection=temporary_db.connection)
+    test_organization = test_db.Organization(connection=temporary_db.connection)
     assert (
-        db.Organization.get(test_organization.id, connection=temporary_db.connection)
+        test_db.Organization.get(
+            test_organization.id, connection=temporary_db.connection
+        )
         is test_organization
     )
 
@@ -47,7 +49,9 @@ def test_organization_delete(capsys, monkeypatch, db_file, temporary_db):
     assert not captured.out
 
     with pytest.raises(SQLObjectNotFound):
-        db.Organization.get(test_organization.id, connection=temporary_db.connection)
+        test_db.Organization.get(
+            test_organization.id, connection=temporary_db.connection
+        )
 
 
 def test_organization_list(
@@ -68,7 +72,7 @@ def test_organization_list(
     assert not captured.out
     assert not captured.err
 
-    db.Organization(connection=temporary_db.connection)
+    test_db.Organization(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv", ["tdb", "--db-file-path", db_file, "organization", "list"]
     )

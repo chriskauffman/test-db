@@ -1,10 +1,10 @@
-import test_db as db
+import test_db
 from test_db.tdb_console import main as tdb
 
 
 def test_personal_key_value_secure_view(capsys, monkeypatch, db_file, temporary_db):
-    person = db.Person(connection=temporary_db.connection)
-    personal_key_value = db.PersonalKeyValueSecure(
+    person = test_db.Person(connection=temporary_db.connection)
+    personal_key_value = test_db.PersonalKeyValueSecure(
         connection=temporary_db.connection, person=person, key="secret", value="test"
     )
     monkeypatch.setattr(

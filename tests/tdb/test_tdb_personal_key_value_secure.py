@@ -1,7 +1,7 @@
 import pytest
 from sqlobject import SQLObjectNotFound
 
-import test_db as db
+import test_db
 from test_db.tdb import app as tdb
 
 
@@ -81,13 +81,13 @@ def test_personal_key_value_secure_add_duplicate(capsys, monkeypatch, db_file, p
 def test_personal_key_value_secure_delete(
     capsys, monkeypatch, db_file, person, temporary_db
 ):
-    test_personal_key_value_secure = db.PersonalKeyValueSecure(
+    test_personal_key_value_secure = test_db.PersonalKeyValueSecure(
         connection=temporary_db.connection,
         key="test_delete_personal_key_value_secure",
         person=person,
     )
     assert (
-        db.PersonalKeyValueSecure.get(
+        test_db.PersonalKeyValueSecure.get(
             test_personal_key_value_secure.id, connection=temporary_db.connection
         )
         is test_personal_key_value_secure
@@ -115,6 +115,6 @@ def test_personal_key_value_secure_delete(
     assert not captured.out
 
     with pytest.raises(SQLObjectNotFound):
-        db.PersonalKeyValueSecure.get(
+        test_db.PersonalKeyValueSecure.get(
             test_personal_key_value_secure.id, connection=temporary_db.connection
         )
