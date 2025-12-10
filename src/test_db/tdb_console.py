@@ -134,7 +134,6 @@ class Console(cmd2.Cmd):
     _prompt = "tdb"
 
     def __init__(self, settings: Settings, log_file: pathlib.Path, **kwargs) -> None:
-        self.logger.debug("Function: Console.__init__")
         super().__init__(persistent_history_file=str(self._cmd_history_file), **kwargs)
 
         self._settings = settings
@@ -173,7 +172,6 @@ class Console(cmd2.Cmd):
 
     def _onchange_db_file_path(self, param_name, old, new):
         """Execute when db_file_path setting changed"""
-        self.logger.debug("Function: Console._onchange_db_file_path")
         if self._db.connection:
             self._db.close()
         self._reset_db()
@@ -188,7 +186,7 @@ class Console(cmd2.Cmd):
 
     def _reset_db(self, create: bool = False):
         # backup_file(self.db_file_path, self._settings.backup_path)
-
+        self.logger.debug("resetting db with db_file_path=%s", self.db_file_path)
         try:
             self._db = test_db.DatabaseController(
                 str(self.db_file_path), create=create, defaultConnection=True
