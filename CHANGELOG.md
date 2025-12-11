@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.1-alpha.3...v0.1.1-beta.1) (2025-12-11)
+
+
+### release
+
+* beta.1 ([59f3132](https://github.com/chriskauffman/test-db/commit/59f31321014bbce22fb5c7b196b2dffbb8577ecd))
+
 ## [0.1.1-alpha.3](https://github.com/chriskauffman/test-db/compare/v0.1.0-alpha.3...v0.1.1-alpha.3) (2025-12-02)
 
 
