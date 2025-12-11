@@ -58,7 +58,7 @@ class BankAccount(SQLObject):
     _gIDPrefix: str = "ba"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
+    attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
 
     routingNumber: StringCol = StringCol(default=fake.aba)
@@ -74,6 +74,10 @@ class BankAccount(SQLObject):
     routingNumberAccountNumberIndex: DatabaseIndex = DatabaseIndex(
         routingNumber, accountNumber, unique=True
     )
+
+    @property
+    def visualID(self):
+        return f"{self.gID}, {self.routingNumber}, {self.accountNumber}"
 
     def _set_gID(self, value):
         if value:

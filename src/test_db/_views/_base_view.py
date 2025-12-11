@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseView:
-    interactive: bool = True
-
     @staticmethod
     def _getDateInput(prompt: str, default: Optional[str] = None) -> datetime.datetime:
         while True:
@@ -32,6 +30,7 @@ class BaseView:
                     int(string_input)
                 except ValueError:
                     logger.error("string input must be numeric")
+                    continue
             try:
                 return str(string_input)
             except ValueError:
@@ -83,10 +82,18 @@ class BaseView:
         """
         return message
 
+    def delete(self):
+        """Delete the object"""
+        pass
+
+    def edit(self):
+        """Edit the object"""
+        pass
+
     def view(self):
-        """Display the person"""
+        """Display the object"""
         pass
 
     def viewDetails(self):
-        """Display the person"""
+        """Display the object's details"""
         self.view()

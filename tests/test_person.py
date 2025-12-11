@@ -1,6 +1,6 @@
 import faker
 
-import test_db as db
+import test_db
 from test_db._address import Address
 from test_db._bank_account import BankAccount
 from test_db._debit_card import DebitCard
@@ -27,7 +27,7 @@ def test__set_email(temporary_db):
 
 def test_getPersonalKeyValueSecureByKey(temporary_db):
     test_person = Person(connection=temporary_db.connection)
-    db.databaseEncryptionKey = "a really good key"
+    test_db.databaseEncryptionKey = "a really good key"
 
     test_oauth2_token = test_person.getPersonalKeyValueSecureByKey("testClientId1")
 
@@ -121,17 +121,17 @@ def test_locate_related_objects(temporary_db):
         is test_debit_card
     )
 
-    test_organization = db.Organization(
+    test_organization = test_db.Organization(
         connection=temporary_db.connection, externalID="test_employer"
     )
-    test_job = db.Job(
+    test_job = test_db.Job(
         connection=temporary_db.connection,
         organization=test_organization,
         person=test_person,
     )
-    db.Job(
+    test_db.Job(
         connection=temporary_db.connection,
-        organization=db.Organization(
+        organization=test_db.Organization(
             connection=temporary_db.connection, externalID="other_employer"
         ),
         person=test_person,
@@ -149,20 +149,20 @@ def test_locate_related_objects(temporary_db):
     )
     # assert (
     #     test_person.jobsSelect.throughTo.organization.filter(
-    #         db.Job.q.organization.q.externalID == "test_employer"
+    #         test_db.Job.q.organization.q.externalID == "test_employer"
     #     ).getOne()
     #     is test_job
     # )
 
 
 def test_autoCreateDependents_children(temporary_db):
-    db.autoCreateDependents = False
+    test_db.autoCreateDependents = False
     test_person = Person(connection=temporary_db.connection)
     assert len(test_person.addresses) == 0
     assert len(test_person.bankAccounts) == 0
     assert len(test_person.bankAccounts) == 0
 
-    db.autoCreateDependents = True
+    test_db.autoCreateDependents = True
     test_person = Person(connection=temporary_db.connection)
     assert len(test_person.addresses) == 1
     assert isinstance(test_person.addresses[0], Address)

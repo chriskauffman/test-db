@@ -20,21 +20,30 @@ class DebitCardView(BaseView):
     """
 
     @classmethod
-    def add(self, entity: Union[Organization, Person, None] = None) -> DebitCard:
+    def add(
+        cls,
+        entity: Union[Organization, Person, None] = None,
+        interactive: bool = True,
+        **kwargs,
+    ) -> DebitCard:
         """Add a debit card"""
-        debit_card = DebitCard()
+        debit_card = DebitCard(**kwargs)
         if entity:
             debit_card.addEntity(entity)
-        if BaseView.interactive:
+        if interactive:
             DebitCardView(debit_card).edit()
         print(debit_card.gID)
         return debit_card
 
     @classmethod
-    def list(cls, debit_cards: Union[List[DebitCard], SQLObject.select, None] = None):
+    def list(
+        cls,
+        debit_cards: Union[List[DebitCard], SQLObject.select, None] = None,
+        **kwargs,
+    ):
         """List all people"""
         if debit_cards is None:
-            debit_cards = DebitCard.select()
+            debit_cards = DebitCard.select(**kwargs)
         for debit_card in debit_cards:
             DebitCardView(debit_card).view()
 
@@ -42,25 +51,36 @@ class DebitCardView(BaseView):
         super().__init__(**kwargs)
         self._debit_card = debit_card
 
+    def delete(self, interactive: bool = True):
+        """Delete the card"""
+        if (
+            interactive
+            and input(f"Delete {self._debit_card.visualID}? [y/n] ").strip().lower()
+            != "y"
+        ):
+            return
+        self._debit_card.destroySelf()
+
     def edit(self):
         """Edit the debit card"""
         self._debit_card.description = self._getStrInput(
-            "Description", self._debit_card.description
+            "Description", self._debit_card.description, acceptNull=True
         )
         self._debit_card.cardNumber = self._getStrInput(
-            "Card Number", self._debit_card.cardNumber
+            "Card Number", self._debit_card.cardNumber, numeric=True
         )
-        self._debit_card.cvv = self._getStrInput("CVV", self._debit_card.cvv)
-        self._debit_card.expirationDate = self._getStrInput(
-            "Expiration Date (MM/YY)", self._debit_card.expirationDate.strftime("%m/%y")
+        self._debit_card.cvv = self._getStrInput(
+            "CVV", self._debit_card.cvv, numeric=True
+        )
+        self._debit_card.expirationDate = self._getDateInput(
+            "Expiration Date",
+            self._debit_card.expirationDate.strftime("%m/%d/%Y"),
         )
 
     def view(self):
         """Display brief details of the debit card"""
         print(
-            f"{self._debit_card.gID}, "
-            f"{self._debit_card.cardNumber}, "
+            f"{self._debit_card.visualID}, "
             f"{self._debit_card.cvv}, "
-            f"{self._debit_card.expirationDate.strftime('%m/%y')}, "
             f"{str(self._debit_card.description)[:10]}"
         )

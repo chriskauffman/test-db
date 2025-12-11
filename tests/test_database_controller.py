@@ -2,7 +2,7 @@ import os
 import pathlib
 import shutil
 
-import test_db as db
+import test_db
 
 from test_db._database_controller import (
     APPLICATION_ID,
@@ -12,90 +12,92 @@ from test_db._database_controller import (
 from test_db._person import Person
 
 
-def db_schema_is_valid(test_db):
+def db_schema_is_valid(database_contoller):
     assert (
-        test_db._rawCursor.execute("PRAGMA application_id").fetchone()[0]
+        database_contoller._rawCursor.execute("PRAGMA application_id").fetchone()[0]
         == APPLICATION_ID
     )
-    assert test_db._rawCursor.execute("PRAGMA schema_version").fetchone()[0] > 0
     assert (
-        test_db._rawCursor.execute("PRAGMA user_version").fetchone()[0]
+        database_contoller._rawCursor.execute("PRAGMA schema_version").fetchone()[0] > 0
+    )
+    assert (
+        database_contoller._rawCursor.execute("PRAGMA user_version").fetchone()[0]
         == CURRENT_APPLICATION_SCHEMA_VERSION
     )
 
     assert (
         len(
-            test_db._rawCursor.execute(
-                f"PRAGMA index_list({db.BankAccount.sqlmeta.table})"
+            database_contoller._rawCursor.execute(
+                f"PRAGMA index_list({test_db.BankAccount.sqlmeta.table})"
             ).fetchall()
         )
         == 2
     )
     assert (
         len(
-            test_db._rawCursor.execute(
-                f"PRAGMA index_list({db.DebitCard.sqlmeta.table})"
+            database_contoller._rawCursor.execute(
+                f"PRAGMA index_list({test_db.DebitCard.sqlmeta.table})"
             ).fetchall()
         )
         == 2
     )
     assert (
         len(
-            test_db._rawCursor.execute(
-                f"PRAGMA index_list({db.Job.sqlmeta.table})"
+            database_contoller._rawCursor.execute(
+                f"PRAGMA index_list({test_db.Job.sqlmeta.table})"
             ).fetchall()
         )
         == 2
     )
 
-    assert test_db.validSchema
+    assert database_contoller.validSchema
 
     return True
 
 
 def test_init():
-    test_db = DatabaseController(db.IN_MEMORY_DB_FILE, create=True)
+    db = DatabaseController(test_db.IN_MEMORY_DB_FILE, create=True)
 
-    assert isinstance(test_db.filePath, pathlib.Path)
-    assert test_db.connection
-    assert db_schema_is_valid(test_db)
+    assert isinstance(db.filePath, pathlib.Path)
+    assert db.connection
+    assert db_schema_is_valid(db)
 
 
 def test_multiple_memory_connections(tmp_path_factory):
-    test_db_1 = DatabaseController(db.IN_MEMORY_DB_FILE, create=True)
-    test_db_2 = DatabaseController(db.IN_MEMORY_DB_FILE, create=True)
+    db_1 = DatabaseController(test_db.IN_MEMORY_DB_FILE, create=True)
+    db_2 = DatabaseController(test_db.IN_MEMORY_DB_FILE, create=True)
 
     # Note: two memory db's seem to have one connection
-    assert test_db_1.connection == test_db_2.connection
+    assert db_1.connection == db_2.connection
 
-    # __connection__ = test_db_1.connection
-    # assert test_db_1.connection == Person(connection=test_db_1.connection)._connection
+    # __connection__ = db_1.connection
+    # assert db_1.connection == Person(connection=db_1.connection)._connection
 
-    # __connection__ = test_db_2.connection
-    # assert test_db_2.connection == Person(connection=test_db_2.connection)._connection
+    # __connection__ = db_2.connection
+    # assert db_2.connection == Person(connection=db_2.connection)._connection
 
 
 def test_multiple_file_connections(tmp_path_factory):
-    test_db_1 = DatabaseController(
+    db_1 = DatabaseController(
         tmp_path_factory.mktemp("data") / "test_multiple_connections_1.sqlite",
         create=True,
     )
-    test_db_2 = DatabaseController(
+    db_2 = DatabaseController(
         tmp_path_factory.mktemp("data") / "test_multiple_connections_2.sqlite",
         create=True,
     )
 
-    assert test_db_1.connection != test_db_2.connection
+    assert db_1.connection != db_2.connection
 
-    # __connection__ = test_db_1.connection
-    assert test_db_1.connection == Person(connection=test_db_1.connection)._connection
+    # __connection__ = db_1.connection
+    assert db_1.connection == Person(connection=db_1.connection)._connection
 
-    # __connection__ = test_db_2.connection
-    assert test_db_2.connection == Person(connection=test_db_2.connection)._connection
+    # __connection__ = db_2.connection
+    assert db_2.connection == Person(connection=db_2.connection)._connection
 
 
 # def test_schema_X_upgrade(tmp_path_factory):
-#     db.databaseEncryptionKey = "a test key"
+#     test_db.databaseEncryptionKey = "a test key"
 #     db_file = tmp_path_factory.mktemp("data") / "upgrade_0.sqlite"
 #     shutil.copy2("tests/data/test.0.sqlite", db_file)
 
@@ -111,13 +113,13 @@ def test_multiple_file_connections(tmp_path_factory):
 
 
 def test_file_version_1(tmp_path_factory):
-    db.databaseEncryptionKey = "a test key"
+    test_db.databaseEncryptionKey = "a test key"
     db_file = tmp_path_factory.mktemp("data") / "test_file_version_1.sqlite"
     # shutil.copy2("tests/data/test.9.sqlite", db_file)
 
-    test_db = DatabaseController(db_file, create=True, defaultConnection=True)
+    db = DatabaseController(db_file, create=True, defaultConnection=True)
 
-    assert db_schema_is_valid(test_db)
+    assert db_schema_is_valid(db)
 
 
 def test_open_empty(tmp_path_factory):

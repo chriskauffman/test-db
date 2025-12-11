@@ -20,15 +20,17 @@ class KeyValueView(BaseView):
     """
 
     @classmethod
-    def add(self, key: str, value: str) -> KeyValue:
+    def add(cls, key: str, value: str, interactive: bool = True) -> KeyValue:
         """Add a key value"""
         return KeyValue(key=key, value=value)
 
     @classmethod
-    def list(cls, key_values: Union[List[KeyValue], SQLObject.select, None] = None):
+    def list(
+        cls, key_values: Union[List[KeyValue], SQLObject.select, None] = None, **kwargs
+    ):
         """List all people"""
         if key_values is None:
-            key_values = KeyValue.select()
+            key_values = KeyValue.select(**kwargs)
         for key_value in key_values:
             KeyValueView(key_value).view()
 

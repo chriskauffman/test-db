@@ -31,7 +31,7 @@ class Entity(InheritableSQLObject):
         debitCardsSelect (SQLRelatedJoin):
     """
 
-    attributes: JSONCol = JSONCol(default=None)
+    attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
     phoneNumber: StringCol = StringCol(default=fake.basic_phone_number)
 

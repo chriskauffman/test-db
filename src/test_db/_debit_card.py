@@ -51,7 +51,7 @@ class DebitCard(SQLObject):
     _gIDPrefix: str = "dc"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
+    attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
 
     cardNumber: StringCol = StringCol(
@@ -66,6 +66,10 @@ class DebitCard(SQLObject):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
+
+    @property
+    def visualID(self):
+        return f"{self.gID}, {self.cardNumber}, {self.expirationDate.strftime('%m/%y')}"
 
     def _set_gID(self, value):
         if value:

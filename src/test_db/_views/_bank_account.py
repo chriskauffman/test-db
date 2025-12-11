@@ -20,23 +20,30 @@ class BankAccountView(BaseView):
     """
 
     @classmethod
-    def add(self, entity: Union[Organization, Person, None] = None) -> BankAccount:
+    def add(
+        cls,
+        entity: Union[Organization, Person, None] = None,
+        interactive: bool = True,
+        **kwargs,
+    ) -> BankAccount:
         """Add a bank account"""
-        bank_account = BankAccount()
+        bank_account = BankAccount(**kwargs)
         if entity:
             bank_account.addEntity(entity)
-        if BaseView.interactive:
+        if interactive:
             BankAccountView(bank_account).edit()
         print(bank_account.gID)
         return bank_account
 
     @classmethod
     def list(
-        cls, bank_accounts: Union[List[BankAccount], SQLObject.select, None] = None
+        cls,
+        bank_accounts: Union[List[BankAccount], SQLObject.select, None] = None,
+        **kwargs,
     ):
         """List all people"""
         if bank_accounts is None:
-            bank_accounts = BankAccount.select()
+            bank_accounts = BankAccount.select(**kwargs)
         for bank_account in bank_accounts:
             BankAccountView(bank_account).view()
 
@@ -44,20 +51,28 @@ class BankAccountView(BaseView):
         super().__init__(**kwargs)
         self._bank_account = bank_account
 
+    def delete(self, interactive: bool = True):
+        """Delete the card"""
+        if (
+            interactive
+            and input(f"Delete {self._bank_account.visualID}? [y/n] ").strip().lower()
+            != "y"
+        ):
+            return
+        self._bank_account.destroySelf()
+
     def edit(self):
         """Edit the bank account"""
         self._bank_account.description = self._getStrInput(
-            "Description", self._bank_account.description
+            "Description", self._bank_account.description, acceptNull=True
         )
         self._bank_account.accountNumber = self._getStrInput(
-            "Account Number", self._bank_account.accountNumber
+            "Account Number", self._bank_account.accountNumber, numeric=True
         )
         self._bank_account.routingNumber = self._getStrInput(
-            "Routing Number", self._bank_account.routingNumber
+            "Routing Number", self._bank_account.routingNumber, numeric=True
         )
 
     def view(self):
         """Display brief details of the debit card"""
-        print(
-            f"{self._bank_account.gID}, {self._bank_account.routingNumber}, {self._bank_account.accountNumber}, {str(self._bank_account.description)[:10]}"
-        )
+        print(f"{self._bank_account.visualID}")

@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.9"
 dependencies = [
+    "cmd2>=2.7.0",
     "cryptography>=45.0.7",
     "faker>=37.6.0",
     "nanoid>=2.0.0",
@@ -24,7 +25,8 @@ requires = ["uv_build >= 0.7.19, <0.9.0"]
 build-backend = "uv_build"
 
 [project.scripts]
-tdb = "test_db.main:main"
+tdb = "test_db.tdb:app"
+tdb-console = "test_db.tdb_console:main"
 
 [dependency-groups]
 dev = [

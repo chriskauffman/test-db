@@ -57,7 +57,7 @@ class Job(SQLObject):
     _gIDPrefix: str = "j"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default=None)
+    attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
 
     employeeID: StringCol = StringCol(default=fake.employee_id)
@@ -73,6 +73,18 @@ class Job(SQLObject):
     employeeIDOrganizationIndex: DatabaseIndex = DatabaseIndex(
         employeeID, organization, unique=True
     )
+
+    @property
+    def visualID(self):
+        viewItems = [
+            str(self.gID),
+            self.employeeID,
+        ]
+        if self.person:
+            viewItems.append(self.person.lastName)
+        if self.organization:
+            viewItems.append(self.organization.name)
+        return ", ".join(viewItems)
 
     def _set_gID(self, value):
         if value:

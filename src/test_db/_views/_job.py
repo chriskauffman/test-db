@@ -21,22 +21,24 @@ class JobView(BaseView):
 
     @classmethod
     def add(
-        self,
+        cls,
         organization: Optional[Organization] = None,
         person: Optional[Person] = None,
+        interactive: bool = True,
+        **kwargs,
     ) -> Job:
         """Add a Job"""
-        new_job = Job(organization=organization, person=person)
-        if BaseView.interactive:
+        new_job = Job(organization=organization, person=person, **kwargs)
+        if interactive:
             JobView(new_job).edit()
         print(new_job.gID)
         return new_job
 
     @classmethod
-    def list(cls, jobs: Union[List[Job], SQLObject.select, None] = None):
+    def list(cls, jobs: Union[List[Job], SQLObject.select, None] = None, **kwargs):
         """List all jobs"""
         if jobs is None:
-            jobs = Job.select()
+            jobs = Job.select(**kwargs)
         for job in jobs:
             JobView(job).view()
 
@@ -44,13 +46,28 @@ class JobView(BaseView):
         super().__init__(**kwargs)
         self._job = job
 
+    def delete(self, interactive: bool = True):
+        """Delete the job"""
+        if (
+            interactive
+            and input(f"Delete {self._job.visualID}? [y/n] ").strip().lower() != "y"
+        ):
+            return
+        self._job.destroySelf()
+
     def edit(self):
         """Edit the job"""
-        pass
+        self._job.employeeID = self._getStrInput("Employee ID", self._job.employeeID)
+        self._job.location = self._getStrInput(
+            "Location", self._job.location, acceptNull=True
+        )
+        self._job.payGroup = self._getStrInput(
+            "Pay Group", self._job.payGroup, acceptNull=True
+        )
 
     def view(self):
         """Display brief details of the debit card"""
-        print(f"{self._job.gID}, {self._job.employeeID}, {self._job.payGroup}")
+        print(f"{self._job.visualID}")
 
     def viewDetails(self):
         """Display brief details of the debit card"""

@@ -50,6 +50,10 @@ class Organization(Entity):
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
+    @property
+    def visualID(self):
+        return f"{self.gID} {self.name} {self.externalID}"
+
     def _set_gID(self, value):
         if value:
             if validGID(value, self._gIDPrefix):

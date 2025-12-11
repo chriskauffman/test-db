@@ -20,28 +20,37 @@ class AddressView(BaseView):
     """
 
     @classmethod
-    def add(self, entity: Union[Organization, Person, None] = None) -> Address:
+    def add(
+        cls,
+        entity: Union[Organization, Person, None] = None,
+        interactive: bool = True,
+        **kwargs,
+    ) -> Address:
         """Add an address
 
         Args:
             entity (Union[Organization, Person, None]): The entity of the address
+            interactive (bool):
+            **kwargs:
 
         Returns:
             Address: The created address
         """
-        address = Address()
+        address = Address(**kwargs)
         if entity:
             entity.addAddress(address)
-        if BaseView.interactive:
+        if interactive:
             AddressView(address).edit()
         print(address.gID)
         return address
 
     @classmethod
-    def list(cls, addresses: Union[List[Address], SQLObject.select, None] = None):
+    def list(
+        cls, addresses: Union[List[Address], SQLObject.select, None] = None, **kwargs
+    ):
         """List all organizations"""
         if addresses is None:
-            addresses = Address.select()
+            addresses = Address.select(**kwargs)
         for address in addresses:
             AddressView(address).view()
 
@@ -49,10 +58,17 @@ class AddressView(BaseView):
         super().__init__(**kwargs)
         self._address = address
 
+    def delete(self, interactive: bool = True):
+        """Delete the card"""
+        if (
+            interactive
+            and input(f"Delete {self._address.visualID}? [y/n] ").strip().lower() != "y"
+        ):
+            return
+        self._address.destroySelf()
+
     def edit(self):
         """Edit the address"""
-        if not BaseView.interactive:
-            return
         self._address.description = self._getStrInput(
             "Description", self._address.description, acceptNull=True
         )
@@ -66,9 +82,7 @@ class AddressView(BaseView):
 
     def view(self):
         """Display brief details of the address"""
-        print(
-            f"{self._address.gID}, {self._address.street}, {self._address.postalCode}, {str(self._address.description)[:10]}"
-        )
+        print(f"{self._address.visualID}")
 
     def viewDetails(self):
         """Display the person"""

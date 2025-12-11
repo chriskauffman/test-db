@@ -24,27 +24,39 @@ class OrganizationView(BaseView):
     """
 
     @classmethod
-    def add(cls) -> Organization:
+    def add(cls, interactive: bool = True, **kwargs) -> Organization:
         """Add a organization"""
-        new_org = Organization()
-        if BaseView.interactive:
+        new_org = Organization(**kwargs)
+        if interactive:
             OrganizationView(new_org).edit()
         print(new_org.gID)
         return new_org
 
     @classmethod
     def list(
-        cls, organizations: Union[List[Organization], SQLObject.select, None] = None
+        cls,
+        organizations: Union[List[Organization], SQLObject.select, None] = None,
+        **kwargs,
     ):
         """List all organizations"""
         if organizations is None:
-            organizations = Organization.select()
+            organizations = Organization.select(**kwargs)
         for organization in organizations:
             OrganizationView(organization).view()
 
     def __init__(self, organization: Organization, **kwargs):
         super().__init__(**kwargs)
         self._organization = organization
+
+    def delete(self, interactive: bool = True):
+        """Delete the organization"""
+        if (
+            interactive
+            and input(f"Delete {self._organization.visualID}? [y/n] ").strip().lower()
+            != "y"
+        ):
+            return
+        self._organization.destroySelf()
 
     def edit(self):
         """Edit the organization"""
@@ -64,7 +76,7 @@ class OrganizationView(BaseView):
 
     def view(self):
         """Display brief details of the person"""
-        print(f"{self._organization.gID}, {self._organization.name}")
+        print(f"{self._organization.visualID}")
 
     def viewDetails(self):
         """Display brief details of the organization"""

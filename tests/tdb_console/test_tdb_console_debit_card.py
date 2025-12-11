@@ -1,0 +1,23 @@
+import test_db
+from test_db.tdb_console import main as tdb
+
+
+def test_debit_card_view(capsys, monkeypatch, temporary_db):
+    debit_card = test_db.DebitCard(connection=temporary_db.connection)
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            f"set db_file_path {temporary_db.filePath}",
+            f"tdb_debit_card_view {debit_card.gID}",
+            "quit",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert debit_card.visualID in captured.out

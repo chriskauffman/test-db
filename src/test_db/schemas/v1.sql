@@ -33,7 +33,7 @@ CREATE TABLE address (
 CREATE TABLE bank_account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
-    attributes TEXT,
+    attributes TEXT NOT NULL,
     description TEXT,
     routing_number TEXT,
     account_number TEXT,
@@ -44,7 +44,7 @@ CREATE UNIQUE INDEX bank_account_routingNumberAccountNumberIndex ON bank_account
 CREATE TABLE debit_card (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
-    attributes TEXT,
+    attributes TEXT NOT NULL,
     description TEXT,
     card_number VARCHAR(16) NOT NULL UNIQUE,
     cvv VARCHAR(3),
@@ -54,7 +54,7 @@ CREATE TABLE debit_card (
 );
 CREATE TABLE entity (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    attributes TEXT,
+    attributes TEXT NOT NULL,
     description TEXT,
     phone_number TEXT,
     child_name VARCHAR(255)
@@ -62,7 +62,7 @@ CREATE TABLE entity (
 CREATE TABLE job (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
-    attributes TEXT,
+    attributes TEXT NOT NULL,
     description TEXT,
     employee_id TEXT,
     location TEXT,
