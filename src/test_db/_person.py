@@ -11,7 +11,6 @@ from sqlobject import (  # type: ignore
 )
 
 from typeid import TypeID
-from typing_extensions import Optional
 
 from test_db._entity import Entity
 from test_db._gid import validGID
@@ -94,7 +93,7 @@ class Person(Entity):
 
     def getPersonalKeyValueSecureByKey(
         self, key: str, **kwargs
-    ) -> Optional[PersonalKeyValueSecure]:
+    ) -> PersonalKeyValueSecure:
         """Find and create an PersonalOAuth2Token
 
         Args:
@@ -102,7 +101,7 @@ class Person(Entity):
             **kwargs:
 
         Returns:
-            Optional[PersonalKeyValueSecure]:
+            PersonalKeyValueSecure:
         """
         try:
             return self.secureKeyValuesSelect.filter(
@@ -112,4 +111,3 @@ class Person(Entity):
             return PersonalKeyValueSecure(
                 connection=self._connection, key=key, person=self.id, **kwargs
             )
-        return None
