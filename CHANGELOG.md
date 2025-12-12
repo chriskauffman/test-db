@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.1-beta.1...v0.1.2-beta.1) (2025-12-12)
+
+
+### Bug Fixes
+
+* **Person:** update typing to indicate that  getPersonalKeyValueSecureByKey always returns a PersonalKeyValueSecure object ([#27](https://github.com/chriskauffman/test-db/issues/27)) ([bc5600a](https://github.com/chriskauffman/test-db/commit/bc5600a91b2a265f4507c03056f77295b20c430b))
+
 ## [0.1.1-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.1-alpha.3...v0.1.1-beta.1) (2025-12-11)
 
 
