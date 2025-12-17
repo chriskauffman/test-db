@@ -26,7 +26,7 @@ import typer
 from typing_extensions import Literal, Optional, Union
 
 import test_db
-from test_db._typer import (
+from test_db.typer import (
     address_app,
     bank_account_app,
     debit_card_app,
@@ -163,7 +163,7 @@ def main(
     ] = False,
 ) -> None:
     state["interactive"] = interactive
-    test_db._typer.interactive = interactive
+    test_db.typer.interactive = interactive
     settings = Settings()
     db_file_path = db_file_path or settings.db_file_path or DEFAULT_DB_PATH
     if db_file_path:
