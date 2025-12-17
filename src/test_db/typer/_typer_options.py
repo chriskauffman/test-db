@@ -4,4 +4,4 @@ import test_db
 class _TyperOptions:
     @property
     def interactive(self):
-        return test_db._typer.interactive
+        return test_db.typer.interactive

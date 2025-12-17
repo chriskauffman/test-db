@@ -6,10 +6,6 @@ try:
 except ImportError:
     import readline
 
-from sqlobject import SQLObjectNotFound  # type: ignore
-
-from formencode.validators import Invalid  # type: ignore
-
 import test_db
 
 from ._base_command_set import BaseCommandSet
@@ -17,12 +13,6 @@ from ._base_command_set import BaseCommandSet
 
 @with_default_category("Database")
 class OrgnizationCommandSet(BaseCommandSet):
-    def validate_orgnization(self, gid: str):
-        try:
-            return test_db.Organization.byGID(gid)
-        except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {str(exc)}")
-
     def do_tdb_organization_add(self, args):
         readline.set_auto_history(False)
         test_db.OrganizationView.add(interactive=self._cmd.command_interaction)
@@ -36,13 +26,13 @@ class OrgnizationCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_delete_organization(self, args):
-        organization = self.validate_orgnization(args.gid)
+        organization = self.validate_organization(args.gid)
         organization.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_organization_edit(self, args):
         readline.set_auto_history(False)
-        organization = self.validate_orgnization(args.gid)
+        organization = self.validate_organization(args.gid)
         test_db.OrganizationView(organization).edit()
         readline.set_auto_history(True)
 
@@ -51,5 +41,5 @@ class OrgnizationCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_organization_view(self, args):
-        organization = self.validate_orgnization(args.gid)
+        organization = self.validate_organization(args.gid)
         test_db.OrganizationView(organization).viewDetails()

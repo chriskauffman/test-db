@@ -19,6 +19,8 @@ from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._debit_card import DebitCard
 from test_db._debit_card_entity import DebitCardEntity
 from test_db._entity import Entity
+from test_db._entity_key_value import EntityKeyValue
+from test_db._entity_secure_key_value import EntitySecureKeyValue
 from test_db._organization import Organization
 from test_db._job import Job
 from test_db._key_value import KeyValue
@@ -28,7 +30,6 @@ from test_db._listeners import (
     handleRowUpdateSignal,
 )
 from test_db._person import Person
-from test_db._personal_key_value_secure import PersonalKeyValueSecure
 
 ENCODING = "utf-8"
 IN_MEMORY_DB_FILE = "/:memory:"
@@ -41,11 +42,12 @@ TABLES = (
     BankAccount,
     DebitCard,
     Entity,
+    EntityKeyValue,
+    EntitySecureKeyValue,
     Job,
     KeyValue,
     Organization,
     Person,
-    PersonalKeyValueSecure,
 )
 
 # Entity is base class, do not add listeners

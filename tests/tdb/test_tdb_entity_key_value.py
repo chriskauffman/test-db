@@ -5,14 +5,14 @@ import test_db
 from test_db.tdb import app as tdb
 
 
-def test_personal_key_value_secure_add(capsys, monkeypatch, person, temporary_db):
+def test_entity_key_value_add(capsys, monkeypatch, person, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
             temporary_db.filePath,
-            "personal-key-value-secure",
+            "entity-key-value",
             "add",
             str(person.gID),
             "secret",
@@ -29,14 +29,14 @@ def test_personal_key_value_secure_add(capsys, monkeypatch, person, temporary_db
     assert not captured.out
 
 
-def test_personal_key_value_secure_add_bad_person(capsys, monkeypatch, temporary_db):
+def test_entity_key_value_add_bad_person(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
             temporary_db.filePath,
-            "personal-key-value-secure",
+            "entity-key-value",
             "add",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
             "secret",
@@ -50,20 +50,18 @@ def test_personal_key_value_secure_add_bad_person(capsys, monkeypatch, temporary
         assert e.code == 1
 
     captured = capsys.readouterr()
-    assert "does not exist" in captured.err
+    assert "person or organization not found" in captured.err
 
 
-def test_personal_key_value_secure_add_duplicate(
-    capsys, monkeypatch, person, temporary_db
-):
-    person.getPersonalKeyValueSecureByKey("secret2", value="test value")
+def test_entity_key_value_add_duplicate(capsys, monkeypatch, person, temporary_db):
+    person.getKeyValueByKey("secret2", value="test value")
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             "--db-file-path",
             temporary_db.filePath,
-            "personal-key-value-secure",
+            "entity-key-value",
             "add",
             str(person.gID),
             "secret2",
@@ -80,17 +78,17 @@ def test_personal_key_value_secure_add_duplicate(
     assert "UNIQUE constraint failed" in captured.err
 
 
-def test_personal_key_value_secure_delete(capsys, monkeypatch, person, temporary_db):
-    test_personal_key_value_secure = test_db.PersonalKeyValueSecure(
+def test_entity_key_value_delete(capsys, monkeypatch, person, temporary_db):
+    test_entity_key_value = test_db.EntityKeyValue(
         connection=temporary_db.connection,
-        key="test_delete_personal_key_value_secure",
-        person=person,
+        key="test_delete_entity_key_value",
+        entity=person,
     )
     assert (
-        test_db.PersonalKeyValueSecure.get(
-            test_personal_key_value_secure.id, connection=temporary_db.connection
+        test_db.EntityKeyValue.get(
+            test_entity_key_value.id, connection=temporary_db.connection
         )
-        is test_personal_key_value_secure
+        is test_entity_key_value
     )
 
     monkeypatch.setattr(
@@ -99,10 +97,10 @@ def test_personal_key_value_secure_delete(capsys, monkeypatch, person, temporary
             "tdb",
             "--db-file-path",
             temporary_db.filePath,
-            "personal-key-value-secure",
+            "entity-key-value",
             "delete",
             str(person.gID),
-            test_personal_key_value_secure.key,
+            test_entity_key_value.key,
         ],
     )
 
@@ -115,6 +113,6 @@ def test_personal_key_value_secure_delete(capsys, monkeypatch, person, temporary
     assert not captured.out
 
     with pytest.raises(SQLObjectNotFound):
-        test_db.PersonalKeyValueSecure.get(
-            test_personal_key_value_secure.id, connection=temporary_db.connection
+        test_db.EntityKeyValue.get(
+            test_entity_key_value.id, connection=temporary_db.connection
         )

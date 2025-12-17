@@ -59,6 +59,24 @@ CREATE TABLE entity (
     phone_number TEXT,
     child_name VARCHAR(255)
 );
+CREATE TABLE entity_key_value (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entity_id INT NOT NULL CONSTRAINT entity_id_exists REFERENCES entity(id) ON DELETE CASCADE,
+    key TEXT NOT NULL,
+    value TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE UNIQUE INDEX entity_key_value_entityKeyIndex ON entity_key_value (entity_id, key);
+CREATE TABLE entity_secure_key_value (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entity_id INT NOT NULL CONSTRAINT entity_id_exists REFERENCES entity(id) ON DELETE CASCADE,
+    key TEXT NOT NULL,
+    value TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE UNIQUE INDEX entity_secure_key_value_entityKeyIndex ON entity_secure_key_value (entity_id, key);
 CREATE TABLE job (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
@@ -102,12 +120,3 @@ CREATE TABLE person (
     updated_at TIMESTAMP,
     child_name VARCHAR(255)
 );
-CREATE TABLE personal_key_value_secure (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    key TEXT NOT NULL,
-    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
-    value TEXT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
-CREATE UNIQUE INDEX personal_key_value_secure_keyPersonIndex ON personal_key_value_secure (key, person_id);

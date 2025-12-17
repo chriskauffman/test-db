@@ -26,15 +26,16 @@ import typer
 from typing_extensions import Literal, Optional, Union
 
 import test_db
-from test_db._typer import (
+from test_db.typer import (
     address_app,
     bank_account_app,
     debit_card_app,
+    entity_key_value_app,
+    entity_secure_key_value_app,
     job_app,
     key_value_app,
     organization_app,
     person_app,
-    personal_key_value_secure_app,
 )
 
 # OK to make dirs as default directory is "owned" by project
@@ -63,11 +64,12 @@ app = typer.Typer()
 app.add_typer(address_app, name="address")
 app.add_typer(bank_account_app, name="bank-account")
 app.add_typer(debit_card_app, name="debit-card")
+app.add_typer(entity_key_value_app, name="entity-key-value")
+app.add_typer(entity_secure_key_value_app, name="entity-secure-key-value")
 app.add_typer(job_app, name="job")
 app.add_typer(key_value_app, name="key-value")
 app.add_typer(organization_app, name="organization")
 app.add_typer(person_app, name="person")
-app.add_typer(personal_key_value_secure_app, name="personal-key-value-secure")
 state = {"interactive": False}
 
 
@@ -161,7 +163,7 @@ def main(
     ] = False,
 ) -> None:
     state["interactive"] = interactive
-    test_db._typer.interactive = interactive
+    test_db.typer.interactive = interactive
     settings = Settings()
     db_file_path = db_file_path or settings.db_file_path or DEFAULT_DB_PATH
     if db_file_path:

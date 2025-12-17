@@ -39,7 +39,7 @@ class JobCommandSet(BaseCommandSet):
         organization = None
         person = None
         if args.organization_gid:
-            organization = self.validate_orgnization(args.organization_gid)
+            organization = self.validate_organization(args.organization_gid)
         if args.person_gid:
             person = self.validate_person(args.person_gid)
         test_db.JobView.add(

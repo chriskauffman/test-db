@@ -1,7 +1,7 @@
 # dex-tools Makefile
 
 .PHONY: build
-build: lint type-check test src/test_db/schemas/v1.sql
+build: lint type-check test src/test_db/_schemas/v1.sql
 	uv build
 
 .PHONY:
@@ -29,7 +29,7 @@ test:
 command-test:
 	uv run tdb --version
 
-src/test_db/schemas/v1.sql: tests/data/test_schema_v1.sqlite
+src/test_db/_schemas/v1.sql: tests/data/test_schema_v1.sqlite
 	sqlite3 --readonly tests/data/test_schema_v1.sqlite .schema > $@
 
 tests/data/test_schema_v1.sqlite: $(wildcard src/test_db/*)

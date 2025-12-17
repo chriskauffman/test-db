@@ -6,7 +6,6 @@ from sqlobject import (  # type: ignore
     DateTimeCol,
     MultipleJoin,
     SQLMultipleJoin,
-    SQLObjectNotFound,
     StringCol,
 )
 
@@ -14,7 +13,6 @@ from typeid import TypeID
 
 from test_db._entity import Entity
 from test_db._gid import validGID
-from test_db._personal_key_value_secure import PersonalKeyValueSecure
 from test_db._type_id_col import TypeIDCol
 
 fake = faker.Faker()
@@ -33,8 +31,6 @@ class Person(Entity):
         email (StringCol): the person's email
         jobs (MultipleJoin): list of employments
         jobsSelect (SQLMultipleJoin):
-        secureKeyValues (MultipleJoin): list of key/value pairs related to the person
-        secureKeyValuesSelect (SQLMultipleJoin):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
     """
@@ -55,9 +51,6 @@ class Person(Entity):
 
     jobs: MultipleJoin = MultipleJoin("Job")
     jobsSelect: SQLMultipleJoin = SQLMultipleJoin("Job")
-
-    secureKeyValues: MultipleJoin = MultipleJoin("PersonalKeyValueSecure")
-    secureKeyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonalKeyValueSecure")
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
@@ -90,24 +83,3 @@ class Person(Entity):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
-
-    def getPersonalKeyValueSecureByKey(
-        self, key: str, **kwargs
-    ) -> PersonalKeyValueSecure:
-        """Find and create an PersonalOAuth2Token
-
-        Args:
-            key (str): name of the PersonalKeyValue
-            **kwargs:
-
-        Returns:
-            PersonalKeyValueSecure:
-        """
-        try:
-            return self.secureKeyValuesSelect.filter(
-                PersonalKeyValueSecure.q.key == key
-            ).getOne()
-        except SQLObjectNotFound:
-            return PersonalKeyValueSecure(
-                connection=self._connection, key=key, person=self.id, **kwargs
-            )

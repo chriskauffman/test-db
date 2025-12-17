@@ -6,10 +6,6 @@ try:
 except ImportError:
     import readline
 
-from sqlobject import SQLObjectNotFound  # type: ignore
-
-from formencode.validators import Invalid  # type: ignore
-
 import test_db
 
 from ._base_command_set import BaseCommandSet
@@ -17,12 +13,6 @@ from ._base_command_set import BaseCommandSet
 
 @with_default_category("Database")
 class PersonCommandSet(BaseCommandSet):
-    def validate_person(self, gid: str):
-        try:
-            return test_db.Person.byGID(gid)
-        except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {str(exc)}")
-
     def do_tdb_person_add(self, args):
         readline.set_auto_history(False)
         test_db.PersonView.add(interactive=self._cmd.command_interaction)

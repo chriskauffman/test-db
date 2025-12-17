@@ -5,7 +5,6 @@ from test_db._address import Address
 from test_db._bank_account import BankAccount
 from test_db._debit_card import DebitCard
 from test_db._person import Person
-from test_db._personal_key_value_secure import PersonalKeyValueSecure
 
 
 fake = faker.Faker()
@@ -23,22 +22,6 @@ def test__set_email(temporary_db):
     )
 
     assert test_person.email == "test__set_email@example.com"
-
-
-def test_getPersonalKeyValueSecureByKey(temporary_db):
-    test_person = Person(connection=temporary_db.connection)
-    test_db.databaseEncryptionKey = "a really good key"
-
-    test_oauth2_token = test_person.getPersonalKeyValueSecureByKey("testClientId1")
-
-    assert isinstance(test_oauth2_token, PersonalKeyValueSecure)
-    assert test_oauth2_token.key == "testClientId1"
-
-    test_oauth2_token = test_person.getPersonalKeyValueSecureByKey(
-        "testClientId2", value={"access_token": "testAccessToken"}
-    )
-
-    assert test_oauth2_token.value == {"access_token": "testAccessToken"}
 
 
 def test_locate_related_objects(temporary_db):
