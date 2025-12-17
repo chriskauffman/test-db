@@ -10,25 +10,25 @@ def test_init(temporary_db):
     )
 
 
-def test_init_set_token(temporary_db):
+def test_create_key_value(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     test_token = EntityKeyValue(
-        key="testClientId",
+        key="test_create_key",
         entity=test_entity,
-        value="",
+        value="test_value",
         connection=temporary_db.connection,
     )
 
     assert isinstance(test_token.value, str)
-    assert test_token.value == ""
+    assert test_token.value == "test_value"
 
 
-def test_set_token(temporary_db):
+def test_update_key_value(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     test_token = EntityKeyValue(
-        key="testClientId", entity=test_entity, connection=temporary_db.connection
+        key="test_update_key", entity=test_entity, connection=temporary_db.connection
     )
 
     test_token.value = "xyz123"
@@ -44,7 +44,7 @@ def test_set_token(temporary_db):
 
 def test_cascade_delete(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
-    test_person_id = test_entity.id
+    test_entity_id = test_entity.id
     test_key_count = EntityKeyValue.select(connection=temporary_db.connection).count()
 
     for item in range(5):
@@ -60,7 +60,7 @@ def test_cascade_delete(temporary_db):
     )
     assert (
         EntityKeyValue.select(
-            EntityKeyValue.q.entity == test_person_id,
+            EntityKeyValue.q.entity == test_entity_id,
             connection=temporary_db.connection,
         ).count()
         == 5
@@ -73,7 +73,7 @@ def test_cascade_delete(temporary_db):
     )
     assert (
         EntityKeyValue.select(
-            EntityKeyValue.q.entity == test_person_id,
+            EntityKeyValue.q.entity == test_entity_id,
             connection=temporary_db.connection,
         ).count()
         == 0

@@ -10,7 +10,7 @@ def test_init(temporary_db):
     )
 
 
-def test_init_set_token(temporary_db):
+def test_create_key_value(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     test_token = EntitySecureKeyValue(
@@ -24,7 +24,7 @@ def test_init_set_token(temporary_db):
     assert test_token.value == {}
 
 
-def test_set_token(temporary_db):
+def test_update_key_value(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     test_token = EntitySecureKeyValue(
@@ -46,7 +46,7 @@ def test_set_token(temporary_db):
 
 def test_cascade_delete(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
-    test_person_id = test_entity.id
+    test_entity_id = test_entity.id
     test_key_count = EntitySecureKeyValue.select(
         connection=temporary_db.connection
     ).count()
@@ -64,7 +64,7 @@ def test_cascade_delete(temporary_db):
     )
     assert (
         EntitySecureKeyValue.select(
-            EntitySecureKeyValue.q.entity == test_person_id,
+            EntitySecureKeyValue.q.entity == test_entity_id,
             connection=temporary_db.connection,
         ).count()
         == 5
@@ -77,7 +77,7 @@ def test_cascade_delete(temporary_db):
     )
     assert (
         EntitySecureKeyValue.select(
-            EntitySecureKeyValue.q.entity == test_person_id,
+            EntitySecureKeyValue.q.entity == test_entity_id,
             connection=temporary_db.connection,
         ).count()
         == 0
