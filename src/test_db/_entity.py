@@ -2,8 +2,19 @@ import logging
 
 import faker
 
-from sqlobject import JSONCol, RelatedJoin, SQLRelatedJoin, StringCol  # type: ignore
+from sqlobject import (  # type: ignore
+    JSONCol,
+    MultipleJoin,
+    RelatedJoin,
+    SQLMultipleJoin,
+    SQLObjectNotFound,
+    SQLRelatedJoin,
+    StringCol,
+)
 from sqlobject.inheritance import InheritableSQLObject  # type: ignore
+
+from test_db._entity_key_value import EntityKeyValue
+from test_db._entity_secure_key_value import EntitySecureKeyValue
 
 
 fake = faker.Faker()
@@ -29,6 +40,10 @@ class Entity(InheritableSQLObject):
         bankAccountsSelect (SQLRelatedJoin):
         debitCards (RelatedJoin): list of debit cards related to the entity
         debitCardsSelect (SQLRelatedJoin):
+        keyValues (MultipleJoin):
+        keyValuesSelect (SQLMultipleJoin):
+        secureKeyValues (MultipleJoin):
+        secureKeyValuesSelect (SQLMultipleJoin):
     """
 
     attributes: JSONCol = JSONCol(default={}, notNull=True)
@@ -53,3 +68,45 @@ class Entity(InheritableSQLObject):
     debitCardsSelect: SQLRelatedJoin = SQLRelatedJoin(
         "DebitCard", intermediateTable="debit_card_entity", createRelatedTable=False
     )
+
+    keyValues: MultipleJoin = MultipleJoin("EntityKeyValue")
+    keyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("EntityKeyValue")
+
+    secureKeyValues: MultipleJoin = MultipleJoin("EntitySecureKeyValue")
+    secureKeyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("EntitySecureKeyValue")
+
+    def getKeyValueByKey(self, key: str, **kwargs) -> EntityKeyValue:
+        """Find and create an EntityKeyValue
+
+        Args:
+            key (str): name of the EntityKeyValue
+            **kwargs:
+
+        Returns:
+            EntityKeyValue:
+        """
+        try:
+            return self.keyValuesSelect.filter(EntityKeyValue.q.key == key).getOne()
+        except SQLObjectNotFound:
+            return EntityKeyValue(
+                connection=self._connection, entity=self.id, key=key, **kwargs
+            )
+
+    def getSecureKeyValueByKey(self, key: str, **kwargs) -> EntitySecureKeyValue:
+        """Find and create an EntitySecureKeyValue
+
+        Args:
+            key (str): name of the EntitySecureKeyValue
+            **kwargs:
+
+        Returns:
+            EntitySecureKeyValue:
+        """
+        try:
+            return self.secureKeyValuesSelect.filter(
+                EntitySecureKeyValue.q.key == key
+            ).getOne()
+        except SQLObjectNotFound:
+            return EntitySecureKeyValue(
+                connection=self._connection, entity=self.id, key=key, **kwargs
+            )

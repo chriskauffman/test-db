@@ -1,21 +1,10 @@
-import sys
-
-from formencode.validators import Invalid  # type: ignore
-from sqlobject import SQLObjectNotFound  # type: ignore
 import typer
 
 import test_db
 from ._typer_options import _TyperOptions
+from ._validate import validate_person
 
 person_app = typer.Typer()
-
-
-def validate_person(gid: str):
-    try:
-        return test_db.Person.byGID(gid)
-    except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {str(exc)}")
-        sys.exit(1)
 
 
 @person_app.command("add")

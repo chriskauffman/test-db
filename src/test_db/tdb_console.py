@@ -31,11 +31,12 @@ from test_db._cmd2 import (
     AddressCommandSet,
     BankAccountCommandSet,
     DebitCardCommandSet,
+    EntityKeyValueCommandSet,
+    EntitySecureKeyValueCommandSet,
     JobCommandSet,
     KeyValueCommandSet,
     OrgnizationCommandSet,
     PersonCommandSet,
-    PersonalKeyValueSecureCommandSet,
 )
 
 # OK to make dirs as default directory is "owned" by project
@@ -284,11 +285,12 @@ def main() -> None:
             AddressCommandSet(),
             BankAccountCommandSet(),
             DebitCardCommandSet(),
+            EntityKeyValueCommandSet(),
+            EntitySecureKeyValueCommandSet(),
             JobCommandSet(),
             KeyValueCommandSet(),
             OrgnizationCommandSet(),
             PersonCommandSet(),
-            PersonalKeyValueSecureCommandSet(),
         ],
     )
     sys.exit(console.cmdloop())

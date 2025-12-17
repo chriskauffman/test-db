@@ -7,6 +7,7 @@ from typing_extensions import Optional
 
 import test_db
 from ._typer_options import _TyperOptions
+from ._validate import validate_organization, validate_person
 
 job_app = typer.Typer()
 
@@ -19,28 +20,12 @@ def validate_job(gid: str):
         sys.exit(1)
 
 
-def validate_orgnization(gid: str):
-    try:
-        return test_db.Organization.byGID(gid)
-    except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {str(exc)}")
-        sys.exit(1)
-
-
-def validate_person(gid: str):
-    try:
-        return test_db.Person.byGID(gid)
-    except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {str(exc)}")
-        sys.exit(1)
-
-
 @job_app.command("add")
 def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = None):
     organization = None
     person = None
     if organization_gid:
-        organization = validate_orgnization(organization_gid)
+        organization = validate_organization(organization_gid)
     if person_gid:
         person = validate_person(person_gid)
     test_db.JobView.add(

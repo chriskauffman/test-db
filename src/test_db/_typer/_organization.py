@@ -1,21 +1,10 @@
-import sys
-
-from formencode.validators import Invalid  # type: ignore
-from sqlobject import SQLObjectNotFound  # type: ignore
 import typer
 
 import test_db
 from ._typer_options import _TyperOptions
+from ._validate import validate_organization
 
 organization_app = typer.Typer()
-
-
-def validate_orgnization(gid: str):
-    try:
-        return test_db.Organization.byGID(gid)
-    except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {str(exc)}")
-        sys.exit(1)
 
 
 @organization_app.command("add")
@@ -25,13 +14,13 @@ def organization_add():
 
 @organization_app.command("delete")
 def organization_delete(gid: str):
-    organization = validate_orgnization(gid)
+    organization = validate_organization(gid)
     organization.destroySelf()
 
 
 @organization_app.command("edit")
 def organization_edit(gid: str):
-    organization = validate_orgnization(gid)
+    organization = validate_organization(gid)
     test_db.OrganizationView(organization).edit()
 
 
@@ -42,5 +31,5 @@ def organization_list():
 
 @organization_app.command("view")
 def organization_view(gid: str):
-    organization = validate_orgnization(gid)
+    organization = validate_organization(gid)
     test_db.OrganizationView(organization).viewDetails()

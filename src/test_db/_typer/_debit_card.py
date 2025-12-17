@@ -8,6 +8,7 @@ from typing_extensions import Optional
 
 import test_db
 from ._typer_options import _TyperOptions
+from ._validate import validate_entity
 
 debit_card_app = typer.Typer()
 
@@ -18,20 +19,6 @@ def validate_debit_card(gid: str):
     except (Invalid, SQLObjectNotFound) as exc:
         sys.stderr.write(f"error: {str(exc)}")
         sys.exit(1)
-
-
-def validate_entity(gid: str):
-    try:
-        return test_db.Person.byGID(gid)
-    except Invalid as exc:
-        sys.stderr.write(f"error: {str(exc)}")
-        sys.exit(1)
-    except SQLObjectNotFound:
-        try:
-            return test_db.Organization.byGID(gid)
-        except SQLObjectNotFound:
-            sys.stderr.write("error: person or organization not found")
-            sys.exit(1)
 
 
 @debit_card_app.command("add")
