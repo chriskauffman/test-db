@@ -100,7 +100,7 @@ class OrganizationView(BaseView):
         DebitCardView.list(self._organization.debitCards)
         print("\nJobs:")
         JobView.list(self._organization.jobs)
-        print("\Organization Key Values:")
+        print("\nOrganization Key Values:")
         EntityKeyValueView.list(self._organization.keyValues)
         print("\nOrganization Secure Key Values:")
         EntitySecureKeyValueView.list(self._organization.secureKeyValues)
