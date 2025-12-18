@@ -59,7 +59,7 @@ class KeyValueCommandSet(BaseCommandSet):
             self._cmd.perror(
                 f"error: key '{args.key}' is restricted and cannot be deleted"
             )
-
+            return
         key_value = self.validate_key(args.key)
         key_value.destroySelf()
 
@@ -70,7 +70,7 @@ class KeyValueCommandSet(BaseCommandSet):
             self._cmd.perror(
                 f"error: key '{args.key}' is restricted and cannot be edited"
             )
-
+            return
         key_value = self.validate_key(args.key)
         test_db.KeyValueView(key_value).edit()
         readline.set_auto_history(True)
