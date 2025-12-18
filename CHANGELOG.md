@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.3-beta.1...v0.1.4-beta.1) (2025-12-18)
+
+
+### Bug Fixes
+
+* **cmd2:** missing return on error condition ([0040af2](https://github.com/chriskauffman/test-db/commit/0040af2034b6235c3e1bd70f46e366a69d3f7eed))
+
 ## [0.1.3-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.2-beta.1...v0.1.3-beta.1) (2025-12-18)
 
 
