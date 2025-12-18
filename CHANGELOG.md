@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.2-beta.1...v0.1.3-beta.1) (2025-12-18)
+
+
+### Bug Fixes
+
+* invalid escape sequence ([#33](https://github.com/chriskauffman/test-db/issues/33)) ([ad1a5b4](https://github.com/chriskauffman/test-db/commit/ad1a5b48405b7e4878d3ecb4ba4acf6b141ea1de)), closes [#30](https://github.com/chriskauffman/test-db/issues/30)
+
 ## [0.1.2-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.1-beta.1...v0.1.2-beta.1) (2025-12-12)
 
 
