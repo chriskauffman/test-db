@@ -7,6 +7,8 @@ from typeid.errors import (
     SuffixValidationException,
 )
 
+# Using typing_extensions vs typing:
+# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Optional
 
 from sqlobject.col import Col, SOCol, SOValidator  # type: ignore

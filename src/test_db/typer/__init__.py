@@ -1,3 +1,16 @@
+"""test-db typer applications
+
+Provides typer applications for various test-db entities to assist
+in building command-line applications that utilize test-db data.
+
+Example:
+    import typer
+    from test_db.typer import key_value_app
+
+    app = typer.Typer()
+    app.add_typer(key_value_app, name="key-value")"
+"""
+
 from ._address import address_app as address_app
 from ._bank_account import bank_account_app as bank_account_app
 from ._debit_card import debit_card_app as debit_card_app
