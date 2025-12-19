@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Christopher Kauffman", email = "chriskauffman@vollgas.net" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "cmd2>=2.7.0",
     "cryptography>=45.0.7",
