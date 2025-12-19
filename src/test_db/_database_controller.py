@@ -9,6 +9,9 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 import sqlobject  # type: ignore
+
+# Using typing_extensions vs typing:
+# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Optional, Union
 
 from test_db._address import Address

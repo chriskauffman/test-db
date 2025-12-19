@@ -1,9 +1,23 @@
+"""test-db package
+
+Provides a simple test database with various entities and
+views to assist applications and utilities in managing test data.
+
+Example:
+    import test_db
+
+    db = test_db.DatabaseController("test_db.sqlite", autoCreate=True)
+    new_person = test_db.PersonView.add()
+"""
+
 import logging
 
 import sqlobject  # type: ignore
 from sqlobject import SQLObjectNotFound as SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError as DuplicateEntryError  # type: ignore
 
+# Using typing_extensions vs typing:
+# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Optional
 
 from test_db._address import Address as Address
