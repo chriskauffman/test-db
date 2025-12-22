@@ -116,3 +116,24 @@ def test_entity_key_value_delete(capsys, monkeypatch, person, temporary_db):
         test_db.EntityKeyValue.get(
             test_entity_key_value.id, connection=temporary_db.connection
         )
+
+
+def test_entity_key_value_list(capsys, monkeypatch, person, temporary_db):
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            "--db-file-path",
+            temporary_db.filePath,
+            "entity-key-value",
+            "list",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert captured.out

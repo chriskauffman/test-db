@@ -30,7 +30,7 @@ def entity_secure_key_value_delete(entity_gid: str, key: str):
         key_value.destroySelf()
 
 
-@entity_secure_key_value_app.command("personal-key-value-secure")
+@entity_secure_key_value_app.command("list")
 def entity_secure_key_value_list():
     test_db.EntitySecureKeyValueView.list()
 
