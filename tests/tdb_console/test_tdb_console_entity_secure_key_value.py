@@ -24,3 +24,23 @@ def test_entity_secure_key_value_view(capsys, monkeypatch, temporary_db):
 
     captured = capsys.readouterr()
     assert "secret = test" in captured.out
+
+
+def test_entity_secure_key_value_list(capsys, monkeypatch, temporary_db):
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            f"set db_file_path {temporary_db.filePath}",
+            "tdb_entity_secure_key_value_list",
+            "quit",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert captured.out

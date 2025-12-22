@@ -61,6 +61,9 @@ class EntitySecureKeyValueCommandSet(BaseCommandSet):
         if key_value:
             key_value.destroySelf()
 
+    def do_tdb_entity_secure_key_value_list(self, args):
+        test_db.EntitySecureKeyValueView.list()
+
     tdb_entity_secure_key_value_view_parser = cmd2.Cmd2ArgumentParser(add_help=False)
     tdb_entity_secure_key_value_view_parser.add_argument(
         "entity_gid",
