@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.4-beta.1...v0.1.5-beta.1) (2025-12-22)
+
+
+### Bug Fixes
+
+* correct list command in utilities for entity key values ([#39](https://github.com/chriskauffman/test-db/issues/39)) ([82b45bc](https://github.com/chriskauffman/test-db/commit/82b45bcebf6a23f8d0b2d2611845a5cc4085f5e0)), closes [#38](https://github.com/chriskauffman/test-db/issues/38)
+
 ## [0.1.4-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.3-beta.1...v0.1.4-beta.1) (2025-12-18)
 
 
