@@ -868,7 +868,7 @@ wheels = [
 
 [[package]]
 name = "test-db"
-version = "0.1.6-beta.1"
+version = "0.2.0-beta.0"
 source = { editable = "." }
 dependencies = [
     { name = "cmd2" },
