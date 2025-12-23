@@ -1,0 +1,17 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "python",
+      "prerelease": true,
+      "prerelease-type": "beta"
+    }
+  },
+  "extra-files": [
+    {
+      "path": "uv.lock",
+      "type": "toml",
+      "jsonpath": "$.package[?(@.name.value=='test-db')].version"
+    }
+  ],
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+}
