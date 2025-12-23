@@ -1,10 +1,11 @@
 ---
-name: Lint and Test on Push
+name: Lint and Test on Push of New Release
 
 on: # yamllint disable-line rule:truthy
   push:
+    branches:
+      - 'release/*'
     paths:
-      - .github/workflows/**
       - uv.lock
       - pyproject.toml
       - src/**
