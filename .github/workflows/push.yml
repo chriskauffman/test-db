@@ -4,7 +4,7 @@ name: Lint and Test on Push of New Release
 on: # yamllint disable-line rule:truthy
   push:
     branches:
-      - 'release/*'
+      - "release/*"
     paths:
       - uv.lock
       - pyproject.toml
