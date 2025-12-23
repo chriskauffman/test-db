@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.5-beta.1...v0.1.6-beta.1) (2025-12-23)
+
+
+### Bug Fixes
+
+* setup release please for prerelease ([d600f1d](https://github.com/chriskauffman/test-db/commit/d600f1df6ed18c4b11d3da0328085770237ac67a))
+
 ## [0.1.5-beta.1](https://github.com/chriskauffman/test-db/compare/v0.1.4-beta.1...v0.1.5-beta.1) (2025-12-22)
 
 
