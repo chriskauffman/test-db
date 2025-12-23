@@ -3,6 +3,7 @@ on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
+      - 'release/v*'
 
 permissions:
   contents: write
