@@ -8,7 +8,7 @@ def test_organization_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"set db_file_path {temporary_db.filePath}",
+            f"set db_connection_uri {temporary_db.connectionURI}",
             f"tdb_organization_view {organization.gID}",
             "quit",
         ],

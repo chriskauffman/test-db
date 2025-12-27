@@ -8,7 +8,13 @@ from test_db.tdb import app as tdb
 def test_organization_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", temporary_db.filePath, "organization", "add"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "organization",
+            "add",
+        ],
     )
 
     try:
@@ -33,8 +39,8 @@ def test_organization_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "organization",
             "delete",
             str(test_organization.gID),
@@ -59,7 +65,14 @@ def test_organization_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--create", "--db-file-path", empty_db_file, "organization", "list"],
+        [
+            "tdb",
+            "--create",
+            "--db-file-path",
+            empty_db_file,
+            "organization",
+            "list",
+        ],
     )
 
     try:
@@ -74,7 +87,13 @@ def test_organization_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     test_db.Organization(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", temporary_db.filePath, "organization", "list"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "organization",
+            "list",
+        ],
     )
     try:
         tdb()
@@ -90,8 +109,8 @@ def test_organization_view(capsys, monkeypatch, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "organization",
             "view",
             str(organization.gID),

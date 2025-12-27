@@ -48,8 +48,11 @@ def version():
 
 @app.callback()
 def tdb_app_callback(
+    db_connection_uri: Annotated[
+        Optional[str], typer.Option(help="sqlobject connection string")
+    ] = None,
     db_file_path: Annotated[
-        Optional[pathlib.Path], typer.Option(help="path to database file")
+        Optional[pathlib.Path], typer.Option(help="path to sqlite database file")
     ] = None,
     create: Annotated[
         bool,
@@ -65,25 +68,38 @@ def tdb_app_callback(
     ] = False,
 ) -> None:
     """main callback for test_db typer applications"""
-    test_db.typer.interactive = interactive
-    settings = Settings()
-    db_file_path = db_file_path or settings.db_file_path or DEFAULT_DB_PATH
-    try:
-        backupFile(db_file_path, settings.backup_path)
-    except ValueError:
+    if db_connection_uri and db_file_path:
         sys.stderr.write(
-            f"error: incorrect backup_path {settings.backup_path}, "
-            "must be existing directory"
+            "error: both db_connection_uri and db_file_path are specified, only one is allowed"
         )
         sys.exit(1)
-    if (
-        not db_file_path.is_file()
-        and db_file_path != test_db.IN_MEMORY_DB_FILE
-        and not create
-    ):
+    test_db.typer.interactive = interactive
+    settings = Settings()
+    if db_file_path:
+        db_file_path = db_file_path or settings.db_file_path or DEFAULT_DB_PATH
+        try:
+            backupFile(db_file_path, settings.backup_path)
+        except ValueError:
+            sys.stderr.write(
+                f"error: incorrect backup_path {settings.backup_path}, "
+                "must be existing directory"
+            )
+            sys.exit(1)
+        if (
+            not db_file_path.is_file()
+            and db_file_path != test_db.IN_MEMORY_DB_FILE
+            and not create
+        ):
+            sys.stderr.write(
+                f"error: DB file {db_file_path} does not exist: "
+                "check db_file_path in toml, env and command options or use --create"
+            )
+            sys.exit(1)
+        db_connection_uri = f"sqlite:{str(db_file_path)}"
+
+    if not db_connection_uri:
         sys.stderr.write(
-            f"error: DB file {db_file_path} does not exist: "
-            "check db_file_path in toml, env and command options or use --create"
+            "error: no database specified, use db_connection_uri or db_file_path"
         )
         sys.exit(1)
 
@@ -119,7 +135,7 @@ def tdb_app_callback(
     test_db.fernetIterations = settings.database_fernet_iterations
 
     test_db.DatabaseController(
-        db_file_path,
+        db_connection_uri,
         create=create,
         defaultConnection=True,
         upgrade=upgrade,

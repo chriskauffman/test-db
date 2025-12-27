@@ -1,3 +1,4 @@
+import nanoid
 import pytest
 from sqlobject import SQLObjectNotFound
 
@@ -10,8 +11,8 @@ def test_entity_secure_key_value_add(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "entity-secure-key-value",
             "add",
             str(person.gID),
@@ -34,8 +35,8 @@ def test_entity_secure_key_value_add_bad_person(capsys, monkeypatch, temporary_d
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "entity-secure-key-value",
             "add",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
@@ -56,17 +57,18 @@ def test_entity_secure_key_value_add_bad_person(capsys, monkeypatch, temporary_d
 def test_entity_secure_key_value_add_duplicate(
     capsys, monkeypatch, person, temporary_db
 ):
-    person.getSecureKeyValueByKey("secret2", value="test value")
+    test_key = nanoid.generate()
+    person.getSecureKeyValueByKey(test_key, value="test value")
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "entity-secure-key-value",
             "add",
             str(person.gID),
-            "secret2",
+            test_key,
             "value",
         ],
     )
@@ -77,7 +79,7 @@ def test_entity_secure_key_value_add_duplicate(
         assert e.code == 1
 
     captured = capsys.readouterr()
-    assert "UNIQUE constraint failed" in captured.err
+    assert captured.err
 
 
 def test_entity_secure_key_value_delete(capsys, monkeypatch, person, temporary_db):
@@ -97,8 +99,8 @@ def test_entity_secure_key_value_delete(capsys, monkeypatch, person, temporary_d
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "entity-secure-key-value",
             "delete",
             str(person.gID),
@@ -125,8 +127,8 @@ def test_entity_secure_key_value_list(capsys, monkeypatch, person, temporary_db)
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "entity-secure-key-value",
             "list",
         ],
