@@ -16,7 +16,7 @@ class EntitySecureKeyValueView(BaseView):
     """Secure key value views
 
     Args:
-        personal_key_value (EntitySecureKeyValue):
+        entity_secure_key_value (EntitySecureKeyValue):
         **kwargs:
             - user_inputs_required (bool):
     """
@@ -44,15 +44,15 @@ class EntitySecureKeyValueView(BaseView):
         for key_value in key_values:
             EntitySecureKeyValueView(key_value).view()
 
-    def __init__(self, personal_key_value: EntitySecureKeyValue, **kwargs):
+    def __init__(self, entity_secure_key_value: EntitySecureKeyValue, **kwargs):
         super().__init__(**kwargs)
-        self._personal_key_value = personal_key_value
+        self._entity_secure_key_value = entity_secure_key_value
 
     def view(self):
         """Display brief details of the key value"""
-        print(f"{self._personal_key_value.entity.gID}, {self._personal_key_value.key}")
+        print(f"{self._entity_secure_key_value.key}")
 
     def viewDetails(self):
         print(
-            f"{self._personal_key_value.entity.gID}, {self._personal_key_value.key} = {self._personal_key_value.value}"
+            f"{self._entity_secure_key_value.key} = {self._entity_secure_key_value.value}"
         )

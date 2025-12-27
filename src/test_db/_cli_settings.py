@@ -67,6 +67,9 @@ class Settings(BaseSettings):
     database_fernet_iterations: int = Field(
         default=1_200_000, description="number of iterations for fernet key generation"
     )
+    db_connection_uri: Optional[str] = Field(
+        default=None, description="sqlobject connection URI"
+    )
     db_file_path: Optional[pathlib.Path] = Field(
         default=None, description="database file"
     )

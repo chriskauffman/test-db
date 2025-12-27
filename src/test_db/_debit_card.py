@@ -54,10 +54,8 @@ class DebitCard(SQLObject):
     attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
 
-    cardNumber: StringCol = StringCol(
-        alternateID=True, length=16, default=fake.credit_card_number
-    )
-    cvv: StringCol = StringCol(length=3, default=fake.credit_card_security_code)
+    cardNumber: StringCol = StringCol(alternateID=True, default=fake.credit_card_number)
+    cvv: StringCol = StringCol(default=fake.credit_card_security_code)
     expirationDate: DateCol = DateCol(default=fake_credit_card_expire_to_date)
 
     entities: RelatedJoin = RelatedJoin(

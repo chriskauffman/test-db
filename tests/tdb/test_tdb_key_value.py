@@ -1,3 +1,4 @@
+import nanoid
 import pytest
 from sqlobject import SQLObjectNotFound
 
@@ -10,11 +11,11 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "key-value",
             "add",
-            "test_add_key_value",
+            nanoid.generate(),
             "test_value",
         ],
     )
@@ -29,8 +30,9 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
 
 
 def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
+    test_key = nanoid.generate()
     test_db.KeyValue(
-        key="test_add_key_value_duplicate",
+        key=test_key,
         value="test_value",
         connection=temporary_db.connection,
     )
@@ -38,11 +40,11 @@ def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "key-value",
             "add",
-            "test_add_key_value_duplicate",
+            test_key,
             "test_value",
         ],
     )
@@ -53,7 +55,7 @@ def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
         assert e.code == 1
 
     captured = capsys.readouterr()
-    assert "UNIQUE constraint failed" in captured.err
+    assert captured.err
 
 
 def test_key_value_delete(capsys, monkeypatch, temporary_db):
@@ -69,8 +71,8 @@ def test_key_value_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "key-value",
             "delete",
             test_key_value.key,

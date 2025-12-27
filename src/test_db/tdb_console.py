@@ -2,6 +2,7 @@
 
 from importlib.metadata import version as get_version
 import logging
+import os
 import pathlib
 import sys
 
@@ -66,6 +67,19 @@ class Console(cmd2.Cmd):
             )
         )
 
+        self.db_connection_uri = (
+            self._settings.db_connection_uri or f"sqlite:{self.db_file_path}"
+        )
+        self.add_settable(
+            cmd2.Settable(
+                "db_connection_uri",
+                str,
+                "Database connection URI",
+                self,
+                onchange_cb=self._onchange_db_connection_uri,
+            )
+        )
+
         self._db: Optional[test_db.DatabaseController] = None
 
         self._reset_db()
@@ -76,11 +90,16 @@ class Console(cmd2.Cmd):
         # self._database_commands = PersonCommandSet()
         # self.register_command_set(self._database_commands)
 
+    def _onchange_db_connection_uri(self, _param_name, _old, new) -> None:
+        """Execute when db_connection_uri setting changed"""
+        self.logger.debug("_param_name=%s, _old=%s, new=%s", _param_name, _old, new)
+        self._reset_db()
+        self._set_prompt()
+
     def _onchange_db_file_path(self, _param_name, _old, new) -> None:
         """Execute when db_file_path setting changed"""
         self.logger.debug("_param_name=%s, _old=%s, new=%s", _param_name, _old, new)
-        if self._db is not None and self._db.connection:
-            self._db.close()
+        self.db_connection_uri = f"sqlite:{new}"
         self._reset_db()
         self._set_prompt()
 
@@ -93,18 +112,16 @@ class Console(cmd2.Cmd):
 
     def _reset_db(self, create: bool = False):
         # backup_file(self.db_file_path, self._settings.backup_path)
-        self.logger.debug("resetting db with db_file_path=%s", self.db_file_path)
-        backupFile(self.db_file_path, self._settings.backup_path)
-        if not self.db_file_path:
-            self.perror(
-                "error: DB file path not set: check db_file_path in toml, "
-                "env and command options"
-            )
-            self._db = None
-            return
+        self.logger.debug(
+            "resetting db with db_connection_uri=%s", self.db_connection_uri
+        )
+        if self._db is not None and self._db.connection:
+            self._db.close()
+        if os.path.isfile(self.db_connection_uri):
+            backupFile(self.db_file_path, self._settings.backup_path)
         try:
             self._db = test_db.DatabaseController(
-                str(self.db_file_path), create=create, defaultConnection=True
+                self.db_connection_uri, create=create, defaultConnection=True
             )
         except ValueError:
             self._db = None

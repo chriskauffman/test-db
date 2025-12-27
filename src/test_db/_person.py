@@ -45,7 +45,7 @@ class Person(Entity):
         default=lambda: fake.date_of_birth(minimum_age=18, maximum_age=90)
     )
     socialSecurityNumber: StringCol = StringCol(
-        alternateID=True, length=9, default=fake.ssn, unique=True
+        alternateID=True, default=fake.ssn, unique=True
     )
     email: StringCol = StringCol(alternateID=True, default=None, unique=True)
 
