@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime, timezone
 import logging
 import secrets
 
@@ -74,11 +75,10 @@ class DatabaseController:
     """DatabaseController
 
     Basic class to handle the connection, configuration and upgrade of a test_db
-    Connect SQLite Database for SQLObject Access
 
     Args:
-        connectionURI (str): path to sqlite file
-        create (bool, optional): creates the database file when True
+        connectionURI (str): SQLObject connection URI
+        create (bool, optional): creates the database when True
         defaultConnection (bool, optional): sets DB as default sqlobject connection
         upgrade (bool, optional): upgrade the database if it is out of date
         databaseEncryptionKey (Optional[str]):
@@ -91,7 +91,6 @@ class DatabaseController:
         applicationSchemaVersion (int): test_db schema version number
         connection (sqlobject.connectionForURI)
         connectionURI (str): location of DB file
-        dbSchemaVersion (int): database schema version
         validSchema (bool): True if schema passes checks
     """
 
@@ -111,10 +110,9 @@ class DatabaseController:
         self._raw = self.connection.getConnection()
         self._rawCursor = self._raw.cursor()
 
-        logger.debug("sqlite3 connectionURI=%s", self.connectionURI)
-        logger.debug("sqlite3 application_id=%s", self.applicationID)
-        logger.debug("sqlite3 schema_version=%s", self.dbSchemaVersion)
-        logger.debug("sqlite3 user_version=%s", self.applicationSchemaVersion)
+        logger.debug("connectionURI=%s", self.connectionURI)
+        logger.debug("applicationID=%s", self.applicationID)
+        logger.debug("applicationSchemaVersion=%s", self.applicationSchemaVersion)
 
         if self._isTestDB:
             if self.validSchema:
@@ -151,15 +149,15 @@ class DatabaseController:
         )
         if databaseEncryptionKey:
             try:
-                fernet_salt = KeyValue.byKey(
+                fernet_salt = KeyValue.byItemKey(
                     "TestDB_EncryptedPickleColSalt", connection=self.connection
-                ).value.encode(ENCODING)
+                ).itemValue.encode(ENCODING)
             except sqlobject.SQLObjectNotFound:
                 fernet_salt = KeyValue(
-                    key="TestDB_EncryptedPickleColSalt",
-                    value=secrets.token_hex(16),
+                    itemKey="TestDB_EncryptedPickleColSalt",
+                    itemValue=secrets.token_hex(16),
                     connection=self.connection,
-                ).value.encode(ENCODING)
+                ).itemValue.encode(ENCODING)
             fernet_kdf = PBKDF2HMAC(
                 algorithm=hashes.SHA256(),
                 length=32,
@@ -181,66 +179,67 @@ class DatabaseController:
     @property
     def applicationID(self) -> int:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
-            application_id = self._rawCursor.execute(
-                f"SELECT value FROM {KeyValue.sqlmeta.table} WHERE key = 'application_id'"
-            ).fetchone()
-            if application_id is not None:
-                return int(application_id[0])
+            try:
+                return int(
+                    KeyValue.byItemKey(
+                        "TestDB_ApplicationID", connection=self.connection
+                    ).itemValue
+                )
+            except sqlobject.SQLObjectNotFound:
+                return 0
         return 0
 
     @applicationID.setter
     def applicationID(self, applicationID: int) -> None:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
-            if (
-                self._rawCursor.execute(
-                    f"SELECT value FROM {KeyValue.sqlmeta.table} WHERE key = 'application_id'"
-                ).fetchone()
-                is None
-            ):
-                self._rawCursor.execute(
-                    f"INSERT INTO {KeyValue.sqlmeta.table} (key, value) VALUES ('application_id', '{applicationID}')"
-                )
-            else:
-                self._rawCursor.execute(
-                    f"UPDATE {KeyValue.sqlmeta.table} SET value = '{applicationID}' WHERE key = 'application_id'"
+            try:
+                KeyValue.byItemKey(
+                    "TestDB_ApplicationID", connection=self.connection
+                ).itemValue = str(applicationID)
+            except sqlobject.SQLObjectNotFound:
+                now = datetime.now(timezone.utc)
+                KeyValue(
+                    itemKey="TestDB_ApplicationID",
+                    itemValue=str(applicationID),
+                    createdAt=now,
+                    updatedAt=now,
+                    connection=self.connection,
                 )
 
     @property
     def applicationSchemaVersion(self) -> int:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
-            application_schema_version = self._rawCursor.execute(
-                f"SELECT value FROM {KeyValue.sqlmeta.table} WHERE key = 'application_schema_version'"
-            ).fetchone()
-            if application_schema_version is not None:
-                return int(application_schema_version[0])
+            try:
+                return int(
+                    KeyValue.byItemKey(
+                        "TestDB_ApplicationSchemaVersion", connection=self.connection
+                    ).itemValue
+                )
+            except sqlobject.SQLObjectNotFound:
+                return 0
         return 0
 
     @applicationSchemaVersion.setter
     def applicationSchemaVersion(self, applicationSchemaVersion: int) -> None:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
-            if (
-                self._rawCursor.execute(
-                    f"SELECT value FROM {KeyValue.sqlmeta.table} WHERE key = 'application_schema_version'"
-                ).fetchone()
-                is None
-            ):
-                self._rawCursor.execute(
-                    f"INSERT INTO {KeyValue.sqlmeta.table} (key, value) VALUES ('application_schema_version', '{applicationSchemaVersion}')"
+            try:
+                KeyValue.byItemKey(
+                    "TestDB_ApplicationSchemaVersion", connection=self.connection
+                ).itemValue = str(applicationSchemaVersion)
+            except sqlobject.SQLObjectNotFound:
+                now = datetime.now(timezone.utc)
+                KeyValue(
+                    itemKey="TestDB_ApplicationSchemaVersion",
+                    itemValue=str(applicationSchemaVersion),
+                    createdAt=now,
+                    updatedAt=now,
+                    connection=self.connection,
                 )
-            else:
-                self._rawCursor.execute(
-                    f"UPDATE {KeyValue.sqlmeta.table} SET value = '{applicationSchemaVersion}' WHERE key = 'application_schema_version'"
-                )
-
-    @property
-    def dbSchemaVersion(self) -> int:
-        return self.applicationSchemaVersion
 
     @property
     def _isEmptyDB(self) -> bool:
         return (
             self.applicationID == 0
-            and self.dbSchemaVersion == 0
             and self.applicationSchemaVersion == 0
         )
 
@@ -258,9 +257,8 @@ class DatabaseController:
             return False
         if not self._schemaVersion(CURRENT_APPLICATION_SCHEMA_VERSION):
             logger.debug(
-                "DB invalid: app ID %s, db schema version %s, app schema version %s",
+                "DB invalid: app ID %s, app schema version %s",
                 self.applicationID,
-                self.dbSchemaVersion,
                 self.applicationSchemaVersion,
             )
             return False
@@ -313,17 +311,15 @@ class DatabaseController:
     def _schemaVersion(self, version: int) -> bool:
         return (
             self.applicationID == APPLICATION_ID
-            and self.dbSchemaVersion > 0
             and self.applicationSchemaVersion == version
         )
 
     def _upgrade(self):
         """Upgrade existing database
 
-        Attempts to upgrade database based on expected values of SQLite's
-        applicationID, dbSchemaVersion and user_version. applicationID and
-        user_version are set by this class. dbSchemaVersion is automatically
-        incremented by SQLite.
+        Attempts to upgrade database based on expected values of the DB's
+        applicationID and applicationSchemaVersion. applicationID and
+        applicationSchemaVersion are set by this class.
 
         Raises:
             ValueError:
@@ -343,7 +339,6 @@ class DatabaseController:
     #     # Upgrade to application schema X
     #     if (
     #         self.applicationID == APPLICATION_ID
-    #         and self.dbSchemaVersion > 0
     #         and self.applicationSchemaVersion == 1
     #     ):
     #         logger.info("Upgrading DB schema to vX")

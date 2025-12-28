@@ -25,12 +25,12 @@ class EntitySecureKeyValueView(BaseView):
     def add(
         cls,
         entity: Union[Organization, Person],
-        key: str,
-        value: Any,
+        itemKey: str,
+        itemValue: Any,
         interactive: bool = True,
     ) -> EntitySecureKeyValue:
         """Add a Secure Key Value to an entity"""
-        return EntitySecureKeyValue(entity=entity, key=key, value=value)
+        return EntitySecureKeyValue(entity=entity, itemKey=itemKey, itemValue=itemValue)
 
     @classmethod
     def list(
@@ -50,9 +50,9 @@ class EntitySecureKeyValueView(BaseView):
 
     def view(self):
         """Display brief details of the key value"""
-        print(f"{self._entity_secure_key_value.key}")
+        print(f"{self._entity_secure_key_value.itemKey}")
 
     def viewDetails(self):
         print(
-            f"{self._entity_secure_key_value.key} = {self._entity_secure_key_value.value}"
+            f"{self._entity_secure_key_value.itemKey} = {self._entity_secure_key_value.itemValue}"
         )

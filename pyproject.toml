@@ -37,6 +37,7 @@ dev = [
     "psycopg[binary]>=3.3.2",
     "pydoclint>=0.6.10",
     "types-nanoid>=2.0.0.20240601",
+    "mysqlclient>=2.2.7",
 ]
 
 [tool.pytest.ini_options]

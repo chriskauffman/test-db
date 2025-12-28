@@ -58,7 +58,7 @@ def test_entity_secure_key_value_add_duplicate(
     capsys, monkeypatch, person, temporary_db
 ):
     test_key = nanoid.generate()
-    person.getSecureKeyValueByKey(test_key, value="test value")
+    person.getSecureKeyValueByKey(test_key, itemValue="test value")
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -85,7 +85,7 @@ def test_entity_secure_key_value_add_duplicate(
 def test_entity_secure_key_value_delete(capsys, monkeypatch, person, temporary_db):
     test_entity_secure_key_value = test_db.EntitySecureKeyValue(
         connection=temporary_db.connection,
-        key="test_delete_entity_secure_key_value",
+        itemKey="test_delete_entity_secure_key_value",
         entity=person,
     )
     assert (
@@ -104,7 +104,7 @@ def test_entity_secure_key_value_delete(capsys, monkeypatch, person, temporary_d
             "entity-secure-key-value",
             "delete",
             str(person.gID),
-            test_entity_secure_key_value.key,
+            test_entity_secure_key_value.itemKey,
         ],
     )
 

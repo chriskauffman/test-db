@@ -6,7 +6,7 @@ and utilities in displaying and interacting with test-db data.
 Example:
     from test_db._views import KeyValueView
 
-    new_kv = KeyValueView.add(key="example_key", value="example_value")
+    new_kv = KeyValueView.add(itemKey="example_key", itemValue="example_value")
     KeyValueView.list() # Lists all key-value pairs in the test database
     keyValueView(new_kv).edit() # Opens an editor to modify the key-value pair
 """

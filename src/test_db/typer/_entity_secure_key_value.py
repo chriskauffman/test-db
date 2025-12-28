@@ -15,7 +15,10 @@ def entity_secure_key_value_add(entity_gid: str, key: str, value: str):
     entity = validate_entity(entity_gid)
     try:
         test_db.EntitySecureKeyValueView.add(
-            entity=entity, key=key, value=value, interactive=_TyperOptions().interactive
+            entity=entity,
+            itemKey=key,
+            itemValue=value,
+            interactive=_TyperOptions().interactive,
         )
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {str(exc)}")

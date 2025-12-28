@@ -17,13 +17,13 @@ def test_getKeyValueByKey(temporary_db):
     test_oauth2_token = test_person.getKeyValueByKey("testClientId1")
 
     assert isinstance(test_oauth2_token, EntityKeyValue)
-    assert test_oauth2_token.key == "testClientId1"
+    assert test_oauth2_token.itemKey == "testClientId1"
 
     test_oauth2_token = test_person.getKeyValueByKey(
-        "testClientId2", value="testAccessToken"
+        "testClientId2", itemValue="testAccessToken"
     )
 
-    assert test_oauth2_token.value == "testAccessToken"
+    assert test_oauth2_token.itemValue == "testAccessToken"
 
 
 def test_getSecureKeyValueByKey(temporary_db):
@@ -33,10 +33,10 @@ def test_getSecureKeyValueByKey(temporary_db):
     test_secure_kv = test_entity.getSecureKeyValueByKey("testKey1")
 
     assert isinstance(test_secure_kv, EntitySecureKeyValue)
-    assert test_secure_kv.key == "testKey1"
+    assert test_secure_kv.itemKey == "testKey1"
 
     test_secure_kv = test_entity.getSecureKeyValueByKey(
-        "testKey2", value={"secret_data": "testSecretData"}
+        "testKey2", itemValue={"secret_data": "testSecretData"}
     )
 
-    assert test_secure_kv.value == {"secret_data": "testSecretData"}
+    assert test_secure_kv.itemValue == {"secret_data": "testSecretData"}

@@ -7,19 +7,19 @@ class EntitySecureKeyValue(SQLObject):
     """Personal KeyValueSecure SQLObject
 
     Attributes:
-        entity (ForeignKey): entity who owns the key/value pair
-        key (StringCol): key name
-        value (EncryptedPickleCol):
+        entity (ForeignKey): entity who owns the itemKey/value pair
+        itemKey (StringCol): itemKey name
+        itemValue (EncryptedPickleCol):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
-        entityKeyIndex (DatabaseIndex): unique index on (key, person)
+        entityKeyIndex (DatabaseIndex): unique index on (itemKey, person)
     """
 
     entity: ForeignKey = ForeignKey("Entity", cascade=True, notNone=True)
-    key: StringCol = StringCol(notNone=True)
-    value: EncryptedPickleCol = EncryptedPickleCol(default=None)
+    itemKey: StringCol = StringCol(notNone=True)
+    itemValue: EncryptedPickleCol = EncryptedPickleCol(default=None)
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
-    entityKeyIndex: DatabaseIndex = DatabaseIndex(entity, key, unique=True)
+    entityKeyIndex: DatabaseIndex = DatabaseIndex(entity, itemKey, unique=True)

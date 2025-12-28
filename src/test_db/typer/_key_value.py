@@ -13,7 +13,7 @@ key_value_app = typer.Typer()
 
 def validate_key(key: str):
     try:
-        return test_db.KeyValue.byKey(key)
+        return test_db.KeyValue.byItemKey(key)
     except (Invalid, SQLObjectNotFound) as exc:
         sys.stderr.write(f"error: {str(exc)}")
         sys.exit(1)
@@ -23,7 +23,7 @@ def validate_key(key: str):
 def key_value_add(key: str, value: str):
     try:
         test_db.KeyValueView.add(
-            key=key, value=value, interactive=_TyperOptions().interactive
+            itemKey=key, itemValue=value, interactive=_TyperOptions().interactive
         )
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {str(exc)}")

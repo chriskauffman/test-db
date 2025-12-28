@@ -56,7 +56,7 @@ def test_entity_key_value_add_bad_person(capsys, monkeypatch, temporary_db):
 
 def test_entity_key_value_add_duplicate(capsys, monkeypatch, person, temporary_db):
     test_key = nanoid.generate()
-    person.getKeyValueByKey(test_key, value="test value")
+    person.getKeyValueByKey(test_key, itemValue="test value")
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -83,7 +83,7 @@ def test_entity_key_value_add_duplicate(capsys, monkeypatch, person, temporary_d
 def test_entity_key_value_delete(capsys, monkeypatch, person, temporary_db):
     test_entity_key_value = test_db.EntityKeyValue(
         connection=temporary_db.connection,
-        key="test_delete_entity_key_value",
+        itemKey="test_delete_entity_key_value",
         entity=person,
     )
     assert (
@@ -102,7 +102,7 @@ def test_entity_key_value_delete(capsys, monkeypatch, person, temporary_db):
             "entity-key-value",
             "delete",
             str(person.gID),
-            test_entity_key_value.key,
+            test_entity_key_value.itemKey,
         ],
     )
 
