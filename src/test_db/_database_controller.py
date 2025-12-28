@@ -238,10 +238,7 @@ class DatabaseController:
 
     @property
     def _isEmptyDB(self) -> bool:
-        return (
-            self.applicationID == 0
-            and self.applicationSchemaVersion == 0
-        )
+        return self.applicationID == 0 and self.applicationSchemaVersion == 0
 
     @property
     def _isTestDB(self) -> bool:
