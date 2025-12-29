@@ -36,7 +36,6 @@ class Console(cmd2.Cmd):
     # pylint: disable=unused-argument,too-many-public-methods,too-many-instance-attributes
 
     intro = "Welcome to the ODP simulator.  Type help or ? to list commands.\n"
-    logger = logging.getLogger(__name__)
     _cmd_history_file = pathlib.Path(DEFAULT_CONFIG_PATH, "odp_cmd2_history")
     _prompt = "tdb"
 
@@ -92,13 +91,13 @@ class Console(cmd2.Cmd):
 
     def _onchange_db_connection_uri(self, _param_name, _old, new) -> None:
         """Execute when db_connection_uri setting changed"""
-        self.logger.debug("_param_name=%s, _old=%s, new=%s", _param_name, _old, new)
+        logger.debug("_param_name=%s, _old=%s, new=%s", _param_name, _old, new)
         self._reset_db()
         self._set_prompt()
 
     def _onchange_db_file_path(self, _param_name, _old, new) -> None:
         """Execute when db_file_path setting changed"""
-        self.logger.debug("_param_name=%s, _old=%s, new=%s", _param_name, _old, new)
+        logger.debug("_param_name=%s, _old=%s, new=%s", _param_name, _old, new)
         self.db_connection_uri = f"sqlite:{new}"
         self._reset_db()
         self._set_prompt()
@@ -112,9 +111,7 @@ class Console(cmd2.Cmd):
 
     def _reset_db(self, create: bool = False):
         # backup_file(self.db_file_path, self._settings.backup_path)
-        self.logger.debug(
-            "resetting db with db_connection_uri=%s", self.db_connection_uri
-        )
+        logger.debug("resetting db with db_connection_uri=%s", self.db_connection_uri)
         if self._db is not None and self._db.connection:
             self._db.close()
         if os.path.isfile(self.db_connection_uri):
