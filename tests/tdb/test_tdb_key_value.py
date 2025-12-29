@@ -1,6 +1,6 @@
-import nanoid
 import pytest
 from sqlobject import SQLObjectNotFound
+import uuid
 
 import test_db
 from test_db.tdb import app as tdb
@@ -15,7 +15,7 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
             temporary_db.connectionURI,
             "key-value",
             "add",
-            nanoid.generate(),
+            str(uuid.uuid4()),
             "test_value",
         ],
     )
@@ -30,7 +30,7 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
 
 
 def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
-    test_key = nanoid.generate()
+    test_key = str(uuid.uuid4())
     test_db.KeyValue(
         itemKey=test_key,
         itemValue="test_value",

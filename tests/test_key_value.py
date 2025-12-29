@@ -1,9 +1,9 @@
-import nanoid
+import uuid
 from test_db._key_value import KeyValue
 
 
 def test_key_value(temporary_db):
-    test_key = nanoid.generate()
+    test_key = str(uuid.uuid4())
     test_key_value = KeyValue(
         itemKey=test_key,
         itemValue="test_value",

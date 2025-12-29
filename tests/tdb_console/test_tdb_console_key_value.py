@@ -1,4 +1,4 @@
-import nanoid
+import uuid
 
 import test_db
 from test_db.tdb_console import main as tdb
@@ -6,7 +6,7 @@ from test_db.tdb_console import main as tdb
 
 def test_key_value_view(capsys, monkeypatch, temporary_db):
     key_value = test_db.KeyValue(
-        connection=temporary_db.connection, itemKey=nanoid.generate(), itemValue="test"
+        connection=temporary_db.connection, itemKey=str(uuid.uuid4()), itemValue="test"
     )
     monkeypatch.setattr(
         "sys.argv",

@@ -1,6 +1,6 @@
-import nanoid
 import pytest
 from sqlobject import SQLObjectNotFound
+import uuid
 
 import test_db
 from test_db.tdb import app as tdb
@@ -57,7 +57,7 @@ def test_entity_secure_key_value_add_bad_person(capsys, monkeypatch, temporary_d
 def test_entity_secure_key_value_add_duplicate(
     capsys, monkeypatch, person, temporary_db
 ):
-    test_key = nanoid.generate()
+    test_key = str(uuid.uuid4())
     person.getSecureKeyValueByKey(test_key, itemValue="test value")
     monkeypatch.setattr(
         "sys.argv",

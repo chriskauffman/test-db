@@ -1,5 +1,5 @@
-import nanoid
 import pytest
+import uuid
 
 from sqlobject.dberrors import DuplicateEntryError
 
@@ -19,7 +19,7 @@ def test_init(temporary_db):
 
 def test_duplicate_employee_id(temporary_db):
     test_organization = Organization(connection=temporary_db.connection)
-    employee_id = nanoid.generate()
+    employee_id = str(uuid.uuid4())
     Job(
         employeeID=employee_id,
         organization=test_organization,
