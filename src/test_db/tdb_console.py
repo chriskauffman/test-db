@@ -2,7 +2,6 @@
 
 from importlib.metadata import version as get_version
 import logging
-import os
 import pathlib
 import sys
 
@@ -13,8 +12,7 @@ import cmd2
 from typing_extensions import Optional
 
 import test_db
-from test_db._backup_file import backupFile
-from test_db._cli_settings import DEFAULT_CONFIG_PATH, DEFAULT_DB_PATH, Settings
+from test_db._cli_settings import DEFAULT_CONFIG_PATH, Settings
 from test_db.cmd2 import (
     AddressCommandSet,
     BankAccountCommandSet,
@@ -55,20 +53,7 @@ class Console(cmd2.Cmd):
             )
         )
 
-        self.db_file_path = self._settings.db_file_path or DEFAULT_DB_PATH
-        self.add_settable(
-            cmd2.Settable(
-                "db_file_path",
-                self._val_type_db_file_path,
-                "Database file name",
-                self,
-                onchange_cb=self._onchange_db_file_path,
-            )
-        )
-
-        self.db_connection_uri = (
-            self._settings.db_connection_uri or f"sqlite:{self.db_file_path}"
-        )
+        self.db_connection_uri = self._settings.db_connection_uri
         self.add_settable(
             cmd2.Settable(
                 "db_connection_uri",
@@ -95,30 +80,13 @@ class Console(cmd2.Cmd):
         self._reset_db()
         self._set_prompt()
 
-    def _onchange_db_file_path(self, _param_name, _old, new) -> None:
-        """Execute when db_file_path setting changed"""
-        logger.debug("_param_name=%s, _old=%s, new=%s", _param_name, _old, new)
-        self.db_connection_uri = f"sqlite:{new}"
-        self._reset_db()
-        self._set_prompt()
-
-    def _val_type_db_file_path(self, new: str):
-        """Validate db_file_path"""
-        if new != test_db.IN_MEMORY_DB_FILE:
-            if not pathlib.Path(new).parent.exists():
-                raise ValueError(f"db_file_path {new} invalid")
-        return pathlib.Path(new)
-
-    def _reset_db(self, create: bool = False):
-        # backup_file(self.db_file_path, self._settings.backup_path)
+    def _reset_db(self):
         logger.debug("resetting db with db_connection_uri=%s", self.db_connection_uri)
-        if self._db is not None and self._db.connection:
+        if self._db and self._db.connection:
             self._db.close()
-        if os.path.isfile(self.db_connection_uri):
-            backupFile(self.db_file_path, self._settings.backup_path)
         try:
             self._db = test_db.DatabaseController(
-                self.db_connection_uri, create=create, defaultConnection=True
+                self.db_connection_uri, defaultConnection=True
             )
         except ValueError:
             self._db = None
@@ -126,9 +94,6 @@ class Console(cmd2.Cmd):
     def _set_prompt(self):
         """Set Prompt"""
         self.prompt = f"{self._prompt}: "
-
-    def do_create(self, args):
-        self._reset_db(create=True)
 
     def do_version(self, args):
         print(get_version(__package__))

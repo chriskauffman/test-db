@@ -55,7 +55,13 @@ def test_person_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--create", "--db-file-path", empty_db_file, "person", "list"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            f"sqlite:{empty_db_file}",
+            "person",
+            "list",
+        ],
     )
 
     try:

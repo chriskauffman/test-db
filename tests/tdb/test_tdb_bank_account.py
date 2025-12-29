@@ -235,9 +235,8 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
         "sys.argv",
         [
             "tdb",
-            "--create",
-            "--db-file-path",
-            empty_db_file,
+            "--db-connection-uri",
+            f"sqlite:{empty_db_file}",
             "bank-account",
             "list",
         ],

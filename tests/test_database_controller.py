@@ -51,7 +51,7 @@ def db_schema_is_valid(database_contoller):
 
 
 def test_init():
-    db = DatabaseController(test_db.IN_MEMORY_DB_FILE, create=True)
+    db = DatabaseController(test_db.IN_MEMORY_DB_FILE)
 
     # assert isinstance(db.filePath, pathlib.Path)
     assert db.connection
@@ -59,8 +59,8 @@ def test_init():
 
 
 def test_multiple_memory_connections(tmp_path_factory):
-    db_1 = DatabaseController(test_db.IN_MEMORY_DB_FILE, create=True)
-    db_2 = DatabaseController(test_db.IN_MEMORY_DB_FILE, create=True)
+    db_1 = DatabaseController(test_db.IN_MEMORY_DB_FILE)
+    db_2 = DatabaseController(test_db.IN_MEMORY_DB_FILE)
 
     # Note: two memory db's seem to have one connection
     assert db_1.connection == db_2.connection
@@ -74,15 +74,9 @@ def test_multiple_memory_connections(tmp_path_factory):
 
 def test_multiple_file_connections(tmp_path_factory):
     db_1_file = tmp_path_factory.mktemp("data") / "test_multiple_connections_1.sqlite"
-    db_1 = DatabaseController(
-        f"sqlite://{db_1_file}",
-        create=True,
-    )
+    db_1 = DatabaseController(f"sqlite://{db_1_file}")
     db_2_file = tmp_path_factory.mktemp("data") / "test_multiple_connections_2.sqlite"
-    db_2 = DatabaseController(
-        f"sqlite://{db_2_file}",
-        create=True,
-    )
+    db_2 = DatabaseController(f"sqlite://{db_2_file}")
 
     assert db_1.connection != db_2.connection
 
@@ -114,7 +108,7 @@ def test_file_version_1(tmp_path_factory):
     db_file = tmp_path_factory.mktemp("data") / "test_file_version_1.sqlite"
     # shutil.copy2("tests/data/test.9.sqlite", db_file)
 
-    db = DatabaseController(f"sqlite://{db_file}", create=True, defaultConnection=True)
+    db = DatabaseController(f"sqlite://{db_file}")
 
     assert db_schema_is_valid(db)
 
@@ -123,7 +117,7 @@ def test_open_empty(tmp_path_factory):
     db_file = tmp_path_factory.mktemp("data") / "test_open_empty.sqlite"
     if os.path.isfile(db_file):
         os.remove(db_file)
-    test_db = DatabaseController(f"sqlite://{db_file}", create=True)
+    test_db = DatabaseController(f"sqlite://{db_file}")
 
     assert test_db.validSchema
 
@@ -136,7 +130,7 @@ def test_open_empty_existing_file(tmp_path_factory):
     db_file = tmp_path_factory.mktemp("data") / "test_open_empty_existing_file.sqlite"
     shutil.copy2("tests/data/test_empty.sqlite", db_file)
 
-    test_db = DatabaseController(f"sqlite://{db_file}", create=True)
+    test_db = DatabaseController(f"sqlite://{db_file}")
 
     assert db_schema_is_valid(test_db)
 

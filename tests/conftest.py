@@ -13,7 +13,7 @@ def temporary_db(tmp_path_factory):
     test_db.autoCreateDependents = True
     test_db.databaseEncryptionKey = TEST_ENCRYPTION_KEY
     if db_connection_uri:
-        return test_db.DatabaseController(db_connection_uri, create=True)
+        return test_db.DatabaseController(db_connection_uri)
     else:
         db_file = tmp_path_factory.mktemp("data") / "test_db_test.sqlite"
-        return test_db.DatabaseController(f"sqlite://{db_file}", create=True)
+        return test_db.DatabaseController(f"sqlite://{db_file}")

@@ -78,7 +78,6 @@ class DatabaseController:
 
     Args:
         connectionURI (str): SQLObject connection URI
-        create (bool, optional): creates the database when True
         defaultConnection (bool, optional): sets DB as default sqlobject connection
         upgrade (bool, optional): upgrade the database if it is out of date
         databaseEncryptionKey (Optional[str]):
@@ -97,7 +96,6 @@ class DatabaseController:
     def __init__(
         self,
         connectionURI: str,
-        create: bool = False,
         defaultConnection: bool = False,
         upgrade: bool = False,
         databaseEncryptionKey: Optional[str] = None,
