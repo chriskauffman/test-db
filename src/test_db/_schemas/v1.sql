@@ -44,25 +44,25 @@ CREATE TABLE entity (
 CREATE TABLE entity_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     entity_id INT NOT NULL CONSTRAINT entity_id_exists REFERENCES entity(id) ON DELETE CASCADE,
-    key TEXT NOT NULL,
-    value TEXT,
+    item_key TEXT NOT NULL,
+    item_value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX entity_key_value_entityKeyIndex ON entity_key_value (entity_id, key);
+CREATE UNIQUE INDEX entity_key_value_entityKeyIndex ON entity_key_value (entity_id, item_key);
 CREATE TABLE entity_secure_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     entity_id INT NOT NULL CONSTRAINT entity_id_exists REFERENCES entity(id) ON DELETE CASCADE,
-    key TEXT NOT NULL,
-    value TEXT,
+    item_key TEXT NOT NULL,
+    item_value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX entity_secure_key_value_entityKeyIndex ON entity_secure_key_value (entity_id, key);
+CREATE UNIQUE INDEX entity_secure_key_value_entityKeyIndex ON entity_secure_key_value (entity_id, item_key);
 CREATE TABLE key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    key TEXT NOT NULL UNIQUE,
-    value TEXT,
+    item_key TEXT NOT NULL UNIQUE,
+    item_value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );

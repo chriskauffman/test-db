@@ -6,7 +6,7 @@ def test_init(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     assert EntityKeyValue(
-        key="testClientId", entity=test_entity, connection=temporary_db.connection
+        itemKey="testClientId", entity=test_entity, connection=temporary_db.connection
     )
 
 
@@ -14,32 +14,34 @@ def test_create_key_value(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     test_token = EntityKeyValue(
-        key="test_create_key",
+        itemKey="test_create_key",
         entity=test_entity,
-        value="test_value",
+        itemValue="test_value",
         connection=temporary_db.connection,
     )
 
-    assert isinstance(test_token.value, str)
-    assert test_token.value == "test_value"
+    assert isinstance(test_token.itemValue, str)
+    assert test_token.itemValue == "test_value"
 
 
 def test_update_key_value(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     test_token = EntityKeyValue(
-        key="test_update_key", entity=test_entity, connection=temporary_db.connection
+        itemKey="test_update_key",
+        entity=test_entity,
+        connection=temporary_db.connection,
     )
 
-    test_token.value = "xyz123"
+    test_token.itemValue = "xyz123"
 
-    assert isinstance(test_token.value, str)
-    assert test_token.value == "xyz123"
+    assert isinstance(test_token.itemValue, str)
+    assert test_token.itemValue == "xyz123"
 
-    test_token.value = "xyz888"
+    test_token.itemValue = "xyz888"
 
-    assert isinstance(test_token.value, str)
-    assert test_token.value == "xyz888"
+    assert isinstance(test_token.itemValue, str)
+    assert test_token.itemValue == "xyz888"
 
 
 def test_cascade_delete(temporary_db):
@@ -49,7 +51,7 @@ def test_cascade_delete(temporary_db):
 
     for item in range(5):
         EntityKeyValue(
-            key=f"cascadeTest{item}",
+            itemKey=f"cascadeTest{item}",
             entity=test_entity,
             connection=temporary_db.connection,
         )

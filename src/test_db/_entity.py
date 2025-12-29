@@ -86,10 +86,10 @@ class Entity(InheritableSQLObject):
             EntityKeyValue:
         """
         try:
-            return self.keyValuesSelect.filter(EntityKeyValue.q.key == key).getOne()
+            return self.keyValuesSelect.filter(EntityKeyValue.q.itemKey == key).getOne()
         except SQLObjectNotFound:
             return EntityKeyValue(
-                connection=self._connection, entity=self.id, key=key, **kwargs
+                connection=self._connection, entity=self.id, itemKey=key, **kwargs
             )
 
     def getSecureKeyValueByKey(self, key: str, **kwargs) -> EntitySecureKeyValue:
@@ -104,9 +104,9 @@ class Entity(InheritableSQLObject):
         """
         try:
             return self.secureKeyValuesSelect.filter(
-                EntitySecureKeyValue.q.key == key
+                EntitySecureKeyValue.q.itemKey == key
             ).getOne()
         except SQLObjectNotFound:
             return EntitySecureKeyValue(
-                connection=self._connection, entity=self.id, key=key, **kwargs
+                connection=self._connection, entity=self.id, itemKey=key, **kwargs
             )

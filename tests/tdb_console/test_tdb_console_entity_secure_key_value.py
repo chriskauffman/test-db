@@ -5,14 +5,17 @@ from test_db.tdb_console import main as tdb
 def test_entity_secure_key_value_view(capsys, monkeypatch, temporary_db):
     person = test_db.Person(connection=temporary_db.connection)
     personal_key_value = test_db.EntitySecureKeyValue(
-        connection=temporary_db.connection, entity=person, key="secret", value="test"
+        connection=temporary_db.connection,
+        entity=person,
+        itemKey="secret",
+        itemValue="test",
     )
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             f"set db_connection_uri {temporary_db.connectionURI}",
-            f"tdb_entity_secure_key_value_view {person.gID} {personal_key_value.key}",
+            f"tdb_entity_secure_key_value_view {person.gID} {personal_key_value.itemKey}",
             "quit",
         ],
     )

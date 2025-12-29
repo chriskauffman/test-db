@@ -25,12 +25,12 @@ class EntityKeyValueView(BaseView):
     def add(
         cls,
         entity: Union[Organization, Person],
-        key: str,
-        value: Any,
+        itemKey: str,
+        itemValue: Any,
         interactive: bool = True,
     ) -> EntityKeyValue:
         """Add a Secure Key Value to an entity"""
-        return EntityKeyValue(entity=entity, key=key, value=value)
+        return EntityKeyValue(entity=entity, itemKey=itemKey, itemValue=itemValue)
 
     @classmethod
     def list(
@@ -48,6 +48,12 @@ class EntityKeyValueView(BaseView):
         super().__init__(**kwargs)
         self._entity_key_value = entity_key_value
 
+    def edit(self):
+        """Edit a key value"""
+        self._entity_key_value.itemValue = self._getStrInput(
+            f"{self._entity_key_value.itemKey}", self._entity_key_value.itemValue
+        )
+
     def view(self):
         """Display brief details of the key value"""
-        print(f"{self._entity_key_value.key} = {self._entity_key_value.value}")
+        print(f"{self._entity_key_value.itemKey} = {self._entity_key_value.itemValue}")

@@ -32,8 +32,8 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
 def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
     test_key = nanoid.generate()
     test_db.KeyValue(
-        key=test_key,
-        value="test_value",
+        itemKey=test_key,
+        itemValue="test_value",
         connection=temporary_db.connection,
     )
     monkeypatch.setattr(
@@ -60,7 +60,7 @@ def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
 
 def test_key_value_delete(capsys, monkeypatch, temporary_db):
     test_key_value = test_db.KeyValue(
-        connection=temporary_db.connection, key="test_delete_key_value"
+        connection=temporary_db.connection, itemKey="test_delete_key_value"
     )
     assert (
         test_db.KeyValue.get(test_key_value.id, connection=temporary_db.connection)
@@ -75,7 +75,7 @@ def test_key_value_delete(capsys, monkeypatch, temporary_db):
             temporary_db.connectionURI,
             "key-value",
             "delete",
-            test_key_value.key,
+            test_key_value.itemKey,
         ],
     )
 

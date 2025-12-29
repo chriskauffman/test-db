@@ -36,8 +36,8 @@ class EntitySecureKeyValueCommandSet(BaseCommandSet):
         try:
             test_db.EntitySecureKeyValueView.add(
                 entity=entity,
-                key=args.key,
-                value=args.value,
+                itemKey=args.key,
+                itemValue=args.value,
                 interactive=self._cmd.command_interaction,
             )
         except DuplicateEntryError as exc:
