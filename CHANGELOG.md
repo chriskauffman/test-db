@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0-beta.2](https://github.com/chriskauffman/test-db/compare/v0.2.0-beta.1...v0.2.0-beta.2) (2025-12-29)
+
+
+### Bug Fixes
+
+* moving logger out of class ([b0183e5](https://github.com/chriskauffman/test-db/commit/b0183e5ae8d079e218171dca65d34cac525909ad)), closes [#51](https://github.com/chriskauffman/test-db/issues/51)
+* renamed cmd2 history file ([0edc5dd](https://github.com/chriskauffman/test-db/commit/0edc5dd23d4700187aca48ba2c567eea3a0f2860)), closes [#49](https://github.com/chriskauffman/test-db/issues/49)
+
+
+### Miscellaneous Chores
+
+* release 0.2.0-beta.2 ([a83099d](https://github.com/chriskauffman/test-db/commit/a83099d076a0247d8e60a1c15e66ff92f3af4703))
+
 ## [0.2.0-beta.1](https://github.com/chriskauffman/test-db/compare/v0.2.0-beta.0...v0.2.0-beta.1) (2025-12-29)
 
 
