@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0-beta.3](https://github.com/chriskauffman/test-db/compare/v0.2.0-beta.2...v0.2.0-beta.3) (2025-12-30)
+
+
+### Miscellaneous Chores
+
+* release 0.2.0-beta.3 ([76dbd48](https://github.com/chriskauffman/test-db/commit/76dbd488f360bb8bbc48120ac6452a9785e1bdb1))
+
 ## [0.2.0-beta.2](https://github.com/chriskauffman/test-db/compare/v0.2.0-beta.1...v0.2.0-beta.2) (2025-12-29)
 
 
