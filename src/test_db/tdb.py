@@ -2,6 +2,7 @@
 
 from importlib.metadata import version as get_version
 import logging
+import logging.handlers
 import pathlib
 import sys
 
@@ -73,26 +74,26 @@ def tdb_app_callback(
         )
         sys.exit(1)
 
-    root_logger = logging.getLogger("")
-    root_logger.setLevel(logging.DEBUG)
-
-    logging_file_handler = logging.FileHandler(
-        pathlib.Path(settings.log_path, "test_db.log"),
-        mode="w",
+    logging_file_handler = logging.handlers.RotatingFileHandler(
+        pathlib.Path(settings.log_path, "tdb.log"),
         encoding="utf-8",
+        maxBytes=2 * 1024 * 1024,  # 2 MB
+        backupCount=10,
     )
     logging_file_handler.setLevel(settings.log_level_file)
     logging_file_handler.setFormatter(
-        logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+        logging.Formatter(
+            "%(asctime)s - %(module)s - %(levelname)s - %(name)s - %(message)s"
+        )
     )
-    root_logger.addHandler(logging_file_handler)
+    logger.addHandler(logging_file_handler)
 
     logging_stream_handler = logging.StreamHandler(sys.stdout)
     logging_stream_handler.setLevel(settings.log_level_screen)
     logging_stream_handler.setFormatter(
         logging.Formatter("%(levelname)s - %(message)s")
     )
-    root_logger.addHandler(logging_stream_handler)
+    logger.addHandler(logging_stream_handler)
     logger.debug("settings=%s", settings)
 
     test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
