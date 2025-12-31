@@ -89,3 +89,31 @@ def test_key_value_delete(capsys, monkeypatch, temporary_db):
 
     with pytest.raises(SQLObjectNotFound):
         test_db.KeyValue.get(test_key_value.id, connection=temporary_db.connection)
+
+
+def test_key_value_view(capsys, monkeypatch, person, temporary_db):
+    test_key = str(uuid.uuid4())
+    test_db.KeyValue(
+        itemKey=test_key,
+        itemValue="test value",
+        connection=temporary_db.connection,
+    )
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "key-value",
+            "view",
+            test_key,
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert test_key in captured.out

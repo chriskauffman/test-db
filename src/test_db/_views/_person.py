@@ -102,4 +102,7 @@ class PersonView(BaseView):
         print("\nPersonal Key Values:")
         EntityKeyValueView.list(self._person.keyValues)
         print("\nPersonal Secure Key Values:")
-        EntitySecureKeyValueView.list(self._person.secureKeyValues)
+        try:
+            EntitySecureKeyValueView.list(self._person.secureKeyValues)
+        except ValueError:
+            print("Unable to decrypt - check database encryption key")

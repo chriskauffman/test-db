@@ -39,10 +39,13 @@ class EntitySecureKeyValueView(BaseView):
         **kwargs,
     ):
         """List all people"""
-        if key_values is None:
-            key_values = EntitySecureKeyValue.select(**kwargs)
-        for key_value in key_values:
-            EntitySecureKeyValueView(key_value).view()
+        try:
+            if key_values is None:
+                key_values = EntitySecureKeyValue.select(**kwargs)
+            for key_value in key_values:
+                EntitySecureKeyValueView(key_value).view()
+        except ValueError:
+            print("Unable to decrypt - check database encryption key")
 
     def __init__(self, entity_secure_key_value: EntitySecureKeyValue, **kwargs):
         super().__init__(**kwargs)
@@ -50,9 +53,15 @@ class EntitySecureKeyValueView(BaseView):
 
     def view(self):
         """Display brief details of the key value"""
-        print(f"{self._entity_secure_key_value.itemKey}")
+        try:
+            print(f"{self._entity_secure_key_value.itemKey}")
+        except ValueError:
+            print("Unable to decrypt - check database encryption key")
 
     def viewDetails(self):
-        print(
-            f"{self._entity_secure_key_value.itemKey} = {self._entity_secure_key_value.itemValue}"
-        )
+        try:
+            print(
+                f"{self._entity_secure_key_value.itemKey} = {self._entity_secure_key_value.itemValue}"
+            )
+        except ValueError:
+            print("Unable to decrypt - check database encryption key")

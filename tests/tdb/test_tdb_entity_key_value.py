@@ -139,3 +139,28 @@ def test_entity_key_value_list(capsys, monkeypatch, person, temporary_db):
 
     captured = capsys.readouterr()
     assert captured.out
+
+
+def test_entity_key_value_view(capsys, monkeypatch, person, temporary_db):
+    test_key = str(uuid.uuid4())
+    person.getKeyValueByKey(test_key, itemValue="test value")
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "entity-key-value",
+            "view",
+            str(person.gID),
+            test_key,
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert test_key in captured.out
