@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0-beta.4](https://github.com/chriskauffman/test-db/compare/v0.2.0-beta.3...v0.2.0-beta.4) (2025-12-31)
+
+
+### Bug Fixes
+
+* needed to catch errors if DB encryption key not set and secure key value accessed ([d8375a9](https://github.com/chriskauffman/test-db/commit/d8375a9977c2445da0e1a2898e3c8d64b6bfe7fe)), closes [#55](https://github.com/chriskauffman/test-db/issues/55)
+
+
+### Miscellaneous Chores
+
+* release 0.2.0-beta.4 ([c59f3f9](https://github.com/chriskauffman/test-db/commit/c59f3f91be2f1b481335d2b74ff06af64717db18))
+
 ## [0.2.0-beta.3](https://github.com/chriskauffman/test-db/compare/v0.2.0-beta.2...v0.2.0-beta.3) (2025-12-30)
 
 
