@@ -1,9 +1,12 @@
+import logging
 import sys
 
 from formencode.validators import Invalid  # type: ignore
 from sqlobject import SQLObjectNotFound  # type: ignore
 
 import test_db
+
+logger = logging.getLogger(__name__)
 
 
 def validate_entity(gid: str):

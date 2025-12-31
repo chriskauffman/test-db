@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from formencode.validators import Invalid  # type: ignore
@@ -7,6 +8,8 @@ import typer
 
 import test_db
 from ._typer_options import _TyperOptions
+
+logger = logging.getLogger(__name__)
 
 key_value_app = typer.Typer()
 

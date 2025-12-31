@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from formencode.validators import Invalid  # type: ignore
@@ -11,6 +12,8 @@ from typing_extensions import Optional
 import test_db
 from ._typer_options import _TyperOptions
 from ._validate import validate_organization, validate_person
+
+logger = logging.getLogger(__name__)
 
 job_app = typer.Typer()
 

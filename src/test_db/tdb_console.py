@@ -103,6 +103,7 @@ def main() -> None:
         )
         sys.exit(1)
 
+    logger.setLevel(logging.DEBUG)
     logging_file_handler = logging.handlers.RotatingFileHandler(
         pathlib.Path(settings.log_path, "tdb_console.log"),
         encoding="utf-8",

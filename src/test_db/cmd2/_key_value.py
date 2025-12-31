@@ -1,3 +1,5 @@
+import logging
+
 import cmd2
 from cmd2 import with_default_category
 
@@ -14,6 +16,8 @@ from formencode.validators import Invalid  # type: ignore
 import test_db
 
 from ._base_command_set import BaseCommandSet
+
+logger = logging.getLogger(__name__)
 
 
 @with_default_category("Database")

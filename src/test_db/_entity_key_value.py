@@ -1,4 +1,8 @@
+import logging
+
 from sqlobject import DateTimeCol, ForeignKey, DatabaseIndex, SQLObject, StringCol  # type: ignore
+
+logger = logging.getLogger(__name__)
 
 
 class EntityKeyValue(SQLObject):
