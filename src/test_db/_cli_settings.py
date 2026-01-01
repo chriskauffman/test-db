@@ -67,8 +67,8 @@ class Settings(BaseSettings):
     database_fernet_iterations: int = Field(
         default=1_200_000, description="number of iterations for fernet key generation"
     )
-    db_file_path: Optional[pathlib.Path] = Field(
-        default=None, description="database file"
+    db_connection_uri: Optional[str] = Field(
+        default=f"sqlite:{DEFAULT_DB_PATH}", description="sqlobject connection URI"
     )
     log_level_file: Union[
         int, Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]

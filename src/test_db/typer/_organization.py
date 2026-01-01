@@ -1,8 +1,11 @@
+import logging
 import typer
 
 import test_db
 from ._typer_options import _TyperOptions
 from ._validate import validate_organization
+
+logger = logging.getLogger(__name__)
 
 organization_app = typer.Typer()
 

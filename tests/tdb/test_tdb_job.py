@@ -10,8 +10,8 @@ def test_job_add(capsys, monkeypatch, person, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "job",
             "add",
             "--organization-gid",
@@ -35,8 +35,8 @@ def test_job_add_bad_org(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "job",
             "add",
             "--organization-gid",
@@ -60,8 +60,8 @@ def test_job_add_bad_person(capsys, monkeypatch, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "job",
             "add",
             "--organization-gid",
@@ -88,8 +88,8 @@ def test_job_delete(capsys, monkeypatch, person, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "job",
             "delete",
             str(test_job.gID),
@@ -109,11 +109,23 @@ def test_job_delete(capsys, monkeypatch, person, organization, temporary_db):
 
 
 def test_job_list(
-    capsys, monkeypatch, temporary_db, tmp_path_factory, organization, person
+    capsys,
+    monkeypatch,
+    temporary_db,
+    tmp_path_factory,
+    organization,
+    person,
 ):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--create", "--db-file-path", empty_db_file, "job", "list"]
+        "sys.argv",
+        [
+            "tdb",
+            "--db-connection-uri",
+            f"sqlite:{empty_db_file}",
+            "job",
+            "list",
+        ],
     )
 
     try:
@@ -131,7 +143,8 @@ def test_job_list(
         person=person,
     )
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", temporary_db.filePath, "job", "list"]
+        "sys.argv",
+        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "job", "list"],
     )
     try:
         tdb()
@@ -150,7 +163,14 @@ def test_job_view(capsys, monkeypatch, temporary_db, organization, person):
     )
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", temporary_db.filePath, "job", "view", str(job.gID)],
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "job",
+            "view",
+            str(job.gID),
+        ],
     )
 
     try:

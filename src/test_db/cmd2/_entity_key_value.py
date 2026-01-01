@@ -1,3 +1,5 @@
+import logging
+
 import cmd2
 from cmd2 import with_default_category
 
@@ -11,6 +13,8 @@ from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 import test_db
 
 from ._base_command_set import BaseCommandSet
+
+logger = logging.getLogger(__name__)
 
 
 @with_default_category("Database")
@@ -36,8 +40,8 @@ class EntityKeyValueCommandSet(BaseCommandSet):
         try:
             test_db.EntityKeyValueView.add(
                 entity=entity,
-                key=args.key,
-                value=args.value,
+                itemKey=args.key,
+                itemValue=args.value,
                 interactive=self._cmd.command_interaction,
             )
         except DuplicateEntryError as exc:

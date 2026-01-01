@@ -8,7 +8,13 @@ from test_db.tdb import app as tdb
 def test_bank_account_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", temporary_db.filePath, "bank-account", "add"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "bank-account",
+            "add",
+        ],
     )
 
     try:
@@ -25,8 +31,8 @@ def test_bank_account_add_with_owner(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "bank-account",
             "add",
             "--entity-gid",
@@ -48,8 +54,8 @@ def test_bank_account_add_with_bad_owner(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "bank-account",
             "add",
             "--entity-gid",
@@ -75,8 +81,8 @@ def test_bank_account_connect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "bank-account",
             "connect",
             str(test_bank_account.gID),
@@ -102,8 +108,8 @@ def test_bank_account_connect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "bank-account",
             "connect",
             str(test_bank_account.gID),
@@ -137,8 +143,8 @@ def test_bank_account_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "bank-account",
             "delete",
             str(test_bank_account.gID),
@@ -171,8 +177,8 @@ def test_bank_account_disconnect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "bank-account",
             "disconnect",
             str(test_bank_account.gID),
@@ -201,8 +207,8 @@ def test_bank_account_disconnect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "bank-account",
             "disconnect",
             str(test_bank_account.gID),
@@ -227,7 +233,13 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--create", "--db-file-path", empty_db_file, "bank-account", "list"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            f"sqlite:{empty_db_file}",
+            "bank-account",
+            "list",
+        ],
     )
 
     try:
@@ -242,7 +254,13 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     test_db.BankAccount(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", temporary_db.filePath, "bank-account", "list"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "bank-account",
+            "list",
+        ],
     )
     try:
         tdb()
@@ -259,8 +277,8 @@ def test_bank_account_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "bank-account",
             "view",
             str(bank_account.gID),

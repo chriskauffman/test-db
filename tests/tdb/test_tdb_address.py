@@ -7,7 +7,8 @@ from test_db.tdb import app as tdb
 
 def test_address_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", temporary_db.filePath, "address", "add"]
+        "sys.argv",
+        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "address", "add"],
     )
 
     try:
@@ -24,8 +25,8 @@ def test_address_add_with_owner(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "address",
             "add",
             "--entity-gid",
@@ -47,8 +48,8 @@ def test_address_add_with_bad_owner(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "address",
             "add",
             "--entity-gid",
@@ -74,8 +75,8 @@ def test_address_connect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "address",
             "connect",
             str(test_address.gID),
@@ -101,8 +102,8 @@ def test_address_connect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "address",
             "connect",
             str(test_address.gID),
@@ -134,8 +135,8 @@ def test_address_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "address",
             "delete",
             str(test_address.gID),
@@ -166,8 +167,8 @@ def test_address_disconnect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "address",
             "disconnect",
             str(test_address.gID),
@@ -196,8 +197,8 @@ def test_address_disconnect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "address",
             "disconnect",
             str(test_address.gID),
@@ -224,9 +225,8 @@ def test_address_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
         "sys.argv",
         [
             "tdb",
-            "--create",
-            "--db-file-path",
-            empty_db_file,
+            "--db-connection-uri",
+            f"sqlite:{empty_db_file}",
             "address",
             "list",
         ],
@@ -243,7 +243,8 @@ def test_address_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
 
     test_db.Address(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", temporary_db.filePath, "address", "list"]
+        "sys.argv",
+        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "address", "list"],
     )
     try:
         tdb()
@@ -260,8 +261,8 @@ def test_address_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "address",
             "view",
             str(address.gID),

@@ -6,7 +6,7 @@ views to assist applications and utilities in managing test data.
 Example:
     import test_db
 
-    db = test_db.DatabaseController("test_db.sqlite", autoCreate=True)
+    db = test_db.DatabaseController("sqlite:test_db.sqlite", autoCreate=True)
     new_person = test_db.PersonView.add()
 """
 
@@ -57,7 +57,11 @@ databaseEncryptionKey: Optional[str] = None
 # https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet
 fernetIterations: int = 1_200_000
 
-RESTRICTED_KEYS = ("TestDB_EncryptedPickleColSalt",)
+RESTRICTED_KEYS = (
+    "TestDB_ApplicationID",
+    "TestDB_ApplicationSchemaVersion",
+    "TestDB_EncryptedPickleColSalt",
+)
 
 logger = logging.getLogger(__name__)
 

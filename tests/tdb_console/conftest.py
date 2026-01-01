@@ -14,6 +14,9 @@ def organization(temporary_db):
     return test_db.Organization(connection=temporary_db.connection)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def set_env():
+@pytest.fixture(scope="module", autouse=True)
+def set_env(temporary_db):
+    # setting DB connection to avoid defaulting to a real DB in tests
+    os.environ["DB_CONNECTION_URI"] = temporary_db.connectionURI
     os.environ["DATABASE_ENCRYPTION_KEY"] = "a test encryption key"
+    os.environ["LOG_PATH"] = "log"

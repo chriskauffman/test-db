@@ -1,3 +1,5 @@
+import logging
+
 import cmd2
 from cmd2 import with_default_category
 
@@ -15,12 +17,14 @@ import test_db
 
 from ._base_command_set import BaseCommandSet
 
+logger = logging.getLogger(__name__)
+
 
 @with_default_category("Database")
 class KeyValueCommandSet(BaseCommandSet):
     def validate_key(self, key: str):
         try:
-            return test_db.KeyValue.byKey(key)
+            return test_db.KeyValue.byItemKey(key)
         except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
 
@@ -39,8 +43,8 @@ class KeyValueCommandSet(BaseCommandSet):
         readline.set_auto_history(False)
         try:
             test_db.KeyValueView.add(
-                key=args.key,
-                value=args.value,
+                itemKey=args.key,
+                itemValue=args.value,
                 interactive=self._cmd.command_interaction,
             )
         except DuplicateEntryError as exc:

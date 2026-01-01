@@ -11,6 +11,8 @@ Example:
     app.add_typer(key_value_app, name="key-value")"
 """
 
+import logging
+
 from ._address import address_app as address_app
 from ._bank_account import bank_account_app as bank_account_app
 from ._debit_card import debit_card_app as debit_card_app
@@ -22,6 +24,8 @@ from ._job import job_app as job_app
 from ._key_value import key_value_app as key_value_app
 from ._organization import organization_app as organization_app
 from ._person import person_app as person_app
+
+logger = logging.getLogger(__name__)
 
 # Options: Available through _TyperOptions
 interactive = False

@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from sqlobject.dberrors import DuplicateEntryError  # type: ignore
@@ -7,6 +8,8 @@ import test_db
 from ._typer_options import _TyperOptions
 from ._validate import validate_entity
 
+logger = logging.getLogger(__name__)
+
 entity_key_value_app = typer.Typer()
 
 
@@ -15,7 +18,10 @@ def entity_key_value_add(entity_gid: str, key: str, value: str):
     entity = validate_entity(entity_gid)
     try:
         test_db.EntityKeyValueView.add(
-            entity=entity, key=key, value=value, interactive=_TyperOptions().interactive
+            entity=entity,
+            itemKey=key,
+            itemValue=value,
+            interactive=_TyperOptions().interactive,
         )
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {str(exc)}")

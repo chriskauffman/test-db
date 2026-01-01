@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from formencode.validators import Invalid  # type: ignore
@@ -12,6 +13,8 @@ from typing_extensions import Optional
 import test_db
 from ._typer_options import _TyperOptions
 from ._validate import validate_entity
+
+logger = logging.getLogger(__name__)
 
 debit_card_app = typer.Typer()
 

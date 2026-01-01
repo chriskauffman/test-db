@@ -1,4 +1,8 @@
+import logging
+
 from sqlobject import DatabaseIndex, ForeignKey, SQLObject  # type: ignore
+
+logger = logging.getLogger(__name__)
 
 
 class BankAccountEntity(SQLObject):

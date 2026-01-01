@@ -1,6 +1,6 @@
 [project]
 name = "test-db"
-version = "0.1.6-beta.1"
+version = "0.2.0-beta.4"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -34,8 +34,10 @@ dev = [
     "ruff>=0.8.2",
     "pytest>=8.3.4",
     "coverage>=7.6.9",
+    "psycopg[binary]>=3.3.2",
     "pydoclint>=0.6.10",
     "types-nanoid>=2.0.0.20240601",
+    "mysqlclient>=2.2.7",
 ]
 
 [tool.pytest.ini_options]

@@ -12,14 +12,14 @@ class KeyValue(SQLObject):
     Designed for simple data storage needs such as database or app configuration
 
     Attributes:
-        key (StringCol):
-        value (StringCol):
+        itemKey (StringCol):
+        itemValue (StringCol):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
     """
 
-    key: StringCol = StringCol(alternateID=True, unique=True)
-    value: StringCol = StringCol(default=None)
+    itemKey: StringCol = StringCol(alternateID=True, unique=True)
+    itemValue: StringCol = StringCol(default=None)
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()

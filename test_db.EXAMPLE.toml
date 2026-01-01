@@ -1,0 +1,8 @@
+# Sample config file
+
+# database_encryption_key = "replace this key"  # Recommended to set with env DATABASE_ENCRYPTION_KEY
+# db_connection_uri = "sqlite:test_db.db"       #
+# database_fernet_iterations = 1200000          #
+# log_level_file = "INFO"                       # accepts int or string
+# log_level_screen = "WARNING"                  # accepts int or string
+# log_path = "./log"                            # defaults to ~/.test_db/log

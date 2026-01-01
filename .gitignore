@@ -1,6 +1,9 @@
 .vscode
 *.db
 *.sqlite
+backup/
+log/
+test_db.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

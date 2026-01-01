@@ -6,7 +6,7 @@ def test_init(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     assert EntitySecureKeyValue(
-        key="testClientId", entity=test_entity, connection=temporary_db.connection
+        itemKey="testClientId", entity=test_entity, connection=temporary_db.connection
     )
 
 
@@ -14,34 +14,34 @@ def test_create_key_value(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     test_token = EntitySecureKeyValue(
-        key="testClientId",
+        itemKey="testClientId",
         entity=test_entity,
-        value={},
+        itemValue={},
         connection=temporary_db.connection,
     )
 
-    assert isinstance(test_token.value, dict)
-    assert test_token.value == {}
+    assert isinstance(test_token.itemValue, dict)
+    assert test_token.itemValue == {}
 
 
 def test_update_key_value(temporary_db):
     test_entity = Entity(connection=temporary_db.connection)
 
     test_token = EntitySecureKeyValue(
-        key="testClientId", entity=test_entity, connection=temporary_db.connection
+        itemKey="testClientId", entity=test_entity, connection=temporary_db.connection
     )
 
-    test_token.value = {"access_token": "abc123", "refresh_token": "xyz123"}
+    test_token.itemValue = {"access_token": "abc123", "refresh_token": "xyz123"}
 
-    assert isinstance(test_token.value, dict)
-    assert test_token.value["access_token"] == "abc123"
-    assert test_token.value["refresh_token"] == "xyz123"
+    assert isinstance(test_token.itemValue, dict)
+    assert test_token.itemValue["access_token"] == "abc123"
+    assert test_token.itemValue["refresh_token"] == "xyz123"
 
-    test_token.value = {"access_token": "abc888", "refresh_token": "xyz888"}
+    test_token.itemValue = {"access_token": "abc888", "refresh_token": "xyz888"}
 
-    assert isinstance(test_token.value, dict)
-    assert test_token.value["access_token"] == "abc888"
-    assert test_token.value["refresh_token"] == "xyz888"
+    assert isinstance(test_token.itemValue, dict)
+    assert test_token.itemValue["access_token"] == "abc888"
+    assert test_token.itemValue["refresh_token"] == "xyz888"
 
 
 def test_cascade_delete(temporary_db):
@@ -53,7 +53,7 @@ def test_cascade_delete(temporary_db):
 
     for item in range(5):
         EntitySecureKeyValue(
-            key=f"cascadeTest{item}",
+            itemKey=f"cascadeTest{item}",
             entity=test_entity,
             connection=temporary_db.connection,
         )

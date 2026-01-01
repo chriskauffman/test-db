@@ -16,7 +16,7 @@ class EntitySecureKeyValueView(BaseView):
     """Secure key value views
 
     Args:
-        personal_key_value (EntitySecureKeyValue):
+        entity_secure_key_value (EntitySecureKeyValue):
         **kwargs:
             - user_inputs_required (bool):
     """
@@ -25,12 +25,12 @@ class EntitySecureKeyValueView(BaseView):
     def add(
         cls,
         entity: Union[Organization, Person],
-        key: str,
-        value: Any,
+        itemKey: str,
+        itemValue: Any,
         interactive: bool = True,
     ) -> EntitySecureKeyValue:
         """Add a Secure Key Value to an entity"""
-        return EntitySecureKeyValue(entity=entity, key=key, value=value)
+        return EntitySecureKeyValue(entity=entity, itemKey=itemKey, itemValue=itemValue)
 
     @classmethod
     def list(
@@ -39,20 +39,29 @@ class EntitySecureKeyValueView(BaseView):
         **kwargs,
     ):
         """List all people"""
-        if key_values is None:
-            key_values = EntitySecureKeyValue.select(**kwargs)
-        for key_value in key_values:
-            EntitySecureKeyValueView(key_value).view()
+        try:
+            if key_values is None:
+                key_values = EntitySecureKeyValue.select(**kwargs)
+            for key_value in key_values:
+                EntitySecureKeyValueView(key_value).view()
+        except ValueError:
+            print("Unable to decrypt - check database encryption key")
 
-    def __init__(self, personal_key_value: EntitySecureKeyValue, **kwargs):
+    def __init__(self, entity_secure_key_value: EntitySecureKeyValue, **kwargs):
         super().__init__(**kwargs)
-        self._personal_key_value = personal_key_value
+        self._entity_secure_key_value = entity_secure_key_value
 
     def view(self):
         """Display brief details of the key value"""
-        print(f"{self._personal_key_value.entity.gID}, {self._personal_key_value.key}")
+        try:
+            print(f"{self._entity_secure_key_value.itemKey}")
+        except ValueError:
+            print("Unable to decrypt - check database encryption key")
 
     def viewDetails(self):
-        print(
-            f"{self._personal_key_value.entity.gID}, {self._personal_key_value.key} = {self._personal_key_value.value}"
-        )
+        try:
+            print(
+                f"{self._entity_secure_key_value.itemKey} = {self._entity_secure_key_value.itemValue}"
+            )
+        except ValueError:
+            print("Unable to decrypt - check database encryption key")

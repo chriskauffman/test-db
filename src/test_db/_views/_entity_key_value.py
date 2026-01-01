@@ -16,7 +16,7 @@ class EntityKeyValueView(BaseView):
     """Secure key value views
 
     Args:
-        personal_key_value (EntityKeyValue):
+        entity_key_value (EntityKeyValue):
         **kwargs:
             - user_inputs_required (bool):
     """
@@ -25,12 +25,12 @@ class EntityKeyValueView(BaseView):
     def add(
         cls,
         entity: Union[Organization, Person],
-        key: str,
-        value: Any,
+        itemKey: str,
+        itemValue: Any,
         interactive: bool = True,
     ) -> EntityKeyValue:
         """Add a Secure Key Value to an entity"""
-        return EntityKeyValue(entity=entity, key=key, value=value)
+        return EntityKeyValue(entity=entity, itemKey=itemKey, itemValue=itemValue)
 
     @classmethod
     def list(
@@ -44,15 +44,16 @@ class EntityKeyValueView(BaseView):
         for key_value in key_values:
             EntityKeyValueView(key_value).view()
 
-    def __init__(self, personal_key_value: EntityKeyValue, **kwargs):
+    def __init__(self, entity_key_value: EntityKeyValue, **kwargs):
         super().__init__(**kwargs)
-        self._personal_key_value = personal_key_value
+        self._entity_key_value = entity_key_value
+
+    def edit(self):
+        """Edit a key value"""
+        self._entity_key_value.itemValue = self._getStrInput(
+            f"{self._entity_key_value.itemKey}", self._entity_key_value.itemValue
+        )
 
     def view(self):
         """Display brief details of the key value"""
-        print(f"{self._personal_key_value.entity.gID}, {self._personal_key_value.key}")
-
-    def viewDetails(self):
-        print(
-            f"{self._personal_key_value.entity.gID}, {self._personal_key_value.key} = {self._personal_key_value.value}"
-        )
+        print(f"{self._entity_key_value.itemKey} = {self._entity_key_value.itemValue}")

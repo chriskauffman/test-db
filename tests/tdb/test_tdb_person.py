@@ -7,7 +7,8 @@ from test_db.tdb import app as tdb
 
 def test_person_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", temporary_db.filePath, "person", "add"]
+        "sys.argv",
+        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "person", "add"],
     )
 
     try:
@@ -30,8 +31,8 @@ def test_person_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "person",
             "delete",
             str(test_person.gID),
@@ -54,7 +55,13 @@ def test_person_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--create", "--db-file-path", empty_db_file, "person", "list"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            f"sqlite:{empty_db_file}",
+            "person",
+            "list",
+        ],
     )
 
     try:
@@ -68,7 +75,8 @@ def test_person_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
 
     test_db.Person(connection=temporary_db.connection)
     monkeypatch.setattr(
-        "sys.argv", ["tdb", "--db-file-path", temporary_db.filePath, "person", "list"]
+        "sys.argv",
+        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "person", "list"],
     )
     try:
         tdb()
@@ -84,8 +92,8 @@ def test_person_view(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "person",
             "view",
             str(person.gID),

@@ -8,7 +8,7 @@ from test_db.tdb import app as tdb
 def test_debit_card_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", temporary_db.filePath, "debit-card", "add"],
+        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "debit-card", "add"],
     )
 
     try:
@@ -25,8 +25,8 @@ def test_debit_card_add_with_owner(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "debit-card",
             "add",
             "--entity-gid",
@@ -48,8 +48,8 @@ def test_debit_card_add_with_bad_owner(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "debit-card",
             "add",
             "--entity-gid",
@@ -75,8 +75,8 @@ def test_debit_card_connect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "debit-card",
             "connect",
             str(test_debit_card.gID),
@@ -102,8 +102,8 @@ def test_debit_card_connect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "debit-card",
             "connect",
             str(test_debit_card.gID),
@@ -134,8 +134,8 @@ def test_debit_card_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "debit-card",
             "delete",
             str(test_debit_card.gID),
@@ -166,8 +166,8 @@ def test_debit_card_disconnect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "debit-card",
             "disconnect",
             str(test_debit_card.gID),
@@ -196,8 +196,8 @@ def test_debit_card_disconnect(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "debit-card",
             "disconnect",
             str(test_debit_card.gID),
@@ -224,9 +224,8 @@ def test_debit_card_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
         "sys.argv",
         [
             "tdb",
-            "--create",
-            "--db-file-path",
-            empty_db_file,
+            "--db-connection-uri",
+            f"sqlite:{empty_db_file}",
             "debit-card",
             "list",
         ],
@@ -244,7 +243,13 @@ def test_debit_card_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     test_db.DebitCard(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-file-path", temporary_db.filePath, "debit-card", "list"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "debit-card",
+            "list",
+        ],
     )
     try:
         tdb()
@@ -261,8 +266,8 @@ def test_debit_card_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-file-path",
-            temporary_db.filePath,
+            "--db-connection-uri",
+            temporary_db.connectionURI,
             "debit-card",
             "view",
             str(debit_card.gID),

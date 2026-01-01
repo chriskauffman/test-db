@@ -1,4 +1,5 @@
 import pytest
+import uuid
 
 from sqlobject.dberrors import DuplicateEntryError
 
@@ -18,14 +19,9 @@ def test_init(temporary_db):
 
 def test_duplicate_employee_id(temporary_db):
     test_organization = Organization(connection=temporary_db.connection)
+    employee_id = str(uuid.uuid4())
     Job(
-        employeeID="test_duplicate_employee_id",
-        organization=test_organization,
-        connection=temporary_db.connection,
-    )
-
-    assert Job(
-        employeeID="test_employee_id",
+        employeeID=employee_id,
         organization=test_organization,
         connection=temporary_db.connection,
     )
@@ -33,7 +29,7 @@ def test_duplicate_employee_id(temporary_db):
     # Should get an error if I try to add a job with the same employee ID
     with pytest.raises(DuplicateEntryError):
         Job(
-            employeeID="test_duplicate_employee_id",
+            employeeID=employee_id,
             organization=test_organization,
             connection=temporary_db.connection,
         )

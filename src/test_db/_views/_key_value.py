@@ -22,9 +22,9 @@ class KeyValueView(BaseView):
     """
 
     @classmethod
-    def add(cls, key: str, value: str, interactive: bool = True) -> KeyValue:
+    def add(cls, itemKey: str, itemValue: str, interactive: bool = True) -> KeyValue:
         """Add a key value"""
-        return KeyValue(key=key, value=value)
+        return KeyValue(itemKey=itemKey, itemValue=itemValue)
 
     @classmethod
     def list(
@@ -42,10 +42,10 @@ class KeyValueView(BaseView):
 
     def edit(self):
         """Edit a key value"""
-        self._key_value.value = self._getStrInput(
-            f"{self._key_value.key}", self._key_value.value
+        self._key_value.itemValue = self._getStrInput(
+            f"{self._key_value.itemKey}", self._key_value.itemValue
         )
 
     def view(self):
         """Display brief details of the key value"""
-        print(f"{self._key_value.key} = {self._key_value.value}")
+        print(f"{self._key_value.itemKey} = {self._key_value.itemValue}")

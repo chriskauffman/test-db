@@ -1,3 +1,5 @@
+import logging
+
 from cmd2 import CommandSet, with_default_category
 
 from sqlobject import SQLObjectNotFound  # type: ignore
@@ -5,6 +7,8 @@ from sqlobject import SQLObjectNotFound  # type: ignore
 from formencode.validators import Invalid  # type: ignore
 
 import test_db
+
+logger = logging.getLogger(__name__)
 
 
 @with_default_category("Database")

@@ -2,6 +2,7 @@
 
 from importlib.metadata import version as get_version
 import logging
+import logging.handlers
 import pathlib
 import sys
 
@@ -12,8 +13,7 @@ import typer
 from typing_extensions import Annotated, Optional
 
 import test_db
-from test_db._backup_file import backupFile
-from test_db._cli_settings import DEFAULT_DB_PATH, Settings
+from test_db._cli_settings import Settings
 from test_db.typer import (
     address_app,
     bank_account_app,
@@ -48,15 +48,9 @@ def version():
 
 @app.callback()
 def tdb_app_callback(
-    db_file_path: Annotated[
-        Optional[pathlib.Path], typer.Option(help="path to database file")
+    db_connection_uri: Annotated[
+        Optional[str], typer.Option(help="sqlobject connection string")
     ] = None,
-    create: Annotated[
-        bool,
-        typer.Option(
-            help="databases are not created by default, creates the database file when True"
-        ),
-    ] = False,
     interactive: Annotated[
         bool, typer.Option(help="allow interactive prompts for user input")
     ] = False,
@@ -67,24 +61,11 @@ def tdb_app_callback(
     """main callback for test_db typer applications"""
     test_db.typer.interactive = interactive
     settings = Settings()
-    db_file_path = db_file_path or settings.db_file_path or DEFAULT_DB_PATH
-    try:
-        backupFile(db_file_path, settings.backup_path)
-    except ValueError:
-        sys.stderr.write(
-            f"error: incorrect backup_path {settings.backup_path}, "
-            "must be existing directory"
-        )
-        sys.exit(1)
-    if (
-        not db_file_path.is_file()
-        and db_file_path != test_db.IN_MEMORY_DB_FILE
-        and not create
-    ):
-        sys.stderr.write(
-            f"error: DB file {db_file_path} does not exist: "
-            "check db_file_path in toml, env and command options or use --create"
-        )
+
+    db_connection_uri = db_connection_uri or settings.db_connection_uri
+
+    if not db_connection_uri:
+        sys.stderr.write("error: no database specified, use db_connection_uri")
         sys.exit(1)
 
     if not settings.log_path.is_dir():
@@ -93,36 +74,35 @@ def tdb_app_callback(
         )
         sys.exit(1)
 
-    root_logger = logging.getLogger("")
-    root_logger.setLevel(logging.DEBUG)
-
-    logging_file_handler = logging.FileHandler(
-        pathlib.Path(settings.log_path, "test_db.log"),
-        mode="w",
+    logger.setLevel(logging.DEBUG)
+    logging_file_handler = logging.handlers.RotatingFileHandler(
+        pathlib.Path(settings.log_path, "tdb.log"),
         encoding="utf-8",
+        maxBytes=2 * 1024 * 1024,  # 2 MB
+        backupCount=10,
     )
     logging_file_handler.setLevel(settings.log_level_file)
     logging_file_handler.setFormatter(
-        logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+        logging.Formatter(
+            "%(asctime)s - %(module)s - %(levelname)s - %(name)s - %(message)s"
+        )
     )
-    root_logger.addHandler(logging_file_handler)
+    logger.addHandler(logging_file_handler)
 
     logging_stream_handler = logging.StreamHandler(sys.stdout)
     logging_stream_handler.setLevel(settings.log_level_screen)
     logging_stream_handler.setFormatter(
         logging.Formatter("%(levelname)s - %(message)s")
     )
-    root_logger.addHandler(logging_stream_handler)
+    logger.addHandler(logging_stream_handler)
     logger.debug("settings=%s", settings)
 
     test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
     test_db.fernetIterations = settings.database_fernet_iterations
 
     test_db.DatabaseController(
-        db_file_path,
-        create=create,
+        db_connection_uri,
         defaultConnection=True,
-        upgrade=upgrade,
     )
 
 

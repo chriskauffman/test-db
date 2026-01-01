@@ -17,3 +17,4 @@ def organization(temporary_db):
 @pytest.fixture(scope="session", autouse=True)
 def set_env():
     os.environ["DATABASE_ENCRYPTION_KEY"] = "a test encryption key"
+    os.environ["LOG_PATH"] = "log"
