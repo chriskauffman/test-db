@@ -3,7 +3,14 @@ import logging
 
 # Using typing_extensions vs typing:
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
+from typing_extensions import Any, Optional, Union
+
+from typeid import TypeID
+from typeid.errors import (
+    InvalidTypeIDStringException,
+    PrefixValidationException,
+    SuffixValidationException,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +46,25 @@ class BaseView:
                 logger.error("invalid string input")
 
     @staticmethod
+    def _getTypeIDInput(
+        prompt: str, default: Optional[Union[str, TypeID]] = None
+    ) -> TypeID:
+        while True:
+            user_input = BaseView._getInput(prompt, default, acceptNull=False)
+            if isinstance(user_input, TypeID):
+                return user_input
+            try:
+                return TypeID.from_string(user_input)
+            except (
+                InvalidTypeIDStringException,
+                PrefixValidationException,
+                SuffixValidationException,
+            ):
+                logger.error("string input must be a valid TypeID")
+
+    @staticmethod
     def _getInput(
-        prompt: str, default: Optional[str] = None, acceptNull: Optional[bool] = False
+        prompt: str, default: Optional[Any] = None, acceptNull: Optional[bool] = False
     ) -> str:
         while True:
             if default:
