@@ -5,6 +5,7 @@ import logging
 from typing_extensions import List, Union
 
 from sqlobject import SQLObject  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
 from test_db import Address, Organization, Person
 from test_db._views._base_view import BaseView
@@ -50,7 +51,7 @@ class AddressView(BaseView):
     def list(
         cls, addresses: Union[List[Address], SQLObject.select, None] = None, **kwargs
     ):
-        """List all organizations"""
+        """List all addresses"""
         if addresses is None:
             addresses = Address.select(**kwargs)
         for address in addresses:
@@ -61,7 +62,7 @@ class AddressView(BaseView):
         self._address = address
 
     def delete(self, interactive: bool = True):
-        """Delete the card"""
+        """Delete the address"""
         if (
             interactive
             and input(f"Delete {self._address.visualID}? [y/n] ").strip().lower() != "y"
@@ -71,6 +72,15 @@ class AddressView(BaseView):
 
     def edit(self):
         """Edit the address"""
+        while True:
+            try:
+                self._address.gID = self._getTypeIDInput("gID", self._address.gID)
+                break
+            except DuplicateEntryError:
+                print("gID already exists. Please enter a different gID.")
+            except ValueError:
+                print("Invalid gID. Check prefix and suffix. Please try again.")
+
         self._address.description = self._getStrInput(
             "Description", self._address.description, acceptNull=True
         )
@@ -87,7 +97,7 @@ class AddressView(BaseView):
         print(f"{self._address.visualID}")
 
     def viewDetails(self):
-        """Display the person"""
+        """Display the address's details"""
         print(f"\nAddress ID: {self._address.gID}")
         print(f"\n{self._address.street}")
         print(

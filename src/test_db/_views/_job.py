@@ -5,6 +5,7 @@ import logging
 from typing_extensions import List, Optional, Union
 
 from sqlobject import SQLObject  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
 from test_db import Job, Organization, Person
 from test_db._views._base_view import BaseView
@@ -59,6 +60,15 @@ class JobView(BaseView):
 
     def edit(self):
         """Edit the job"""
+        while True:
+            try:
+                self._job.gID = self._getTypeIDInput("gID", self._job.gID)
+                break
+            except DuplicateEntryError:
+                print("gID already exists. Please enter a different gID.")
+            except ValueError:
+                print("Invalid gID. Check prefix and suffix. Please try again.")
+
         self._job.employeeID = self._getStrInput("Employee ID", self._job.employeeID)
         self._job.location = self._getStrInput(
             "Location", self._job.location, acceptNull=True
@@ -68,11 +78,11 @@ class JobView(BaseView):
         )
 
     def view(self):
-        """Display brief details of the debit card"""
+        """Display brief details of the job"""
         print(f"{self._job.visualID}")
 
     def viewDetails(self):
-        """Display brief details of the debit card"""
+        """Display brief details of the job"""
         print(f"\nJob ID: {self._job.gID}")
         print(f"\nEmployee ID:\t{self._job.employeeID}")
         print(f"Location:\t{self._job.location}")

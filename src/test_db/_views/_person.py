@@ -5,6 +5,7 @@ import logging
 from typing_extensions import List, Union
 
 from sqlobject import SQLObject  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
 from test_db import Person
 from test_db._views._base_view import BaseView
@@ -61,6 +62,15 @@ class PersonView(BaseView):
 
     def edit(self):
         """Edit the person"""
+        while True:
+            try:
+                self._person.gID = self._getTypeIDInput("gID", self._person.gID)
+                break
+            except DuplicateEntryError:
+                print("gID already exists. Please enter a different gID.")
+            except ValueError:
+                print("Invalid gID. Check prefix and suffix. Please try again.")
+
         self._person.firstName = self._getStrInput("First Name", self._person.firstName)
         self._person.lastName = self._getStrInput("Last Name", self._person.lastName)
         self._person.dateOfBirth = self._getDateInput(

@@ -5,6 +5,7 @@ import logging
 from typing_extensions import List, Union
 
 from sqlobject import SQLObject  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
 from test_db import Organization
 from test_db._views._base_view import BaseView
@@ -66,6 +67,17 @@ class OrganizationView(BaseView):
 
     def edit(self):
         """Edit the organization"""
+        while True:
+            try:
+                self._organization.gID = self._getTypeIDInput(
+                    "gID", self._organization.gID
+                )
+                break
+            except DuplicateEntryError:
+                print("gID already exists. Please enter a different gID.")
+            except ValueError:
+                print("Invalid gID. Check prefix and suffix. Please try again.")
+
         self._organization.name = self._getStrInput("Name", self._organization.name)
         self._organization.description = self._getStrInput(
             "Description", self._organization.description, acceptNull=True
@@ -81,7 +93,7 @@ class OrganizationView(BaseView):
         )
 
     def view(self):
-        """Display brief details of the person"""
+        """Display brief details of the organization"""
         print(f"{self._organization.visualID}")
 
     def viewDetails(self):
