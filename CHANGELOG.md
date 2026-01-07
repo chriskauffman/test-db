@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.1](https://github.com/chriskauffman/test-db/compare/v0.3.0...v0.3.1) (2026-01-07)
+
+
+### Bug Fixes
+
+* **cmd2:** corrected misnamed commands ([#67](https://github.com/chriskauffman/test-db/issues/67)) ([ad0ba9b](https://github.com/chriskauffman/test-db/commit/ad0ba9ba1913d66f8f1b2b9218b54494e31c7ddf)), closes [#66](https://github.com/chriskauffman/test-db/issues/66)
+
+
+### Miscellaneous Chores
+
+* release 0.3.1 ([9bc666c](https://github.com/chriskauffman/test-db/commit/9bc666caae8809c941400273442894586d92e324))
+
 ## [0.3.0](https://github.com/chriskauffman/test-db/compare/v0.2.0...v0.3.0) (2026-01-07)
 
 
