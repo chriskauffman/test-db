@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/chriskauffman/test-db/compare/v0.3.1...v0.3.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* **cmd2:** remove `add_help=False` from cmd2 commands ([#70](https://github.com/chriskauffman/test-db/issues/70)) ([d5e1fa1](https://github.com/chriskauffman/test-db/commit/d5e1fa1f4ceb90f6eb2ca51069eac8b224262e04)), closes [#69](https://github.com/chriskauffman/test-db/issues/69)
+
 ## [0.3.1](https://github.com/chriskauffman/test-db/compare/v0.3.0...v0.3.1) (2026-01-07)
 
 
