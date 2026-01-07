@@ -39,7 +39,7 @@ class KeyValueCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(tdb_add_key_value_parser)
-    def do_tdb_add_key_value(self, args):
+    def do_tdb_key_value_add(self, args):
         readline.set_auto_history(False)
         try:
             test_db.KeyValueView.add(
@@ -58,7 +58,7 @@ class KeyValueCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(key_parser)
-    def do_tdb_delete_key_value(self, args):
+    def do_tdb_key_value_delete(self, args):
         if args.key in test_db.RESTRICTED_KEYS:
             self._cmd.perror(
                 f"error: key '{args.key}' is restricted and cannot be deleted"

@@ -29,7 +29,7 @@ class OrgnizationCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_delete_organization(self, args):
+    def do_tdb_organization_delete(self, args):
         organization = self.validate_organization(args.gid)
         organization.destroySelf()
 
