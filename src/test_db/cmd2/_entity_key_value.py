@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 @with_default_category("Database")
 class EntityKeyValueCommandSet(BaseCommandSet):
-    tdb_entity_key_value_add_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    tdb_entity_key_value_add_parser = cmd2.Cmd2ArgumentParser()
     tdb_entity_key_value_add_parser.add_argument(
         "entity_gid",
         help="person or organization's gID",
@@ -48,7 +48,7 @@ class EntityKeyValueCommandSet(BaseCommandSet):
             self._cmd.perror(f"error: {str(exc)}")
         readline.set_auto_history(False)
 
-    tdb_entity_key_value_delete_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    tdb_entity_key_value_delete_parser = cmd2.Cmd2ArgumentParser()
     tdb_entity_key_value_delete_parser.add_argument(
         "entity_gid",
         help="person's gID",
@@ -68,7 +68,7 @@ class EntityKeyValueCommandSet(BaseCommandSet):
     def do_tdb_entity_key_value_list(self, args):
         test_db.EntityKeyValueView.list()
 
-    tdb_entity_key_value_view_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    tdb_entity_key_value_view_parser = cmd2.Cmd2ArgumentParser()
     tdb_entity_key_value_view_parser.add_argument(
         "entity_gid",
         help="person's gID",
