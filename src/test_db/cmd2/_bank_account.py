@@ -35,7 +35,7 @@ class BankAccountCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_add_bank_acount(self, args):
+    def do_tdb_bank_account_add(self, args):
         readline.set_auto_history(False)
         if args.entity_gid:
             entity = self.validate_entity(args.entity_gid)
