@@ -5,6 +5,7 @@ import logging
 from typing_extensions import List, Union
 
 from sqlobject import SQLObject  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
 from test_db import DebitCard, Organization, Person
 from test_db._views._base_view import BaseView
@@ -43,7 +44,7 @@ class DebitCardView(BaseView):
         debit_cards: Union[List[DebitCard], SQLObject.select, None] = None,
         **kwargs,
     ):
-        """List all people"""
+        """List all debit cards"""
         if debit_cards is None:
             debit_cards = DebitCard.select(**kwargs)
         for debit_card in debit_cards:
@@ -65,6 +66,15 @@ class DebitCardView(BaseView):
 
     def edit(self):
         """Edit the debit card"""
+        while True:
+            try:
+                self._debit_card.gID = self._getTypeIDInput("gID", self._debit_card.gID)
+                break
+            except DuplicateEntryError:
+                print("gID already exists. Please enter a different gID.")
+            except ValueError:
+                print("Invalid gID. Check prefix and suffix. Please try again.")
+
         self._debit_card.description = self._getStrInput(
             "Description", self._debit_card.description, acceptNull=True
         )

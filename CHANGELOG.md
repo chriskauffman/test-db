@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.3.0-beta.1](https://github.com/chriskauffman/test-db/compare/v0.4.0-beta.0...v0.3.0-beta.1) (2026-01-07)
+
+
+### Miscellaneous Chores
+
+* release 0.3.0-beta.1 ([f0cb16a](https://github.com/chriskauffman/test-db/commit/f0cb16a382ea07dc04985476f34db8a9c6fa053d))
+
+## [0.4.0-beta.0](https://github.com/chriskauffman/test-db/compare/v0.3.0-beta.0...v0.4.0-beta.0) (2026-01-07)
+
+
+### Features
+
+* add editing of gID ([#61](https://github.com/chriskauffman/test-db/issues/61)) ([c70217b](https://github.com/chriskauffman/test-db/commit/c70217b7d338aef15c3631bb125072469373af72)), closes [#60](https://github.com/chriskauffman/test-db/issues/60)
+
+## [0.3.0-beta.0](https://github.com/chriskauffman/test-db/compare/v0.3.0-beta.0...v0.3.0-beta.0) (2026-01-06)
+
+
+### release
+
+* beta.1 ([59f3132](https://github.com/chriskauffman/test-db/commit/59f31321014bbce22fb5c7b196b2dffbb8577ecd))
+* relase new alpha version ([cfb5c04](https://github.com/chriskauffman/test-db/commit/cfb5c043e07f480a07e802f59794a19db49916c0))
+
+
+### Features
+
+* first test-db version forked from rest-api-test ([#1](https://github.com/chriskauffman/test-db/issues/1)) ([15d4ebc](https://github.com/chriskauffman/test-db/commit/15d4ebc1771ab436453bf1cf317817ea17d8e795))
+
+
+### Bug Fixes
+
+* **cmd2:** missing return on error condition ([0040af2](https://github.com/chriskauffman/test-db/commit/0040af2034b6235c3e1bd70f46e366a69d3f7eed))
+* correct list command in utilities for entity key values ([#39](https://github.com/chriskauffman/test-db/issues/39)) ([82b45bc](https://github.com/chriskauffman/test-db/commit/82b45bcebf6a23f8d0b2d2611845a5cc4085f5e0)), closes [#38](https://github.com/chriskauffman/test-db/issues/38)
+* invalid escape sequence ([#33](https://github.com/chriskauffman/test-db/issues/33)) ([ad1a5b4](https://github.com/chriskauffman/test-db/commit/ad1a5b48405b7e4878d3ecb4ba4acf6b141ea1de)), closes [#30](https://github.com/chriskauffman/test-db/issues/30)
+* organization view missing details ([#23](https://github.com/chriskauffman/test-db/issues/23)) ([a657bab](https://github.com/chriskauffman/test-db/commit/a657bab093208ed9e357d143d8b80de94754ed16)), closes [#22](https://github.com/chriskauffman/test-db/issues/22)
+* **Person:** update typing to indicate that  getPersonalKeyValueSecureByKey always returns a PersonalKeyValueSecure object ([#27](https://github.com/chriskauffman/test-db/issues/27)) ([bc5600a](https://github.com/chriskauffman/test-db/commit/bc5600a91b2a265f4507c03056f77295b20c430b))
+* setup release please for prerelease ([d600f1d](https://github.com/chriskauffman/test-db/commit/d600f1df6ed18c4b11d3da0328085770237ac67a))
+
+
+### Miscellaneous Chores
+
+* release 0.2.0 ([6b8b038](https://github.com/chriskauffman/test-db/commit/6b8b038fb8ea85250f5035bfc6c3d4e9e9084725))
+* release 0.3.0-beta.0 ([1776f0f](https://github.com/chriskauffman/test-db/commit/1776f0fa76d5fa5e00eb452881dee7691d68cec8))
+* **release:** relase new alpha version ([2a82a23](https://github.com/chriskauffman/test-db/commit/2a82a23ddb1aa736d8dc0ad7cfccab8e05064444))
+
 ## [0.2.0](https://github.com/chriskauffman/test-db/compare/v0.1.6-beta.1...v0.2.0) (2026-01-01)
 
 
