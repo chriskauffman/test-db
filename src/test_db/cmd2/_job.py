@@ -27,7 +27,7 @@ class JobCommandSet(BaseCommandSet):
         except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
 
-    tdb_job_add_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    tdb_job_add_parser = cmd2.Cmd2ArgumentParser()
     tdb_job_add_parser.add_argument(
         "--organization_gid",
         help="related organization's gID",
@@ -53,7 +53,7 @@ class JobCommandSet(BaseCommandSet):
         )
         readline.set_auto_history(True)
 
-    gid_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    gid_parser = cmd2.Cmd2ArgumentParser()
     gid_parser.add_argument(
         "gid",
         help="object's gID",

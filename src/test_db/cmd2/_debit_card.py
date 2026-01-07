@@ -28,7 +28,7 @@ class DebitCardCommandSet(BaseCommandSet):
         except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
 
-    optional_related_entity_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    optional_related_entity_parser = cmd2.Cmd2ArgumentParser()
     optional_related_entity_parser.add_argument(
         "--entity_gid",
         help="related organizaiton or person's gID",
@@ -46,7 +46,7 @@ class DebitCardCommandSet(BaseCommandSet):
             test_db.DebitCardView.add(interactive=self._cmd.command_interaction)
         readline.set_auto_history(True)
 
-    connect_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    connect_parser = cmd2.Cmd2ArgumentParser()
     connect_parser.add_argument(
         "gid",
         help="object's gID",
@@ -65,7 +65,7 @@ class DebitCardCommandSet(BaseCommandSet):
         except DuplicateEntryError:
             pass
 
-    gid_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    gid_parser = cmd2.Cmd2ArgumentParser()
     gid_parser.add_argument(
         "gid",
         help="object's gID",

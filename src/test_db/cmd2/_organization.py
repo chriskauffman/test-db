@@ -22,7 +22,7 @@ class OrgnizationCommandSet(BaseCommandSet):
         test_db.OrganizationView.add(interactive=self._cmd.command_interaction)
         readline.set_auto_history(True)
 
-    gid_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    gid_parser = cmd2.Cmd2ArgumentParser()
     gid_parser.add_argument(
         "gid",
         help="object's gID",

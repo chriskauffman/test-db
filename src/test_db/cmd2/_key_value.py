@@ -28,7 +28,7 @@ class KeyValueCommandSet(BaseCommandSet):
         except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
 
-    tdb_add_key_value_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    tdb_add_key_value_parser = cmd2.Cmd2ArgumentParser()
     tdb_add_key_value_parser.add_argument(
         "key",
         help="key",
@@ -51,7 +51,7 @@ class KeyValueCommandSet(BaseCommandSet):
             self._cmd.perror(f"error: {str(exc)}")
         readline.set_auto_history(True)
 
-    key_parser = cmd2.Cmd2ArgumentParser(add_help=False)
+    key_parser = cmd2.Cmd2ArgumentParser()
     key_parser.add_argument(
         "key",
         help="key",
