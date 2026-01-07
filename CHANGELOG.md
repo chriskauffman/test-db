@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0-beta.0](https://github.com/chriskauffman/test-db/compare/v0.3.0-beta.0...v0.4.0-beta.0) (2026-01-07)
+
+
+### Features
+
+* add editing of gID ([#61](https://github.com/chriskauffman/test-db/issues/61)) ([c70217b](https://github.com/chriskauffman/test-db/commit/c70217b7d338aef15c3631bb125072469373af72)), closes [#60](https://github.com/chriskauffman/test-db/issues/60)
+
 ## [0.3.0-beta.0](https://github.com/chriskauffman/test-db/compare/v0.3.0-beta.0...v0.3.0-beta.0) (2026-01-06)
 
 
