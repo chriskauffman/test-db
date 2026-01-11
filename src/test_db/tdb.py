@@ -27,7 +27,7 @@ from test_db.typer import (
 )
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 app = typer.Typer()
 app.add_typer(address_app, name="address")
