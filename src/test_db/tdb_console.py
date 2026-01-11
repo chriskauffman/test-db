@@ -26,7 +26,7 @@ from test_db.cmd2 import (
     PersonCommandSet,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 class Console(cmd2.Cmd):
