@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/chriskauffman/test-db/compare/v0.3.2...v0.3.3) (2026-01-11)
+
+
+### Miscellaneous Chores
+
+* release 0.3.3 ([783154d](https://github.com/chriskauffman/test-db/commit/783154dfea6bbaa82162cd39929214541b8644b5))
+
 ## [0.3.2](https://github.com/chriskauffman/test-db/compare/v0.3.1...v0.3.2) (2026-01-07)
 
 
