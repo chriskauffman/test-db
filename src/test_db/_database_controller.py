@@ -25,6 +25,7 @@ from test_db._entity_key_value import EntityKeyValue
 from test_db._entity_secure_key_value import EntitySecureKeyValue
 from test_db._organization import Organization
 from test_db._job import Job
+from test_db._job_key_value import JobKeyValue
 from test_db._key_value import KeyValue
 from test_db._listeners import (
     handleRowCreatedSignal,
@@ -47,6 +48,7 @@ TABLES = (
     Organization,
     Person,
     Job,
+    JobKeyValue,
     AddressEntity,
     BankAccountEntity,
     DebitCardEntity,

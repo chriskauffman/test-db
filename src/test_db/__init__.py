@@ -34,6 +34,7 @@ from test_db._entity_secure_key_value import (
     EntitySecureKeyValue as EntitySecureKeyValue,
 )
 from test_db._job import Job as Job
+from test_db._job_key_value import JobKeyValue as JobKeyValue
 from test_db._key_value import KeyValue as KeyValue
 from test_db._organization import Organization as Organization
 from test_db._person import Person as Person

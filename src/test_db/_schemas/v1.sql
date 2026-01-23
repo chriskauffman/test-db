@@ -102,6 +102,15 @@ CREATE TABLE job (
     updated_at TIMESTAMP
 );
 CREATE UNIQUE INDEX job_employeeIDOrganizationIndex ON job (employee_id, organization_id);
+CREATE TABLE job_key_value (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    job_id INT NOT NULL CONSTRAINT job_id_exists REFERENCES job(id) ON DELETE CASCADE,
+    item_key TEXT NOT NULL,
+    item_value TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE UNIQUE INDEX job_key_value_jobKeyIndex ON job_key_value (job_id, item_key);
 CREATE TABLE address_entity (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     address_id INT CONSTRAINT address_id_exists REFERENCES address(id) ,

@@ -9,6 +9,8 @@ from sqlobject import (  # type: ignore
     DateTimeCol,
     JSONCol,
     ForeignKey,
+    MultipleJoin,
+    SQLMultipleJoin,
     SQLObject,
     StringCol,
 )
@@ -54,6 +56,8 @@ class Job(SQLObject):
         person (ForeignKey): the DB ID of the person
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        keyValues (MultipleJoin):
+        keyValuesSelect (SQLMultipleJoin):
         employeeIDOrganizationIndex (DatabaseIndex):
     """
 
@@ -72,6 +76,9 @@ class Job(SQLObject):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
+
+    keyValues: MultipleJoin = MultipleJoin("JobKeyValue")
+    keyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("JobKeyValue")
 
     employeeIDOrganizationIndex: DatabaseIndex = DatabaseIndex(
         employeeID, organization, unique=True

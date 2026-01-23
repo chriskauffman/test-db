@@ -32,7 +32,7 @@ command-test:
 src/test_db/_schemas/v1.sql: tests/data/test_schema_v1.sqlite
 	sqlite3 --readonly tests/data/test_schema_v1.sqlite .schema > $@
 
-tests/data/test_schema_v1.sqlite: src/test_db/_address_entity.py src/test_db/_address.py src/test_db/_bank_account_entity.py src/test_db/_bank_account.py src/test_db/_debit_card_entity.py src/test_db/_debit_card.py src/test_db/_entity.py src/test_db/_entity_key_value.py src/test_db/_entity_secure_key_value.py src/test_db/_entity.py  src/test_db/_job.py  src/test_db/_key_value.py  src/test_db/_organization.py  src/test_db/_person.py
+tests/data/test_schema_v1.sqlite: src/test_db/_address_entity.py src/test_db/_address.py src/test_db/_bank_account_entity.py src/test_db/_bank_account.py src/test_db/_debit_card_entity.py src/test_db/_debit_card.py src/test_db/_entity.py src/test_db/_entity_key_value.py src/test_db/_entity_secure_key_value.py src/test_db/_entity.py  src/test_db/_job.py  src/test_db/_job_key_value.py  src/test_db/_key_value.py  src/test_db/_organization.py  src/test_db/_person.py
 	rm -f tests/data/test_schema_v1.sqlite
 	uv run tdb --no-upgrade --db-connection-uri "sqlite:tests/data/test_schema_v1.sqlite" version
 
