@@ -37,6 +37,7 @@ def person_address_add(person_gid: Optional[str] = None):
     new_address = test_db.PersonAddress(person=person)
     if _TyperOptions().interactive:
         test_db.AddressView(new_address).edit()
+    print(new_address.gID)
 
 
 @person_address_app.command("delete")

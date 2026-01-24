@@ -37,6 +37,7 @@ def organization_bank_account_add(organization_gid: Optional[str] = None):
     new_bank_account = test_db.OrganizationBankAccount(organization=organization)
     if _TyperOptions().interactive:
         test_db.BankAccountView(new_bank_account).edit()
+    print(new_bank_account.gID)
 
 
 @organization_bank_account_app.command("delete")

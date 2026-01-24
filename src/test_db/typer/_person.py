@@ -15,6 +15,7 @@ def person_add():
     person = test_db.Person()
     if _TyperOptions().interactive:
         test_db.PersonView(person).edit()
+    print(person.gID)
 
 
 @person_app.command("delete")

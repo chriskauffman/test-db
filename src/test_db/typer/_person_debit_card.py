@@ -37,6 +37,7 @@ def person_debit_card_add(person_gid: Optional[str] = None):
     new_debit_card = test_db.PersonDebitCard(person=person)
     if _TyperOptions().interactive:
         test_db.DebitCardView(new_debit_card).edit()
+    print(new_debit_card.gID)
 
 
 @person_debit_card_app.command("delete")

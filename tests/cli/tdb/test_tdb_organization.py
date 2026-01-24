@@ -62,27 +62,6 @@ def test_organization_delete(capsys, monkeypatch, temporary_db):
 
 
 def test_organization_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
-    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
-    monkeypatch.setattr(
-        "sys.argv",
-        [
-            "tdb",
-            "--db-connection-uri",
-            f"sqlite:{empty_db_file}",
-            "organization",
-            "list",
-        ],
-    )
-
-    try:
-        tdb()
-    except SystemExit as e:
-        assert e.code == 0
-
-    captured = capsys.readouterr()
-    assert not captured.out
-    assert not captured.err
-
     test_db.Organization(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",

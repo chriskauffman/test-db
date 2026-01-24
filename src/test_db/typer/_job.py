@@ -29,6 +29,7 @@ def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = 
     )
     if _TyperOptions().interactive:
         test_db.JobView(job).edit()
+    print(job.gID)
 
 
 @job_app.command("delete")

@@ -37,6 +37,7 @@ def organization_address_add(organization_gid: Optional[str] = None):
     new_address = test_db.OrganizationAddress(organization=organization)
     if _TyperOptions().interactive:
         test_db.AddressView(new_address).edit()
+    print(new_address.gID)
 
 
 @organization_address_app.command("delete")

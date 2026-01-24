@@ -11,7 +11,6 @@ from test_db import Organization
 from test_db._views._base_view import BaseView
 from test_db._views._address import AddressView
 from test_db._views._bank_account import BankAccountView
-from test_db._views._debit_card import DebitCardView
 from test_db._views._key_value import KeyValueView
 from test_db._views._job import JobView
 
@@ -99,7 +98,6 @@ class OrganizationView(BaseView):
         print(f"\nName:\t\t{self._organization.name}")
         print(f"Description:\t{self._organization.description}")
         print(f"EIN:\t\t{self._organization.employerIdentificationNumber}")
-        print(f"External ID:\t{self._organization.externalID}")
         print(f"Phone Number:\t{self._organization.phoneNumber}")
         print(f"Created At:\t{self._organization.createdAt}")
         print(f"Updated At:\t{self._organization.updatedAt}")
@@ -107,11 +105,7 @@ class OrganizationView(BaseView):
         AddressView.list(self._organization.addresses)
         print("\nBank Accounts:")
         BankAccountView.list(self._organization.bankAccounts)
-        print("\nDebit Cards:")
-        DebitCardView.list(self._organization.debitCards)
         print("\nJobs:")
         JobView.list(self._organization.jobs)
         print("\nOrganization Key Values:")
         KeyValueView.list(self._organization.keyValues)
-        print("\nOrganization Secure Key Values:")
-        KeyValueView.list(self._organization.secureKeyValues)

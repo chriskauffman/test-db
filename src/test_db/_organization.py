@@ -66,7 +66,7 @@ class Organization(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.gID} {self.name} {self.externalID}"
+        return f"{self.gID} {self.name}"
 
     def _set_gID(self, value):
         if value:
