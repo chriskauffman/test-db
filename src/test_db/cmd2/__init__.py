@@ -20,16 +20,28 @@ Example:
 
 import logging
 
-from ._address import AddressCommandSet as AddressCommandSet
-from ._bank_account import BankAccountCommandSet as BankAccountCommandSet
-from ._debit_card import DebitCardCommandSet as DebitCardCommandSet
-from ._entity_key_value import EntityKeyValueCommandSet as EntityKeyValueCommandSet
-from ._entity_secure_key_value import (
-    EntitySecureKeyValueCommandSet as EntitySecureKeyValueCommandSet,
-)
 from ._job import JobCommandSet as JobCommandSet
+from ._job_key_value import JobKeyValueCommandSet as JobKeyValueCommandSet
 from ._key_value import KeyValueCommandSet as KeyValueCommandSet
 from ._organization import OrgnizationCommandSet as OrgnizationCommandSet
+from ._organization_address import (
+    OrganizationAddressCommandSet as OrganizationAddressCommandSet,
+)
+from ._organization_bank_account import (
+    OrganizationBankAccountCommandSet as OrganizationBankAccountCommandSet,
+)
+from ._organization_key_value import (
+    OrganizationKeyValueCommandSet as OrganizationKeyValueCommandSet,
+)
 from ._person import PersonCommandSet as PersonCommandSet
+from ._person_address import PersonAddressCommandSet as PersonAddressCommandSet
+from ._person_bank_account import (
+    PersonBankAccountCommandSet as PersonBankAccountCommandSet,
+)
+from ._person_debit_card import PersonDebitCardCommandSet as PersonDebitCardCommandSet
+from ._person_key_value import PersonKeyValueCommandSet as PersonKeyValueCommandSet
+from ._person_secure_key_value import (
+    PersonSecureKeyValueCommandSet as PersonSecureKeyValueCommandSet,
+)
 
 logger = logging.getLogger(__name__)

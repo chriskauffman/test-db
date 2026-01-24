@@ -9,18 +9,12 @@ import test_db
 logger = logging.getLogger(__name__)
 
 
-def validate_entity(gid: str):
+def validate_job(gid: str):
     try:
-        return test_db.Person.byGID(gid)
-    except Invalid as exc:
+        return test_db.Job.byGID(gid)
+    except (Invalid, SQLObjectNotFound) as exc:
         sys.stderr.write(f"error: {str(exc)}")
         sys.exit(1)
-    except SQLObjectNotFound:
-        try:
-            return test_db.Organization.byGID(gid)
-        except SQLObjectNotFound:
-            sys.stderr.write("error: person or organization not found")
-            sys.exit(1)
 
 
 def validate_organization(gid: str):

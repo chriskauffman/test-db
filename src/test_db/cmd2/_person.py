@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 class PersonCommandSet(BaseCommandSet):
     def do_tdb_person_add(self, args):
         readline.set_auto_history(False)
-        test_db.PersonView.add(interactive=self._cmd.command_interaction)
+        new_person = test_db.Person()
+        if self._cmd.command_interaction:
+            test_db.PersonView(new_person).edit()
         readline.set_auto_history(True)
 
     gid_parser = cmd2.Cmd2ArgumentParser()

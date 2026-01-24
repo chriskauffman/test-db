@@ -7,7 +7,7 @@ from typing_extensions import List, Union
 from sqlobject import SQLObject  # type: ignore
 from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
-from test_db import DebitCard, Organization, Person
+from test_db import PersonDebitCard
 from test_db._views._base_view import BaseView
 
 logger = logging.getLogger(__name__)
@@ -17,40 +17,22 @@ class DebitCardView(BaseView):
     """Debit card views
 
     Args:
-        debit_card (DebitCard):
+        debit_card (PersonDebitCard):
         **kwargs:
             - user_inputs_required (bool):
     """
 
     @classmethod
-    def add(
-        cls,
-        entity: Union[Organization, Person, None] = None,
-        interactive: bool = True,
-        **kwargs,
-    ) -> DebitCard:
-        """Add a debit card"""
-        debit_card = DebitCard(**kwargs)
-        if entity:
-            debit_card.addEntity(entity)
-        if interactive:
-            DebitCardView(debit_card).edit()
-        print(debit_card.gID)
-        return debit_card
-
-    @classmethod
     def list(
         cls,
-        debit_cards: Union[List[DebitCard], SQLObject.select, None] = None,
+        debit_cards: Union[List[PersonDebitCard], SQLObject.select],
         **kwargs,
     ):
         """List all debit cards"""
-        if debit_cards is None:
-            debit_cards = DebitCard.select(**kwargs)
         for debit_card in debit_cards:
             DebitCardView(debit_card).view()
 
-    def __init__(self, debit_card: DebitCard, **kwargs):
+    def __init__(self, debit_card: PersonDebitCard, **kwargs):
         super().__init__(**kwargs)
         self._debit_card = debit_card
 

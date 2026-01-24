@@ -46,11 +46,9 @@ class JobCommandSet(BaseCommandSet):
             organization = self.validate_organization(args.organization_gid)
         if args.person_gid:
             person = self.validate_person(args.person_gid)
-        test_db.JobView.add(
-            organization=organization,
-            person=person,
-            interactive=self._cmd.command_interaction,
-        )
+        new_job = test_db.Job(organization=organization, person=person)
+        if self._cmd.command_interaction:
+            test_db.JobView(new_job).edit()
         readline.set_auto_history(True)
 
     gid_parser = cmd2.Cmd2ArgumentParser()

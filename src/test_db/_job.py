@@ -12,6 +12,7 @@ from sqlobject import (  # type: ignore
     MultipleJoin,
     SQLMultipleJoin,
     SQLObject,
+    SQLObjectNotFound,
     StringCol,
 )
 from typeid import TypeID
@@ -22,6 +23,7 @@ from typing_extensions import Optional, Self, Union
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._job_key_value import JobKeyValue
 from test_db._organization import Organization
 from test_db._person import Person
 
@@ -143,3 +145,20 @@ class Job(SQLObject):
         return cls.selectBy(
             organization=organization, person=person, connection=connection
         ).getOne()
+
+    def getKeyValueByKey(self, key: str, **kwargs) -> JobKeyValue:
+        """Find and create an JobKeyValue
+
+        Args:
+            key (str): name of the JobKeyValue
+            **kwargs:
+
+        Returns:
+            JobKeyValue:
+        """
+        try:
+            return self.keyValuesSelect.filter(JobKeyValue.q.itemKey == key).getOne()
+        except SQLObjectNotFound:
+            return JobKeyValue(
+                connection=self._connection, job=self.id, itemKey=key, **kwargs
+            )

@@ -15,15 +15,18 @@ from typing_extensions import Optional
 import test_db
 from test_db._cli_settings import DEFAULT_CONFIG_PATH, Settings
 from test_db.cmd2 import (
-    AddressCommandSet,
-    BankAccountCommandSet,
-    DebitCardCommandSet,
-    EntityKeyValueCommandSet,
-    EntitySecureKeyValueCommandSet,
     JobCommandSet,
+    JobKeyValueCommandSet,
     KeyValueCommandSet,
     OrgnizationCommandSet,
+    OrganizationAddressCommandSet,
+    OrganizationBankAccountCommandSet,
+    OrganizationKeyValueCommandSet,
     PersonCommandSet,
+    PersonAddressCommandSet,
+    PersonBankAccountCommandSet,
+    PersonDebitCardCommandSet,
+    PersonKeyValueCommandSet,
 )
 
 logger = logging.getLogger()
@@ -132,15 +135,18 @@ def main() -> None:
     console = Console(
         settings,
         command_sets=[
-            AddressCommandSet(),
-            BankAccountCommandSet(),
-            DebitCardCommandSet(),
-            EntityKeyValueCommandSet(),
-            EntitySecureKeyValueCommandSet(),
             JobCommandSet(),
+            JobKeyValueCommandSet(),
             KeyValueCommandSet(),
             OrgnizationCommandSet(),
+            OrganizationAddressCommandSet(),
+            OrganizationBankAccountCommandSet(),
+            OrganizationKeyValueCommandSet(),
             PersonCommandSet(),
+            PersonAddressCommandSet(),
+            PersonBankAccountCommandSet(),
+            PersonDebitCardCommandSet(),
+            PersonKeyValueCommandSet(),
         ],
     )
     sys.exit(console.cmdloop())
