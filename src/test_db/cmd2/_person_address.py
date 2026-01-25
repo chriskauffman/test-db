@@ -45,6 +45,7 @@ class PersonAddressCommandSet(BaseCommandSet):
         new_address = test_db.PersonAddress(person=person)
         if self._cmd.command_interaction:
             test_db.AddressView(new_address).edit()
+        self._cmd.poutput(new_address.gID)
         readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
@@ -75,8 +76,13 @@ class PersonAddressCommandSet(BaseCommandSet):
         test_db.AddressView(address).edit()
         readline.set_auto_history(True)
 
+    @cmd2.with_argparser(optional_related_entity_parser)
     def do_tdb_person_address_list(self, args):
-        test_db.AddressView.list()
+        if args.person_gid:
+            person = self.validate_person(args.person_gid)
+            test_db.AddressView.list(person.addresses)
+        else:
+            test_db.AddressView.list(test_db.PersonAddress.select())
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_person_address_view(self, args):

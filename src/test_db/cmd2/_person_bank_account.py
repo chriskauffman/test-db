@@ -45,6 +45,7 @@ class PersonBankAccountCommandSet(BaseCommandSet):
         new_bank_account = test_db.PersonBankAccount(person=person)
         if self._cmd.command_interaction:
             test_db.BankAccountView(new_bank_account).edit()
+        self._cmd.poutput(new_bank_account.gID)
         readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
@@ -75,8 +76,13 @@ class PersonBankAccountCommandSet(BaseCommandSet):
         test_db.BankAccountView(bank_account).edit()
         readline.set_auto_history(True)
 
+    @cmd2.with_argparser(optional_related_entity_parser)
     def do_tdb_person_bank_account_list(self, args):
-        test_db.BankAccountView.list()
+        if args.person_gid:
+            person = self.validate_person(args.person_gid)
+            test_db.BankAccountView.list(person.bankAccounts)
+        else:
+            test_db.BankAccountView.list(test_db.PersonBankAccount.select())
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_person_bank_account_view(self, args):

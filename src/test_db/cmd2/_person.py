@@ -22,6 +22,7 @@ class PersonCommandSet(BaseCommandSet):
         new_person = test_db.Person()
         if self._cmd.command_interaction:
             test_db.PersonView(new_person).edit()
+        self._cmd.poutput(new_person.gID)
         readline.set_auto_history(True)
 
     gid_parser = cmd2.Cmd2ArgumentParser()

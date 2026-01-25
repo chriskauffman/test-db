@@ -40,6 +40,7 @@ class JobCommandSet(BaseCommandSet):
         new_job = test_db.Job(organization=organization, person=person)
         if self._cmd.command_interaction:
             test_db.JobView(new_job).edit()
+        self._cmd.poutput(new_job.gID)
         readline.set_auto_history(True)
 
     gid_parser = cmd2.Cmd2ArgumentParser()

@@ -45,6 +45,7 @@ class OrganizationAddressCommandSet(BaseCommandSet):
         new_address = test_db.OrganizationAddress(organization=organization)
         if self._cmd.command_interaction:
             test_db.AddressView(new_address).edit()
+        self._cmd.poutput(new_address.gID)
         readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
@@ -75,8 +76,13 @@ class OrganizationAddressCommandSet(BaseCommandSet):
         test_db.AddressView(address).edit()
         readline.set_auto_history(True)
 
+    @cmd2.with_argparser(optional_related_entity_parser)
     def do_tdb_organization_address_list(self, args):
-        test_db.AddressView.list()
+        if args.organization_gid:
+            organization = self.validate_organization(args.organization_gid)
+            test_db.AddressView.list(organization.addresses)
+        else:
+            test_db.AddressView.list(test_db.OrganizationAddress.select())
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_organization_address_view(self, args):

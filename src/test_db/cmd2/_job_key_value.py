@@ -69,7 +69,7 @@ class JobKeyValueCommandSet(BaseCommandSet):
     tdb_job_key_value_list_parser = cmd2.Cmd2ArgumentParser()
     tdb_job_key_value_list_parser.add_argument(
         "job_gid",
-        help="person's gID",
+        help="job's gID",
     )
 
     @cmd2.with_argparser(tdb_job_key_value_list_parser)
@@ -80,7 +80,7 @@ class JobKeyValueCommandSet(BaseCommandSet):
     tdb_job_key_value_view_parser = cmd2.Cmd2ArgumentParser()
     tdb_job_key_value_view_parser.add_argument(
         "job_gid",
-        help="person's gID",
+        help="job's gID",
     )
     tdb_job_key_value_view_parser.add_argument(
         "key",

@@ -45,6 +45,7 @@ class PersonDebitCardCommandSet(BaseCommandSet):
         new_debit_card = test_db.PersonDebitCard(person=person)
         if self._cmd.command_interaction:
             test_db.DebitCardView(new_debit_card).edit()
+        self._cmd.poutput(new_debit_card.gID)
         readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
@@ -75,8 +76,13 @@ class PersonDebitCardCommandSet(BaseCommandSet):
         test_db.DebitCardView(debit_card).edit()
         readline.set_auto_history(True)
 
+    @cmd2.with_argparser(optional_related_entity_parser)
     def do_tdb_person_debit_card_list(self, args):
-        test_db.DebitCardView.list()
+        if args.person_gid:
+            person = self.validate_person(args.person_gid)
+            test_db.DebitCardView.list(person.debitCards)
+        else:
+            test_db.DebitCardView.list(test_db.PersonDebitCard.select())
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_person_debit_card_view(self, args):

@@ -22,6 +22,7 @@ class OrgnizationCommandSet(BaseCommandSet):
         new_organization = test_db.Organization()
         if self._cmd.command_interaction:
             test_db.OrganizationView(new_organization).edit()
+        self._cmd.poutput(new_organization.gID)
         readline.set_auto_history(True)
 
     gid_parser = cmd2.Cmd2ArgumentParser()
