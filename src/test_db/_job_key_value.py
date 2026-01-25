@@ -25,3 +25,11 @@ class JobKeyValue(SQLObject):
     updatedAt: DateTimeCol = DateTimeCol()
 
     jobKeyIndex: DatabaseIndex = DatabaseIndex(job, itemKey, unique=True)
+
+    @property
+    def ownerID(self):
+        return self.job.gID
+
+    @property
+    def visualID(self):
+        return f"{self.job.gID}, {self.itemKey}"

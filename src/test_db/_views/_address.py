@@ -76,6 +76,7 @@ class AddressView(BaseView):
     def viewDetails(self):
         """Display the address's details"""
         print(f"\nAddress ID: {self._address.gID}")
+        print(f"Owner ID:   {self._address.ownerID}")
         print(f"\n{self._address.street}")
         print(
             f"{self._address.locality}, {self._address.region} {self._address.postalCode}"

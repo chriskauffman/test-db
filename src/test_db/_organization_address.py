@@ -46,8 +46,12 @@ class OrganizationAddress(SQLObject):
     updatedAt: DateTimeCol = DateTimeCol()
 
     @property
+    def ownerID(self):
+        return self.organization.gID
+
+    @property
     def visualID(self):
-        return f"{self.gID}, {self.street}, {self.postalCode}"
+        return f"{self.gID}, {self.street[:15]}..., {self.postalCode}, {self.organization.gID}"
 
     def _set_gID(self, value):
         if value:

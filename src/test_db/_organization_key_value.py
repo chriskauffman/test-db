@@ -27,3 +27,11 @@ class OrganizationKeyValue(SQLObject):
     organizationKeyIndex: DatabaseIndex = DatabaseIndex(
         organization, itemKey, unique=True
     )
+
+    @property
+    def ownerID(self):
+        return self.organization.gID
+
+    @property
+    def visualID(self):
+        return f"{self.organization.gID}, {self.itemKey}"

@@ -48,6 +48,7 @@ class Person(SQLObject):
         secureKeyValuesSelect (SQLMultipleJoin):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        ownerID (str): owner ID for the object
     """
 
     _gIDPrefix: str = "p"
@@ -84,6 +85,8 @@ class Person(SQLObject):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
+
+    ownerID: str = "global"
 
     @property
     def name(self):

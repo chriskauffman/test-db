@@ -70,8 +70,12 @@ class OrganizationBankAccount(SQLObject):
     )
 
     @property
+    def ownerID(self):
+        return self.organization.gID
+
+    @property
     def visualID(self):
-        return f"{self.gID}, {self.routingNumber}, {self.accountNumber}"
+        return f"{self.gID}, {self.routingNumber}, ...{self.accountNumber[-4:]}, {self.organization.gID}"
 
     def _set_gID(self, value):
         if value:

@@ -40,6 +40,7 @@ class Organization(SQLObject):
         keyValuesSelect (SQLMultipleJoin):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        ownerID (str): owner ID for the object
     """
 
     _gIDPrefix: str = "o"
@@ -63,6 +64,8 @@ class Organization(SQLObject):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
+
+    ownerID: str = "global"
 
     @property
     def visualID(self):

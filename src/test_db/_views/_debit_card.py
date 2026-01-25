@@ -73,8 +73,4 @@ class DebitCardView(BaseView):
 
     def view(self):
         """Display brief details of the debit card"""
-        print(
-            f"{self._debit_card.visualID}, "
-            f"{self._debit_card.cvv}, "
-            f"{str(self._debit_card.description)[:10]}"
-        )
+        print(self._debit_card.visualID)

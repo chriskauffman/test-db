@@ -25,3 +25,11 @@ class PersonKeyValue(SQLObject):
     updatedAt: DateTimeCol = DateTimeCol()
 
     personKeyIndex: DatabaseIndex = DatabaseIndex(person, itemKey, unique=True)
+
+    @property
+    def ownerID(self):
+        return self.person.gID
+
+    @property
+    def visualID(self):
+        return f"{self.person.gID}, {self.itemKey}"

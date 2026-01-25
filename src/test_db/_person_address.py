@@ -45,8 +45,12 @@ class PersonAddress(SQLObject):
     updatedAt: DateTimeCol = DateTimeCol()
 
     @property
+    def ownerID(self):
+        return self.person.gID
+
+    @property
     def visualID(self):
-        return f"{self.gID}, {self.street}, {self.postalCode}"
+        return f"{self.gID}, {self.street[:7]}..., {self.postalCode}, {self.person.gID}"
 
     def _set_gID(self, value):
         if value:
