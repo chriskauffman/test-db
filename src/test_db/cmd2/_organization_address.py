@@ -68,12 +68,6 @@ class OrganizationAddressCommandSet(BaseCommandSet):
         address = self.validate_address(args.gid)
         address.destroySelf()
 
-    @cmd2.with_argparser(connect_parser)
-    def do_tdb_organization_address_disconnect(self, args):
-        address = self.validate_address(args.gid)
-        organization = self.validate_organization(args.organization_gid)
-        organization.removeAddress(address)
-
     @cmd2.with_argparser(gid_parser)
     def do_tdb_organization_address_edit(self, args):
         readline.set_auto_history(False)

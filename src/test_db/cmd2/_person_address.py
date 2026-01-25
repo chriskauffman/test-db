@@ -68,12 +68,6 @@ class PersonAddressCommandSet(BaseCommandSet):
         address = self.validate_address(args.gid)
         address.destroySelf()
 
-    @cmd2.with_argparser(connect_parser)
-    def do_tdb_person_address_disconnect(self, args):
-        address = self.validate_address(args.gid)
-        person = self.validate_person(args.person_gid)
-        person.removeAddress(address)
-
     @cmd2.with_argparser(gid_parser)
     def do_tdb_person_address_edit(self, args):
         readline.set_auto_history(False)

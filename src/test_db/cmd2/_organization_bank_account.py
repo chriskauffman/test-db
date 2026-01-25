@@ -68,12 +68,6 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
         bank_account = self.validate_bank_account(args.gid)
         bank_account.destroySelf()
 
-    @cmd2.with_argparser(connect_parser)
-    def do_tdb_organization_bank_account_disconnect(self, args):
-        bank_account = self.validate_bank_account(args.gid)
-        organization = self.validate_organization(args.organization_gid)
-        organization.removeBankAccount(bank_account)
-
     @cmd2.with_argparser(gid_parser)
     def do_tdb_organization_bank_account_edit(self, args):
         readline.set_auto_history(False)

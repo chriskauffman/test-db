@@ -68,12 +68,6 @@ class PersonBankAccountCommandSet(BaseCommandSet):
         bank_account = self.validate_bank_account(args.gid)
         bank_account.destroySelf()
 
-    @cmd2.with_argparser(connect_parser)
-    def do_tdb_person_bank_account_disconnect(self, args):
-        bank_account = self.validate_bank_account(args.gid)
-        person = self.validate_person(args.person_gid)
-        person.removeBankAccount(bank_account)
-
     @cmd2.with_argparser(gid_parser)
     def do_tdb_person_bank_account_edit(self, args):
         readline.set_auto_history(False)
