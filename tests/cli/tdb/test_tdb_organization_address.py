@@ -104,7 +104,7 @@ def test_address_delete(capsys, monkeypatch, temporary_db, organization):
 def test_address_list(
     capsys, monkeypatch, temporary_db, tmp_path_factory, organization
 ):
-    test_db.OrganizationAddress(
+    address = test_db.OrganizationAddress(
         organization=organization, connection=temporary_db.connection
     )
     monkeypatch.setattr(
@@ -121,7 +121,7 @@ def test_address_list(
     except SystemExit as e:
         assert e.code == 0
     captured = capsys.readouterr()
-    assert captured.out.startswith("addr_")
+    assert str(address.gID) in captured.out
     assert captured.out.count("addr_") >= 1
 
 
@@ -145,4 +145,4 @@ def test_address_view(capsys, monkeypatch, temporary_db, organization):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("\nAddress ID: addr_")
+    assert str(address.gID) in captured.out

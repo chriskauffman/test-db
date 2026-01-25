@@ -102,7 +102,7 @@ def test_bank_account_delete(capsys, monkeypatch, temporary_db, organization):
 
 
 def test_bank_account_list(capsys, monkeypatch, temporary_db, organization):
-    test_db.OrganizationBankAccount(
+    bank_account = test_db.OrganizationBankAccount(
         organization=organization, connection=temporary_db.connection
     )
     monkeypatch.setattr(
@@ -119,7 +119,7 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, organization):
     except SystemExit as e:
         assert e.code == 0
     captured = capsys.readouterr()
-    assert captured.out.startswith("ba_")
+    assert str(bank_account.gID) in captured.out
     assert captured.out.count("ba_") >= 1
 
 
@@ -143,4 +143,4 @@ def test_bank_account_view(capsys, monkeypatch, temporary_db, organization):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("ba_")
+    assert str(bank_account.gID) in captured.out

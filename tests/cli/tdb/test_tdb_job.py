@@ -129,7 +129,7 @@ def test_job_list(
     assert not captured.out
     assert not captured.err
 
-    test_db.Job(
+    job = test_db.Job(
         connection=temporary_db.connection,
         organization=organization,
         person=person,
@@ -143,7 +143,7 @@ def test_job_list(
     except SystemExit as e:
         assert e.code == 0
     captured = capsys.readouterr()
-    assert captured.out.startswith("j_")
+    assert str(job.gID) in captured.out
     assert captured.out.count("j_") >= 1
 
 

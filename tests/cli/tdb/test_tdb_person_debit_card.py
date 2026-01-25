@@ -101,7 +101,9 @@ def test_debit_card_delete(capsys, monkeypatch, temporary_db, person):
 
 
 def test_debit_card_list(capsys, monkeypatch, temporary_db, tmp_path_factory, person):
-    test_db.PersonDebitCard(person=person, connection=temporary_db.connection)
+    debit_card = test_db.PersonDebitCard(
+        person=person, connection=temporary_db.connection
+    )
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -116,7 +118,7 @@ def test_debit_card_list(capsys, monkeypatch, temporary_db, tmp_path_factory, pe
     except SystemExit as e:
         assert e.code == 0
     captured = capsys.readouterr()
-    assert captured.out.startswith("dc_")
+    assert str(debit_card.gID) in captured.out
     assert captured.out.count("dc_") >= 1
 
 
@@ -140,4 +142,4 @@ def test_debit_card_view(capsys, monkeypatch, temporary_db, person):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("dc_")
+    assert str(debit_card.gID) in captured.out

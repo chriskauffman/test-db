@@ -102,7 +102,9 @@ def test_bank_account_delete(capsys, monkeypatch, temporary_db, person):
 
 
 def test_bank_account_list(capsys, monkeypatch, temporary_db, tmp_path_factory, person):
-    test_db.PersonBankAccount(person=person, connection=temporary_db.connection)
+    bank_account = test_db.PersonBankAccount(
+        person=person, connection=temporary_db.connection
+    )
     monkeypatch.setattr(
         "sys.argv",
         [
@@ -117,7 +119,7 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, tmp_path_factory, 
     except SystemExit as e:
         assert e.code == 0
     captured = capsys.readouterr()
-    assert captured.out.startswith("ba_")
+    assert str(bank_account.gID) in captured.out
     assert captured.out.count("ba_") >= 1
 
 
@@ -141,4 +143,4 @@ def test_bank_account_view(capsys, monkeypatch, temporary_db, person):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("ba_")
+    assert str(bank_account.gID) in captured.out
