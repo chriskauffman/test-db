@@ -53,7 +53,7 @@ def key_value_edit(key: str):
 
 @key_value_app.command("list")
 def key_value_list():
-    test_db.KeyValueView.list()
+    test_db.KeyValueView.list(test_db.KeyValue.select())
 
 
 @key_value_app.command("view")
