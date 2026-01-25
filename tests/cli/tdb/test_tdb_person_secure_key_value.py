@@ -11,8 +11,6 @@ def test_person_secure_key_value_add(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-secure-key-value",
             "add",
             str(person.gID),
@@ -35,8 +33,6 @@ def test_person_secure_key_value_add_bad_person(capsys, monkeypatch, temporary_d
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-secure-key-value",
             "add",
             "test_01kah9p4b0ejfb7apkkr2abr7c",
@@ -71,8 +67,6 @@ def test_person_secure_key_value_delete(capsys, monkeypatch, person, temporary_d
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-secure-key-value",
             "delete",
             str(person.gID),
@@ -99,8 +93,6 @@ def test_person_secure_key_value_list(capsys, monkeypatch, person, temporary_db)
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-secure-key-value",
             "list",
             str(person.gID),
@@ -123,8 +115,6 @@ def test_person_secure_key_value_view(capsys, monkeypatch, person, temporary_db)
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-secure-key-value",
             "view",
             str(person.gID),

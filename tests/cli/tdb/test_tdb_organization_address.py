@@ -10,8 +10,6 @@ def test_address_add(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-address",
             "add",
         ],
@@ -31,8 +29,6 @@ def test_address_add_with_owner(capsys, monkeypatch, organization, temporary_db)
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-address",
             "add",
             "--organization-gid",
@@ -54,8 +50,6 @@ def test_address_add_with_bad_owner(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-address",
             "add",
             "--organization-gid",
@@ -87,8 +81,6 @@ def test_address_delete(capsys, monkeypatch, temporary_db, organization):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-address",
             "delete",
             str(test_address.gID),
@@ -119,8 +111,6 @@ def test_address_list(
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-address",
             "list",
             str(organization.gID),
@@ -143,8 +133,6 @@ def test_address_view(capsys, monkeypatch, temporary_db, organization):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-address",
             "view",
             str(address.gID),

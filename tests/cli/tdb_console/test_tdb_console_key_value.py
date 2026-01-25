@@ -12,7 +12,6 @@ def test_key_value_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"set db_connection_uri {temporary_db.connectionURI}",
             f"tdb_key_value_view {key_value.itemKey}",
             "quit",
         ],

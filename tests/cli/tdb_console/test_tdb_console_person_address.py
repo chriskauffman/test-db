@@ -8,7 +8,6 @@ def test_address_view(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            f"set db_connection_uri {temporary_db.connectionURI}",
             f"tdb_person_address_view {address.gID}",
             "quit",
         ],

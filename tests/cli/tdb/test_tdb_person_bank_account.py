@@ -10,8 +10,6 @@ def test_bank_account_add(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-bank-account",
             "add",
         ],
@@ -31,8 +29,6 @@ def test_bank_account_add_with_owner(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-bank-account",
             "add",
             "--person-gid",
@@ -54,8 +50,6 @@ def test_bank_account_add_with_bad_owner(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-bank-account",
             "add",
             "--person-gid",
@@ -87,8 +81,6 @@ def test_bank_account_delete(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-bank-account",
             "delete",
             str(test_bank_account.gID),
@@ -115,8 +107,6 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, tmp_path_factory, 
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-bank-account",
             "list",
             str(person.gID),
@@ -139,8 +129,6 @@ def test_bank_account_view(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-bank-account",
             "view",
             str(bank_account.gID),

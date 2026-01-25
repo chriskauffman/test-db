@@ -5,17 +5,6 @@ import test_db
 
 
 @pytest.fixture(scope="module")
-def cli_test_connection(tmp_path_factory):
-    db_file = tmp_path_factory.mktemp("data") / "test_db_cli_test.sqlite"
-    return f"sqlite://{db_file}"
-
-
-@pytest.fixture(scope="module")
-def temporary_db(cli_test_connection):
-    return test_db.DatabaseController(cli_test_connection)
-
-
-@pytest.fixture(scope="module")
 def organization(temporary_db):
     return test_db.Organization(connection=temporary_db.connection)
 
@@ -26,6 +15,9 @@ def person(temporary_db):
 
 
 @pytest.fixture(scope="module", autouse=True)
-def set_env():
-    os.environ["DATABASE_ENCRYPTION_KEY"] = "a test encryption key"
+def set_env(db_encryption_key, temporary_db):
+    os.environ["DATABASE_ENCRYPTION_KEY"] = db_encryption_key
+    os.environ["BACKUP_PATH"] = "backup"
     os.environ["LOG_PATH"] = "log"
+    # setting DB connection to avoid defaulting to a real DB in tests
+    os.environ["DB_CONNECTION_URI"] = temporary_db.connectionURI

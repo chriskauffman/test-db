@@ -55,8 +55,8 @@ def test_getKeyValueByKey(temporary_db):
     assert test_key_value.itemValue == "testAccessToken"
 
 
-def test_getSecureKeyValueByKey(temporary_db):
-    test_db.databaseEncryptionKey = "a really good key"
+def test_getSecureKeyValueByKey(temporary_db, db_encryption_key):
+    test_db.databaseEncryptionKey = db_encryption_key
     test_person = Person(connection=temporary_db.connection)
     test_secure_key_value = test_person.getSecureKeyValueByKey(
         "test_getSecureKeyValueByKey"

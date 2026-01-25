@@ -10,8 +10,6 @@ def test_debit_card_add(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-debit-card",
             "add",
         ],
@@ -31,8 +29,6 @@ def test_debit_card_add_with_owner(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-debit-card",
             "add",
             "--person-gid",
@@ -54,8 +50,6 @@ def test_debit_card_add_with_bad_owner(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-debit-card",
             "add",
             "--person-gid",
@@ -86,8 +80,6 @@ def test_debit_card_delete(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-debit-card",
             "delete",
             str(test_debit_card.gID),
@@ -114,8 +106,6 @@ def test_debit_card_list(capsys, monkeypatch, temporary_db, tmp_path_factory, pe
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-debit-card",
             "list",
             str(person.gID),
@@ -138,8 +128,6 @@ def test_debit_card_view(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person-debit-card",
             "view",
             str(debit_card.gID),

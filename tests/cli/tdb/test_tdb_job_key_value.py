@@ -16,8 +16,6 @@ def test_job_key_value_add(capsys, monkeypatch, job, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job-key-value",
             "add",
             str(job.gID),
@@ -52,8 +50,6 @@ def test_job_key_value_delete(capsys, monkeypatch, job, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job-key-value",
             "delete",
             str(job.gID),
@@ -80,8 +76,6 @@ def test_job_key_value_list(capsys, monkeypatch, job, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job-key-value",
             "list",
             str(job.gID),
@@ -104,8 +98,6 @@ def test_job_key_value_view(capsys, monkeypatch, job, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job-key-value",
             "view",
             str(job.gID),

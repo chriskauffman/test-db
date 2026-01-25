@@ -10,8 +10,6 @@ def test_organization_add(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization",
             "add",
         ],
@@ -39,8 +37,6 @@ def test_organization_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization",
             "delete",
             str(test_organization.gID),
@@ -67,8 +63,6 @@ def test_organization_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization",
             "list",
         ],
@@ -87,8 +81,6 @@ def test_organization_view(capsys, monkeypatch, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization",
             "view",
             str(organization.gID),

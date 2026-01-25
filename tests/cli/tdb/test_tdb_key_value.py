@@ -11,8 +11,6 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "key-value",
             "add",
             str(uuid.uuid4()),
@@ -40,8 +38,6 @@ def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "key-value",
             "add",
             test_key,
@@ -71,8 +67,6 @@ def test_key_value_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "key-value",
             "delete",
             test_key_value.itemKey,
@@ -102,8 +96,6 @@ def test_key_value_view(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "key-value",
             "view",
             test_key,

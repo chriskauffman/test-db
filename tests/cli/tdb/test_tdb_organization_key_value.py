@@ -11,8 +11,6 @@ def test_organization_key_value_add(capsys, monkeypatch, organization, temporary
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-key-value",
             "add",
             str(organization.gID),
@@ -47,8 +45,6 @@ def test_organization_key_value_delete(capsys, monkeypatch, organization, tempor
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-key-value",
             "delete",
             str(organization.gID),
@@ -75,8 +71,6 @@ def test_organization_key_value_list(capsys, monkeypatch, organization, temporar
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-key-value",
             "list",
             str(organization.gID),
@@ -99,8 +93,6 @@ def test_organization_key_value_view(capsys, monkeypatch, organization, temporar
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization-key-value",
             "view",
             str(organization.gID),
