@@ -25,12 +25,10 @@ def test_person_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert test_db.Person._gIDPrefix in captured.out
 
+
 def test_person_delete(capsys, monkeypatch, temporary_db):
     person = test_db.Person(connection=temporary_db.connection)
-    assert (
-        test_db.Person.get(person.id, connection=temporary_db.connection)
-        is person
-    )
+    assert test_db.Person.get(person.id, connection=temporary_db.connection) is person
 
     monkeypatch.setattr(
         "sys.argv",
@@ -52,6 +50,7 @@ def test_person_delete(capsys, monkeypatch, temporary_db):
     with pytest.raises(SQLObjectNotFound):
         test_db.Person.get(person.id, connection=temporary_db.connection)
 
+
 def test_person_list(capsys, monkeypatch, temporary_db):
     person = test_db.Person(connection=temporary_db.connection)
     monkeypatch.setattr(
@@ -70,6 +69,7 @@ def test_person_list(capsys, monkeypatch, temporary_db):
 
     captured = capsys.readouterr()
     assert str(person.gID) in captured.out
+
 
 def test_person_view(capsys, monkeypatch, temporary_db):
     person = test_db.Person(connection=temporary_db.connection)

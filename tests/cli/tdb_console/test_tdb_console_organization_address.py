@@ -21,6 +21,7 @@ def test_address_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert test_db.OrganizationAddress._gIDPrefix in captured.out
 
+
 def test_address_list(capsys, monkeypatch, temporary_db, organization):
     address = test_db.OrganizationAddress(
         organization=organization, connection=temporary_db.connection
@@ -41,6 +42,7 @@ def test_address_list(capsys, monkeypatch, temporary_db, organization):
 
     captured = capsys.readouterr()
     assert str(address.gID) in captured.out
+
 
 def test_address_view(capsys, monkeypatch, temporary_db, organization):
     address = test_db.OrganizationAddress(

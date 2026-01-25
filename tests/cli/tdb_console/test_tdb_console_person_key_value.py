@@ -22,6 +22,7 @@ def test_person_key_value_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert not captured.err
 
+
 def test_person_key_value_view(capsys, monkeypatch, temporary_db):
     person = test_db.Person(connection=temporary_db.connection)
     personal_key_value = test_db.PersonKeyValue(

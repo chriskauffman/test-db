@@ -22,6 +22,7 @@ def test_job_key_value_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert not captured.err
 
+
 def test_job_key_value_view(capsys, monkeypatch, temporary_db):
     job = test_db.Job(connection=temporary_db.connection)
     job_key_value = test_db.JobKeyValue(

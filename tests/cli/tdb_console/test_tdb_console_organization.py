@@ -25,6 +25,7 @@ def test_organization_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert test_db.Organization._gIDPrefix in captured.out
 
+
 def test_organization_delete(capsys, monkeypatch, temporary_db):
     organization = test_db.Organization(connection=temporary_db.connection)
     assert (
@@ -52,6 +53,7 @@ def test_organization_delete(capsys, monkeypatch, temporary_db):
     with pytest.raises(SQLObjectNotFound):
         test_db.Organization.get(organization.id, connection=temporary_db.connection)
 
+
 def test_organization_list(capsys, monkeypatch, temporary_db):
     organization = test_db.Organization(connection=temporary_db.connection)
     monkeypatch.setattr(
@@ -70,6 +72,7 @@ def test_organization_list(capsys, monkeypatch, temporary_db):
 
     captured = capsys.readouterr()
     assert str(organization.gID) in captured.out
+
 
 def test_organization_view(capsys, monkeypatch, temporary_db):
     organization = test_db.Organization(connection=temporary_db.connection)

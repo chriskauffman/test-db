@@ -23,6 +23,7 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert not captured.err
 
+
 def test_key_value_view(capsys, monkeypatch, temporary_db):
     key_value = test_db.KeyValue(
         connection=temporary_db.connection, itemKey=str(uuid.uuid4()), itemValue="test"

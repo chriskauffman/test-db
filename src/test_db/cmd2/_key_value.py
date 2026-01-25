@@ -42,9 +42,7 @@ class KeyValueCommandSet(BaseCommandSet):
     def do_tdb_key_value_add(self, args):
         readline.set_auto_history(False)
         try:
-            key_value = test_db.KeyValue(
-                itemKey=args.key,
-                itemValue=args.value)
+            key_value = test_db.KeyValue(itemKey=args.key, itemValue=args.value)
             if self._cmd.command_interaction:
                 test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:

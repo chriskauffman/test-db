@@ -25,12 +25,10 @@ def test_job_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert test_db.Job._gIDPrefix in captured.out
 
+
 def test_job_delete(capsys, monkeypatch, temporary_db):
     job = test_db.Job(connection=temporary_db.connection)
-    assert (
-        test_db.Job.get(job.id, connection=temporary_db.connection)
-        is job
-    )
+    assert test_db.Job.get(job.id, connection=temporary_db.connection) is job
 
     monkeypatch.setattr(
         "sys.argv",
@@ -52,6 +50,7 @@ def test_job_delete(capsys, monkeypatch, temporary_db):
     with pytest.raises(SQLObjectNotFound):
         test_db.Job.get(job.id, connection=temporary_db.connection)
 
+
 def test_job_list(capsys, monkeypatch, temporary_db):
     job = test_db.Job(connection=temporary_db.connection)
     monkeypatch.setattr(
@@ -70,6 +69,7 @@ def test_job_list(capsys, monkeypatch, temporary_db):
 
     captured = capsys.readouterr()
     assert str(job.gID) in captured.out
+
 
 def test_job_view(capsys, monkeypatch, temporary_db):
     job = test_db.Job(connection=temporary_db.connection)

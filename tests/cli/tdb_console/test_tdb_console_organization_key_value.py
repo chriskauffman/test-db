@@ -22,6 +22,7 @@ def test_organization_key_value_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert not captured.err
 
+
 def test_organization_key_value_view(capsys, monkeypatch, temporary_db):
     organization = test_db.Organization(connection=temporary_db.connection)
     organization_key_value = test_db.OrganizationKeyValue(

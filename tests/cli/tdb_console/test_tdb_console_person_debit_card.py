@@ -21,6 +21,7 @@ def test_debit_card_add(capsys, monkeypatch, temporary_db):
     captured = capsys.readouterr()
     assert test_db.PersonDebitCard._gIDPrefix in captured.out
 
+
 def test_debit_card_list(capsys, monkeypatch, temporary_db, person):
     debit_card = test_db.PersonDebitCard(
         person=person, connection=temporary_db.connection
@@ -41,6 +42,7 @@ def test_debit_card_list(capsys, monkeypatch, temporary_db, person):
 
     captured = capsys.readouterr()
     assert str(debit_card.gID) in captured.out
+
 
 def test_debit_card_view(capsys, monkeypatch, temporary_db, person):
     debit_card = test_db.PersonDebitCard(
