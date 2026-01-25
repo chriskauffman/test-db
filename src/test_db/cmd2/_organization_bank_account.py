@@ -37,12 +37,14 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
     def do_tdb_organization_bank_account_add(self, args):
         readline.set_auto_history(False)
         if args.organization_gid:
-            entity = self.validate_entity(args.organization_gid)
-            test_db.BankAccountView.add(
-                entity=entity, interactive=self._cmd.command_interaction
-            )
+            organization = self.validate_organization(args.organization_gid)
         else:
-            test_db.BankAccountView.add(interactive=self._cmd.command_interaction)
+            organization = test_db.Organization()
+            if self._cmd.command_interaction:
+                test_db.OrganizationView(organization).edit()
+        new_bank_account = test_db.OrganizationBankAccount(organizaiton=organization)
+        if self._cmd.command_interaction:
+            test_db.BankAccountView(new_bank_account).edit()
         readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
@@ -69,8 +71,8 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
     @cmd2.with_argparser(connect_parser)
     def do_tdb_organization_bank_account_disconnect(self, args):
         bank_account = self.validate_bank_account(args.gid)
-        entity = self.validate_entity(args.organization_gid)
-        entity.removeBankAccount(bank_account)
+        organization = self.validate_organization(args.organization_gid)
+        organization.removeBankAccount(bank_account)
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_organization_bank_account_edit(self, args):

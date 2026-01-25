@@ -8,7 +8,13 @@ from test_db.tdb import app as tdb
 def test_address_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "person-address", "add"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "person-address",
+            "add",
+        ],
     )
 
     try:
@@ -67,7 +73,9 @@ def test_address_add_with_bad_owner(capsys, monkeypatch, temporary_db):
 
 
 def test_address_delete(capsys, monkeypatch, temporary_db, person):
-    test_address = test_db.PersonAddress(person=person, connection=temporary_db.connection)
+    test_address = test_db.PersonAddress(
+        person=person, connection=temporary_db.connection
+    )
     assert (
         test_db.PersonAddress.get(test_address.id, connection=temporary_db.connection)
         is test_address

@@ -25,7 +25,7 @@ def person(temporary_db):
     return test_db.Person(connection=temporary_db.connection)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def set_env():
     os.environ["DATABASE_ENCRYPTION_KEY"] = "a test encryption key"
     os.environ["LOG_PATH"] = "log"

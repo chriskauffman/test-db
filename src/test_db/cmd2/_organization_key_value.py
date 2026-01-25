@@ -36,14 +36,15 @@ class OrganizationKeyValueCommandSet(BaseCommandSet):
     @cmd2.with_argparser(tdb_organization_key_value_add_parser)
     def do_tdb_organization_key_value_add(self, args):
         readline.set_auto_history(False)
-        entity = self.validate_entity(args.organization_gid)
+        organization = self.validate_organization(args.organization_gid)
         try:
-            test_db.KeyValueView.add(
-                entity=entity,
+            key_value = test_db.OrganizationKeyValue(
+                organization=organization,
                 itemKey=args.key,
                 itemValue=args.value,
-                interactive=self._cmd.command_interaction,
             )
+            if self._cmd.command_interaction:
+                test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:
             self._cmd.perror(f"error: {str(exc)}")
         readline.set_auto_history(False)
@@ -60,13 +61,21 @@ class OrganizationKeyValueCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(tdb_organization_key_value_delete_parser)
     def do_tdb_organization_key_value_delete(self, args):
-        entity = self.validate_entity(args.organization_gid)
-        key_value = entity.getKeyValueByKey(args.key)
+        organization = self.validate_organization(args.organization_gid)
+        key_value = organization.getKeyValueByKey(args.key)
         if key_value:
             key_value.destroySelf()
 
+    tdb_organization_key_value_list_parser = cmd2.Cmd2ArgumentParser()
+    tdb_organization_key_value_list_parser.add_argument(
+        "organization_gid",
+        help="person or organization's gID",
+    )
+
+    @cmd2.with_argparser(tdb_organization_key_value_list_parser)
     def do_tdb_organization_key_value_list(self, args):
-        test_db.KeyValueView.list()
+        organization = self.validate_organization(args.organization_gid)
+        test_db.KeyValueView.list(organization.keyValues)
 
     tdb_organization_key_value_view_parser = cmd2.Cmd2ArgumentParser()
     tdb_organization_key_value_view_parser.add_argument(
@@ -80,7 +89,7 @@ class OrganizationKeyValueCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(tdb_organization_key_value_view_parser)
     def do_tdb_organization_key_value_view(self, args):
-        entity = self.validate_entity(args.organization_gid)
-        key_value = entity.getKeyValueByKey(args.key)
+        organization = self.validate_organization(args.organization_gid)
+        key_value = organization.getKeyValueByKey(args.key)
         if key_value:
             test_db.KeyValueView(key_value).viewDetails()

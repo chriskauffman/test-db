@@ -73,7 +73,9 @@ def test_bank_account_add_with_bad_owner(capsys, monkeypatch, temporary_db):
 
 
 def test_bank_account_delete(capsys, monkeypatch, temporary_db, person):
-    test_bank_account = test_db.PersonBankAccount(person=person, connection=temporary_db.connection)
+    test_bank_account = test_db.PersonBankAccount(
+        person=person, connection=temporary_db.connection
+    )
     assert (
         test_db.PersonBankAccount.get(
             test_bank_account.id, connection=temporary_db.connection
@@ -130,7 +132,9 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, tmp_path_factory, 
 
 
 def test_bank_account_view(capsys, monkeypatch, temporary_db, person):
-    bank_account = test_db.PersonBankAccount(person=person, connection=temporary_db.connection)
+    bank_account = test_db.PersonBankAccount(
+        person=person, connection=temporary_db.connection
+    )
     monkeypatch.setattr(
         "sys.argv",
         [

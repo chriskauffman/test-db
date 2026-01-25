@@ -27,6 +27,7 @@ from test_db.cmd2 import (
     PersonBankAccountCommandSet,
     PersonDebitCardCommandSet,
     PersonKeyValueCommandSet,
+    PersonSecureKeyValueCommandSet,
 )
 
 logger = logging.getLogger()
@@ -147,6 +148,7 @@ def main() -> None:
             PersonBankAccountCommandSet(),
             PersonDebitCardCommandSet(),
             PersonKeyValueCommandSet(),
+            PersonSecureKeyValueCommandSet(),
         ],
     )
     sys.exit(console.cmdloop())

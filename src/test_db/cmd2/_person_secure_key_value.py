@@ -36,14 +36,15 @@ class PersonSecureKeyValueCommandSet(BaseCommandSet):
     @cmd2.with_argparser(tdb_person_secure_key_value_add_parser)
     def do_tdb_person_secure_key_value_add(self, args):
         readline.set_auto_history(False)
-        entity = self.validate_entity(args.person_gid)
+        person = self.validate_person(args.person_gid)
         try:
-            test_db.EntitySecureKeyValueView.add(
-                entity=entity,
+            key_value = test_db.PersonSecureKeyValue(
+                person=person,
                 itemKey=args.key,
                 itemValue=args.value,
-                interactive=self._cmd.command_interaction,
             )
+            if self._cmd.command_interaction:
+                test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:
             self._cmd.perror(f"error: {str(exc)}")
         readline.set_auto_history(False)
@@ -60,13 +61,21 @@ class PersonSecureKeyValueCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(tdb_person_secure_key_value_delete_parser)
     def do_tdb_person_secure_key_value_delete(self, args):
-        entity = self.validate_entity(args.person_gid)
-        key_value = entity.getSecureKeyValueByKey(args.key)
+        person = self.validate_person(args.person_gid)
+        key_value = person.getSecureKeyValueByKey(args.key)
         if key_value:
             key_value.destroySelf()
 
+    tdb_person_secure_key_value_list_parser = cmd2.Cmd2ArgumentParser()
+    tdb_person_secure_key_value_list_parser.add_argument(
+        "person_gid",
+        help="person's gID",
+    )
+
+    @cmd2.with_argparser(tdb_person_secure_key_value_list_parser)
     def do_tdb_person_secure_key_value_list(self, args):
-        test_db.EntitySecureKeyValueView.list()
+        person = self.validate_person(args.person_gid)
+        test_db.KeyValueView.list(person.secureKeyValues)
 
     tdb_person_secure_key_value_view_parser = cmd2.Cmd2ArgumentParser()
     tdb_person_secure_key_value_view_parser.add_argument(
@@ -80,7 +89,7 @@ class PersonSecureKeyValueCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(tdb_person_secure_key_value_view_parser)
     def do_tdb_person_secure_key_value_view(self, args):
-        entity = self.validate_entity(args.person_gid)
-        key_value = entity.getSecureKeyValueByKey(args.key)
+        person = self.validate_person(args.person_gid)
+        key_value = person.getSecureKeyValueByKey(args.key)
         if key_value:
-            test_db.EntitySecureKeyValueView(key_value).viewDetails()
+            test_db.KeyValueView(key_value).viewDetails()

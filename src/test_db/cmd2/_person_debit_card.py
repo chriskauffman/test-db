@@ -37,12 +37,14 @@ class PersonDebitCardCommandSet(BaseCommandSet):
     def do_tdb_person_debit_card_add(self, args):
         readline.set_auto_history(False)
         if args.person_gid:
-            entity = self.validate_entity(args.person_gid)
-            test_db.DebitCardView.add(
-                entity=entity, interactive=self._cmd.command_interaction
-            )
+            person = self.validate_person(args.person_gid)
         else:
-            test_db.DebitCardView.add(interactive=self._cmd.command_interaction)
+            person = test_db.Person()
+            if self._cmd.command_interaction:
+                test_db.PersonView(person).edit()
+        new_debit_card = test_db.PersonDebitCard(person=person)
+        if self._cmd.command_interaction:
+            test_db.DebitCardView(new_debit_card).edit()
         readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
@@ -65,12 +67,6 @@ class PersonDebitCardCommandSet(BaseCommandSet):
     def do_tdb_person_debit_card_delete(self, args):
         debit_card = self.validate_debit_card(args.gid)
         debit_card.destroySelf()
-
-    @cmd2.with_argparser(connect_parser)
-    def do_tdb_person_debit_card_disconnect(self, args):
-        debit_card = self.validate_debit_card(args.gid)
-        entity = self.validate_entity(args.person_gid)
-        entity.removeDebitCard(debit_card)
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_person_debit_card_edit(self, args):

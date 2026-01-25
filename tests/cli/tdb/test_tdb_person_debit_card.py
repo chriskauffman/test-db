@@ -8,7 +8,13 @@ from test_db.tdb import app as tdb
 def test_debit_card_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "person-debit-card", "add"],
+        [
+            "tdb",
+            "--db-connection-uri",
+            temporary_db.connectionURI,
+            "person-debit-card",
+            "add",
+        ],
     )
 
     try:
@@ -67,7 +73,9 @@ def test_debit_card_add_with_bad_owner(capsys, monkeypatch, temporary_db):
 
 
 def test_debit_card_delete(capsys, monkeypatch, temporary_db, person):
-    test_debit_card = test_db.PersonDebitCard(person=person, connection=temporary_db.connection)
+    test_debit_card = test_db.PersonDebitCard(
+        person=person, connection=temporary_db.connection
+    )
     assert (
         test_db.PersonDebitCard.get(
             test_debit_card.id, connection=temporary_db.connection
@@ -123,7 +131,9 @@ def test_debit_card_list(capsys, monkeypatch, temporary_db, tmp_path_factory, pe
 
 
 def test_debit_card_view(capsys, monkeypatch, temporary_db, person):
-    debit_card = test_db.PersonDebitCard(person=person, connection=temporary_db.connection)
+    debit_card = test_db.PersonDebitCard(
+        person=person, connection=temporary_db.connection
+    )
     monkeypatch.setattr(
         "sys.argv",
         [

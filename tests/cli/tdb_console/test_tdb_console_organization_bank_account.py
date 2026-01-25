@@ -2,14 +2,16 @@ import test_db
 from test_db.tdb_console import main as tdb
 
 
-def test_bank_account_view(capsys, monkeypatch, temporary_db):
-    bank_account = test_db.OrganizationBankAccount(connection=temporary_db.connection)
+def test_bank_account_view(capsys, monkeypatch, temporary_db, organization):
+    bank_account = test_db.OrganizationBankAccount(
+        organization=organization, connection=temporary_db.connection
+    )
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             f"set db_connection_uri {temporary_db.connectionURI}",
-            f"tdb_bank_account_view {bank_account.gID}",
+            f"tdb_organization_bank_account_view {bank_account.gID}",
             "quit",
         ],
     )

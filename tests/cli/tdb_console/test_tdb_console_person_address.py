@@ -2,14 +2,14 @@ import test_db
 from test_db.tdb_console import main as tdb
 
 
-def test_address_view(capsys, monkeypatch, temporary_db):
-    address = test_db.PersonAddress(connection=temporary_db.connection)
+def test_address_view(capsys, monkeypatch, temporary_db, person):
+    address = test_db.PersonAddress(person=person, connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
             f"set db_connection_uri {temporary_db.connectionURI}",
-            f"tdb_address_view {address.gID}",
+            f"tdb_person_address_view {address.gID}",
             "quit",
         ],
     )

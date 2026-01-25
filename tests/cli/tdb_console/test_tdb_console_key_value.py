@@ -24,4 +24,5 @@ def test_key_value_view(capsys, monkeypatch, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert f"{key_value.itemKey} = {key_value.itemValue}" in captured.out
+    assert key_value.itemKey in captured.out
+    assert key_value.itemValue in captured.out

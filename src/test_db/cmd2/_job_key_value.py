@@ -36,14 +36,15 @@ class JobKeyValueCommandSet(BaseCommandSet):
     @cmd2.with_argparser(tdb_job_key_value_add_parser)
     def do_tdb_job_key_value_add(self, args):
         readline.set_auto_history(False)
-        job = self.validate_entity(args.job_gid)
+        job = self.validate_job(args.job_gid)
         try:
-            test_db.KeyValueView.add(
+            key_value = test_db.JobKeyValue(
                 job=job,
                 itemKey=args.key,
                 itemValue=args.value,
-                interactive=self._cmd.command_interaction,
             )
+            if self._cmd.command_interaction:
+                test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:
             self._cmd.perror(f"error: {str(exc)}")
         readline.set_auto_history(False)
@@ -60,13 +61,20 @@ class JobKeyValueCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(tdb_job_key_value_delete_parser)
     def do_tdb_job_key_value_delete(self, args):
-        job = self.validate_entity(args.job_gid)
+        job = self.validate_job(args.job_gid)
         key_value = job.getKeyValueByKey(args.key)
         if key_value:
             key_value.destroySelf()
 
+    tdb_job_key_value_list_parser = cmd2.Cmd2ArgumentParser()
+    tdb_job_key_value_list_parser.add_argument(
+        "job_gid",
+        help="person's gID",
+    )
+
+    @cmd2.with_argparser(tdb_job_key_value_list_parser)
     def do_tdb_job_key_value_list(self, args):
-        job = self.validate_entity(args.job_gid)
+        job = self.validate_job(args.job_gid)
         test_db.KeyValueView.list(job.keyValues)
 
     tdb_job_key_value_view_parser = cmd2.Cmd2ArgumentParser()
@@ -81,7 +89,7 @@ class JobKeyValueCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(tdb_job_key_value_view_parser)
     def do_tdb_job_key_value_view(self, args):
-        job = self.validate_entity(args.job_gid)
+        job = self.validate_job(args.job_gid)
         key_value = job.getKeyValueByKey(args.key)
         if key_value:
             test_db.KeyValueView(key_value).viewDetails()

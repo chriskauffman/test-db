@@ -37,12 +37,14 @@ class PersonBankAccountCommandSet(BaseCommandSet):
     def do_tdb_person_bank_account_add(self, args):
         readline.set_auto_history(False)
         if args.person_gid:
-            entity = self.validate_entity(args.person_gid)
-            test_db.BankAccountView.add(
-                entity=entity, interactive=self._cmd.command_interaction
-            )
+            person = self.validate_person(args.person_gid)
         else:
-            test_db.BankAccountView.add(interactive=self._cmd.command_interaction)
+            person = test_db.Person()
+            if self._cmd.command_interaction:
+                test_db.PersonView(person).edit()
+        new_bank_account = test_db.PersonBankAccount(person=person)
+        if self._cmd.command_interaction:
+            test_db.BankAccountView(new_bank_account).edit()
         readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
@@ -69,8 +71,8 @@ class PersonBankAccountCommandSet(BaseCommandSet):
     @cmd2.with_argparser(connect_parser)
     def do_tdb_person_bank_account_disconnect(self, args):
         bank_account = self.validate_bank_account(args.gid)
-        entity = self.validate_entity(args.person_gid)
-        entity.removeBankAccount(bank_account)
+        person = self.validate_person(args.person_gid)
+        person.removeBankAccount(bank_account)
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_person_bank_account_edit(self, args):
