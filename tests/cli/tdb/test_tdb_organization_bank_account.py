@@ -111,6 +111,7 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, organization):
             "tdb",
             "organization-bank-account",
             "list",
+            "--organization-gid",
             str(organization.gID),
         ],
     )

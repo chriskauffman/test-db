@@ -51,7 +51,7 @@ class OrganizationAddress(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.gID}, {self.street[:15]}..., {self.postalCode}, {self.organization.gID}"
+        return f"{self.gID}, {self.region}, {self.postalCode}, {self.organization.gID}"
 
     def _set_gID(self, value):
         if value:

@@ -53,9 +53,12 @@ def person_debit_card_edit(gid: str):
 
 
 @person_debit_card_app.command("list")
-def person_debit_card_list(person_gid: str):
-    person = validate_person(person_gid)
-    test_db.DebitCardView.list(person.debitCards)
+def person_debit_card_list(person_gid: Optional[str] = None):
+    if person_gid:
+        person = validate_person(person_gid)
+        test_db.DebitCardView.list(person.debitCards)
+    else:
+        test_db.DebitCardView.list(test_db.PersonDebitCard.select())
 
 
 @person_debit_card_app.command("view")

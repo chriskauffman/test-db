@@ -53,9 +53,12 @@ def organization_bank_account_edit(gid: str):
 
 
 @organization_bank_account_app.command("list")
-def organization_bank_account_list(organization_gid: str):
-    organization = validate_organization(organization_gid)
-    test_db.BankAccountView.list(organization.bankAccounts)
+def organization_bank_account_list(organization_gid: Optional[str] = None):
+    if organization_gid:
+        organization = validate_organization(organization_gid)
+        test_db.BankAccountView.list(organization.bankAccounts)
+    else:
+        test_db.BankAccountView.list(test_db.OrganizationBankAccount.select())
 
 
 @organization_bank_account_app.command("view")

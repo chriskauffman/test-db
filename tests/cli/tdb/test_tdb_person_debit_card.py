@@ -110,6 +110,7 @@ def test_debit_card_list(capsys, monkeypatch, temporary_db, tmp_path_factory, pe
             "tdb",
             "person-debit-card",
             "list",
+            "--person-gid",
             str(person.gID),
         ],
     )

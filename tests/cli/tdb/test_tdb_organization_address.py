@@ -113,6 +113,7 @@ def test_address_list(
             "tdb",
             "organization-address",
             "list",
+            "--organization-gid",
             str(organization.gID),
         ],
     )

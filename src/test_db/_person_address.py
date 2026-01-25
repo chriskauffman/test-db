@@ -50,7 +50,7 @@ class PersonAddress(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.gID}, {self.street[:7]}..., {self.postalCode}, {self.person.gID}"
+        return f"{self.gID}, {self.region}, {self.postalCode}, {self.person.gID}"
 
     def _set_gID(self, value):
         if value:

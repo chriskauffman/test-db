@@ -53,9 +53,12 @@ def person_bank_account_edit(gid: str):
 
 
 @person_bank_account_app.command("list")
-def person_bank_account_list(person_gid: str):
-    person = validate_person(person_gid)
-    test_db.BankAccountView.list(person.bankAccounts)
+def person_bank_account_list(person_gid: Optional[str] = None):
+    if person_gid:
+        person = validate_person(person_gid)
+        test_db.BankAccountView.list(person.bankAccounts)
+    else:
+        test_db.BankAccountView.list(test_db.PersonBankAccount.select())
 
 
 @person_bank_account_app.command("view")

@@ -53,9 +53,12 @@ def person_address_edit(gid: str):
 
 
 @person_address_app.command("list")
-def person_address_list(person_gid: str):
-    person = validate_person(person_gid)
-    test_db.AddressView.list(person.addresses)
+def person_address_list(person_gid: Optional[str] = None):
+    if person_gid:
+        person = validate_person(person_gid)
+        test_db.AddressView.list(person.addresses)
+    else:
+        test_db.AddressView.list(test_db.PersonAddress.select())
 
 
 @person_address_app.command("view")

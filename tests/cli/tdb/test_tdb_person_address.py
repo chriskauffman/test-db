@@ -105,6 +105,7 @@ def test_address_list(capsys, monkeypatch, temporary_db, tmp_path_factory, perso
             "tdb",
             "person-address",
             "list",
+            "--person-gid",
             str(person.gID),
         ],
     )

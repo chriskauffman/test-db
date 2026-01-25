@@ -53,9 +53,12 @@ def organization_address_edit(gid: str):
 
 
 @organization_address_app.command("list")
-def organization_address_list(organization_gid: str):
-    organization = validate_organization(organization_gid)
-    test_db.AddressView.list(organization.addresses)
+def organization_address_list(organization_gid: Optional[str] = None):
+    if organization_gid:
+        organization = validate_organization(organization_gid)
+        test_db.AddressView.list(organization.addresses)
+    else:
+        test_db.AddressView.list(test_db.OrganizationAddress.select())
 
 
 @organization_address_app.command("view")
