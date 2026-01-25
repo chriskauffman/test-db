@@ -37,11 +37,11 @@ tests/data/test_schema_v1.sqlite: src/test_db/*.py
 	uv run tdb --no-upgrade --db-connection-uri "sqlite:tests/data/test_schema_v1.sqlite" version
 
 .PHONY: init
-init: log tmp
+init: backup log tmp
 	brew install --quiet prettier uv yamllint
 	uv sync --all-groups
 
-log tmp:
+backup log tmp:
 	mkdir -p $@
 
 .PHONY: clean
