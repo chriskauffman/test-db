@@ -33,6 +33,13 @@ def job_key_value_delete(job_gid: str, key: str):
         key_value.destroySelf()
 
 
+@job_key_value_app.command("edit")
+def key_value_edit(job_gid: str, key: str):
+    job = validate_job(job_gid)
+    key_value = job.getKeyValueByKey(key)
+    test_db.KeyValueView(key_value).edit()
+
+
 @job_key_value_app.command("list")
 def job_key_value_list(job_gid: str):
     job = validate_job(job_gid)

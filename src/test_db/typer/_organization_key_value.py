@@ -33,6 +33,13 @@ def organization_key_value_delete(organization_gid: str, key: str):
         key_value.destroySelf()
 
 
+@organization_key_value_app.command("edit")
+def key_value_edit(organization_gid: str, key: str):
+    organization = validate_organization(organization_gid)
+    key_value = organization.getKeyValueByKey(key)
+    test_db.KeyValueView(key_value).edit()
+
+
 @organization_key_value_app.command("list")
 def organization_key_value_list(organization_gid: str):
     organization = validate_organization(organization_gid)

@@ -33,6 +33,13 @@ def person_key_value_delete(person_gid: str, key: str):
         key_value.destroySelf()
 
 
+@person_key_value_app.command("edit")
+def key_value_edit(person_gid: str, key: str):
+    person = validate_person(person_gid)
+    key_value = person.getKeyValueByKey(key)
+    test_db.KeyValueView(key_value).edit()
+
+
 @person_key_value_app.command("list")
 def person_key_value_list(person_gid: str):
     person = validate_person(person_gid)
