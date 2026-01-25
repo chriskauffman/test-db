@@ -81,9 +81,6 @@ class OrganizationView(BaseView):
         self._organization.employerIdentificationNumber = self._getStrInput(
             "EIN", self._organization.employerIdentificationNumber
         )
-        self._organization.externalID = self._getStrInput(
-            "External ID", self._organization.externalID
-        )
         self._organization.phoneNumber = self._getStrInput(
             "Phone Number", self._organization.phoneNumber
         )
