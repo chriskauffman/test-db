@@ -10,7 +10,7 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            "tdb_key_value_add test_key_value_add test_key_value_add_value",
+            f"tdb_key_value_add {uuid.uuid4()} test_key_value_add_value",
             "quit",
         ],
     )
