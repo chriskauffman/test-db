@@ -42,11 +42,9 @@ class KeyValueCommandSet(BaseCommandSet):
     def do_tdb_key_value_add(self, args):
         readline.set_auto_history(False)
         try:
-            test_db.KeyValueView.add(
-                itemKey=args.key,
-                itemValue=args.value,
-                interactive=self._cmd.command_interaction,
-            )
+            key_value = test_db.KeyValue(itemKey=args.key, itemValue=args.value)
+            if self._cmd.command_interaction:
+                test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:
             self._cmd.perror(f"error: {str(exc)}")
         readline.set_auto_history(True)
@@ -80,7 +78,7 @@ class KeyValueCommandSet(BaseCommandSet):
         readline.set_auto_history(True)
 
     def do_tdb_key_value_list(self, args):
-        test_db.KeyValueView.list()
+        test_db.KeyValueView.list(test_db.KeyValue.select())
 
     @cmd2.with_argparser(key_parser)
     def do_tdb_key_value_view(self, args):

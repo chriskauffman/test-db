@@ -1,13 +1,15 @@
 from datetime import datetime, timezone
 import logging
 
-from test_db._address import Address
-from test_db._bank_account import BankAccount
-from test_db._debit_card import DebitCard
-from test_db._entity import Entity
 from test_db._job import Job
 from test_db._organization import Organization
+from test_db._organization_address import OrganizationAddress
+from test_db._organization_bank_account import OrganizationBankAccount
 from test_db._person import Person
+from test_db._person_address import PersonAddress
+from test_db._person_bank_account import PersonBankAccount
+from test_db._person_debit_card import PersonDebitCard
+
 
 logger = logging.getLogger(__name__)
 
@@ -25,15 +27,25 @@ def handleRowUpdateSignal(instance, kwargs):
 
 def handleRowCreatedSignal(instance, kwargs, post_funcs):
     if (
-        isinstance(instance, Entity)
+        isinstance(instance, Organization)
         and instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents
     ):
         if not instance.addresses:
-            instance.addAddress(Address(connection=instance._connection))
+            OrganizationAddress(organization=instance, connection=instance._connection)
         if not instance.bankAccounts:
-            instance.addBankAccount(BankAccount(connection=instance._connection))
+            OrganizationBankAccount(
+                organization=instance, connection=instance._connection
+            )
+    if (
+        isinstance(instance, Person)
+        and instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents
+    ):
+        if not instance.addresses:
+            PersonAddress(person=instance, connection=instance._connection)
+        if not instance.bankAccounts:
+            PersonBankAccount(person=instance, connection=instance._connection)
         if not instance.debitCards:
-            instance.addDebitCard(DebitCard(connection=instance._connection))
+            PersonDebitCard(person=instance, connection=instance._connection)
     if (
         isinstance(instance, Job)
         and instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents

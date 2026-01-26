@@ -10,8 +10,6 @@ def test_job_add(capsys, monkeypatch, person, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job",
             "add",
             "--organization-gid",
@@ -35,8 +33,6 @@ def test_job_add_bad_org(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job",
             "add",
             "--organization-gid",
@@ -60,8 +56,6 @@ def test_job_add_bad_person(capsys, monkeypatch, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job",
             "add",
             "--organization-gid",
@@ -88,8 +82,6 @@ def test_job_delete(capsys, monkeypatch, person, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job",
             "delete",
             str(test_job.gID),
@@ -137,21 +129,21 @@ def test_job_list(
     assert not captured.out
     assert not captured.err
 
-    test_db.Job(
+    job = test_db.Job(
         connection=temporary_db.connection,
         organization=organization,
         person=person,
     )
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "job", "list"],
+        ["tdb", "job", "list"],
     )
     try:
         tdb()
     except SystemExit as e:
         assert e.code == 0
     captured = capsys.readouterr()
-    assert captured.out.startswith("j_")
+    assert str(job.gID) in captured.out
     assert captured.out.count("j_") >= 1
 
 
@@ -165,8 +157,6 @@ def test_job_view(capsys, monkeypatch, temporary_db, organization, person):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "job",
             "view",
             str(job.gID),

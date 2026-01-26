@@ -1,0 +1,95 @@
+import logging
+
+import cmd2
+from cmd2 import with_default_category
+
+try:
+    import gnureadline as readline  # type: ignore
+except ImportError:
+    import readline
+
+from sqlobject.dberrors import DuplicateEntryError  # type: ignore
+
+import test_db
+
+from ._base_command_set import BaseCommandSet
+
+logger = logging.getLogger(__name__)
+
+
+@with_default_category("Database")
+class PersonSecureKeyValueCommandSet(BaseCommandSet):
+    tdb_person_secure_key_value_add_parser = cmd2.Cmd2ArgumentParser()
+    tdb_person_secure_key_value_add_parser.add_argument(
+        "person_gid",
+        help="person or organization's gID",
+    )
+    tdb_person_secure_key_value_add_parser.add_argument(
+        "key",
+        help="key",
+    )
+    tdb_person_secure_key_value_add_parser.add_argument(
+        "value",
+        help="value",
+    )
+
+    @cmd2.with_argparser(tdb_person_secure_key_value_add_parser)
+    def do_tdb_person_secure_key_value_add(self, args):
+        readline.set_auto_history(False)
+        person = self.validate_person(args.person_gid)
+        try:
+            key_value = test_db.PersonSecureKeyValue(
+                person=person,
+                itemKey=args.key,
+                itemValue=args.value,
+            )
+            if self._cmd.command_interaction:
+                test_db.KeyValueView(key_value).edit()
+        except DuplicateEntryError as exc:
+            self._cmd.perror(f"error: {str(exc)}")
+        readline.set_auto_history(False)
+
+    tdb_person_secure_key_value_delete_parser = cmd2.Cmd2ArgumentParser()
+    tdb_person_secure_key_value_delete_parser.add_argument(
+        "person_gid",
+        help="person's gID",
+    )
+    tdb_person_secure_key_value_delete_parser.add_argument(
+        "key",
+        help="key",
+    )
+
+    @cmd2.with_argparser(tdb_person_secure_key_value_delete_parser)
+    def do_tdb_person_secure_key_value_delete(self, args):
+        person = self.validate_person(args.person_gid)
+        key_value = person.getSecureKeyValueByKey(args.key)
+        if key_value:
+            key_value.destroySelf()
+
+    tdb_person_secure_key_value_list_parser = cmd2.Cmd2ArgumentParser()
+    tdb_person_secure_key_value_list_parser.add_argument(
+        "person_gid",
+        help="person's gID",
+    )
+
+    @cmd2.with_argparser(tdb_person_secure_key_value_list_parser)
+    def do_tdb_person_secure_key_value_list(self, args):
+        person = self.validate_person(args.person_gid)
+        test_db.KeyValueView.list(person.secureKeyValues)
+
+    tdb_person_secure_key_value_view_parser = cmd2.Cmd2ArgumentParser()
+    tdb_person_secure_key_value_view_parser.add_argument(
+        "person_gid",
+        help="person's gID",
+    )
+    tdb_person_secure_key_value_view_parser.add_argument(
+        "key",
+        help="key",
+    )
+
+    @cmd2.with_argparser(tdb_person_secure_key_value_view_parser)
+    def do_tdb_person_secure_key_value_view(self, args):
+        person = self.validate_person(args.person_gid)
+        key_value = person.getSecureKeyValueByKey(args.key)
+        if key_value:
+            test_db.KeyValueView(key_value).viewDetails()

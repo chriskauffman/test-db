@@ -19,7 +19,10 @@ logger = logging.getLogger(__name__)
 class OrgnizationCommandSet(BaseCommandSet):
     def do_tdb_organization_add(self, args):
         readline.set_auto_history(False)
-        test_db.OrganizationView.add(interactive=self._cmd.command_interaction)
+        new_organization = test_db.Organization()
+        if self._cmd.command_interaction:
+            test_db.OrganizationView(new_organization).edit()
+        self._cmd.poutput(new_organization.gID)
         readline.set_auto_history(True)
 
     gid_parser = cmd2.Cmd2ArgumentParser()

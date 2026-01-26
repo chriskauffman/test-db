@@ -16,6 +16,7 @@ class KeyValue(SQLObject):
         itemValue (StringCol):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        ownerID (str): identifier for the owner of the key/value pair
     """
 
     itemKey: StringCol = StringCol(alternateID=True, unique=True)
@@ -23,3 +24,9 @@ class KeyValue(SQLObject):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
+
+    ownerID: str = "global"
+
+    @property
+    def visualID(self):
+        return f"{self.ownerID}, {self.itemKey}"

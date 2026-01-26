@@ -87,8 +87,8 @@ def test_multiple_file_connections(tmp_path_factory):
     assert db_2.connection == Person(connection=db_2.connection)._connection
 
 
-# def test_schema_X_upgrade(tmp_path_factory):
-#     test_db.databaseEncryptionKey = "a test key"
+# def test_schema_X_upgrade(tmp_path_factory, db_encryption_key):
+#     test_db.databaseEncryptionKey = db_encryption_key
 #     db_file = tmp_path_factory.mktemp("data") / "upgrade_0.sqlite"
 #     shutil.copy2("tests/data/test.0.sqlite", db_file)
 
@@ -103,8 +103,8 @@ def test_multiple_file_connections(tmp_path_factory):
 #     assert db_schema_is_valid(test_db)
 
 
-def test_file_version_1(tmp_path_factory):
-    test_db.databaseEncryptionKey = "a test key"
+def test_file_version_1(tmp_path_factory, db_encryption_key):
+    test_db.databaseEncryptionKey = db_encryption_key
     db_file = tmp_path_factory.mktemp("data") / "test_file_version_1.sqlite"
     # shutil.copy2("tests/data/test.9.sqlite", db_file)
 

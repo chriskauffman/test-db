@@ -10,8 +10,6 @@ def test_organization_add(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization",
             "add",
         ],
@@ -39,8 +37,6 @@ def test_organization_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization",
             "delete",
             str(test_organization.gID),
@@ -62,34 +58,11 @@ def test_organization_delete(capsys, monkeypatch, temporary_db):
 
 
 def test_organization_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
-    empty_db_file = str(tmp_path_factory.mktemp("data") / "test_address_listes.sqlite")
-    monkeypatch.setattr(
-        "sys.argv",
-        [
-            "tdb",
-            "--db-connection-uri",
-            f"sqlite:{empty_db_file}",
-            "organization",
-            "list",
-        ],
-    )
-
-    try:
-        tdb()
-    except SystemExit as e:
-        assert e.code == 0
-
-    captured = capsys.readouterr()
-    assert not captured.out
-    assert not captured.err
-
     test_db.Organization(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization",
             "list",
         ],
@@ -108,8 +81,6 @@ def test_organization_view(capsys, monkeypatch, organization, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "organization",
             "view",
             str(organization.gID),

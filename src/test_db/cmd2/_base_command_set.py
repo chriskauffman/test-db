@@ -13,17 +13,11 @@ logger = logging.getLogger(__name__)
 
 @with_default_category("Database")
 class BaseCommandSet(CommandSet):
-    def validate_entity(self, gid: str):
+    def validate_job(self, gid: str):
         try:
-            return test_db.Person.byGID(gid)
-        except Invalid as exc:
+            return test_db.Job.byGID(gid)
+        except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
-
-        except SQLObjectNotFound:
-            try:
-                return test_db.Organization.byGID(gid)
-            except SQLObjectNotFound:
-                self._cmd.perror("error: person or organization not found")
 
     def validate_organization(self, gid: str):
         try:
