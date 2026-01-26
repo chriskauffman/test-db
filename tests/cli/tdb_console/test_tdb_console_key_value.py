@@ -1,3 +1,7 @@
+import pytest
+
+from sqlobject import SQLObjectNotFound
+
 import uuid
 
 import test_db
@@ -22,6 +26,36 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
 
     captured = capsys.readouterr()
     assert not captured.err
+
+
+def test_job_delete(capsys, monkeypatch, temporary_db):
+    key_value = test_db.KeyValue(
+        connection=temporary_db.connection, itemKey=str(uuid.uuid4()), itemValue="test"
+    )
+    assert (
+        test_db.KeyValue.get(key_value.id, connection=temporary_db.connection)
+        is key_value
+    )
+
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            f"tdb_key_value_delete {key_value.itemKey}",
+            "quit",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert not captured.out
+
+    with pytest.raises(SQLObjectNotFound):
+        test_db.KeyValue.get(key_value.id, connection=temporary_db.connection)
 
 
 def test_key_value_view(capsys, monkeypatch, temporary_db):

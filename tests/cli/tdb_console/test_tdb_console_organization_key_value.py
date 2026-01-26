@@ -1,3 +1,7 @@
+import pytest
+
+from sqlobject import SQLObjectNotFound
+
 import test_db
 from test_db.tdb_console import main as tdb
 
@@ -21,6 +25,42 @@ def test_organization_key_value_add(capsys, monkeypatch, temporary_db):
 
     captured = capsys.readouterr()
     assert not captured.err
+
+
+def test_organization_key_value_delete(capsys, monkeypatch, temporary_db, organization):
+    organization_key_value = test_db.OrganizationKeyValue(
+        connection=temporary_db.connection,
+        organization=organization,
+        itemKey="test_organization_key_value_delete",
+        itemValue="test_organization_key_value_delete_value",
+    )
+    assert (
+        test_db.OrganizationKeyValue.get(
+            organization_key_value.id, connection=temporary_db.connection
+        )
+        is organization_key_value
+    )
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            f"tdb_organization_key_value_delete {organization.gID} {organization_key_value.itemKey}",
+            "quit",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert not captured.out
+
+    with pytest.raises(SQLObjectNotFound):
+        test_db.OrganizationKeyValue.get(
+            organization_key_value.id, connection=temporary_db.connection
+        )
 
 
 def test_organization_key_value_list(capsys, monkeypatch, temporary_db):

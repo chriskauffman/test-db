@@ -1,3 +1,7 @@
+import pytest
+
+from sqlobject import SQLObjectNotFound
+
 import test_db
 from test_db.tdb_console import main as tdb
 
@@ -21,6 +25,42 @@ def test_person_secure_key_value_add(capsys, monkeypatch, temporary_db):
 
     captured = capsys.readouterr()
     assert not captured.err
+
+
+def test_person_secure_key_value_delete(capsys, monkeypatch, temporary_db, person):
+    person_key_value = test_db.PersonSecureKeyValue(
+        connection=temporary_db.connection,
+        person=person,
+        itemKey="test_person_secure_key_value_delete",
+        itemValue="test_person_secure_key_value_delete_value",
+    )
+    assert (
+        test_db.PersonSecureKeyValue.get(
+            person_key_value.id, connection=temporary_db.connection
+        )
+        is person_key_value
+    )
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "tdb",
+            f"tdb_person_secure_key_value_delete {person.gID} {person_key_value.itemKey}",
+            "quit",
+        ],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert not captured.out
+
+    with pytest.raises(SQLObjectNotFound):
+        test_db.PersonSecureKeyValue.get(
+            person_key_value.id, connection=temporary_db.connection
+        )
 
 
 def test_person_secure_key_value_list(capsys, monkeypatch, temporary_db):
