@@ -31,8 +31,8 @@ def test_organization_key_value_delete(capsys, monkeypatch, temporary_db, organi
     organization_key_value = test_db.OrganizationKeyValue(
         connection=temporary_db.connection,
         organization=organization,
-        itemKey="test_organization_key_value_delete",
-        itemValue="test_organization_key_value_delete_value",
+        key="test_organization_key_value_delete",
+        value="test_organization_key_value_delete_value",
     )
     assert (
         test_db.OrganizationKeyValue.get(
@@ -44,7 +44,7 @@ def test_organization_key_value_delete(capsys, monkeypatch, temporary_db, organi
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_key_value_delete {organization.gID} {organization_key_value.itemKey}",
+            f"tdb_organization_key_value_delete {organization.gID} {organization_key_value.key}",
             "quit",
         ],
     )
@@ -68,8 +68,8 @@ def test_organization_key_value_list(capsys, monkeypatch, temporary_db):
     organization_key_value = test_db.OrganizationKeyValue(
         connection=temporary_db.connection,
         organization=organization,
-        itemKey="test_organization_key_value_list",
-        itemValue="test_organization_key_value_list_value",
+        key="test_organization_key_value_list",
+        value="test_organization_key_value_list_value",
     )
     monkeypatch.setattr(
         "sys.argv",
@@ -86,7 +86,7 @@ def test_organization_key_value_list(capsys, monkeypatch, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert organization_key_value.itemKey in captured.out
+    assert organization_key_value.key in captured.out
 
 
 def test_organization_key_value_view(capsys, monkeypatch, temporary_db):
@@ -94,14 +94,14 @@ def test_organization_key_value_view(capsys, monkeypatch, temporary_db):
     organization_key_value = test_db.OrganizationKeyValue(
         connection=temporary_db.connection,
         organization=organization,
-        itemKey="test_organization_key_value_view",
-        itemValue="test_organization_key_value_view_value",
+        key="test_organization_key_value_view",
+        value="test_organization_key_value_view_value",
     )
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_key_value_view {organization.gID} {organization_key_value.itemKey}",
+            f"tdb_organization_key_value_view {organization.gID} {organization_key_value.key}",
             "quit",
         ],
     )

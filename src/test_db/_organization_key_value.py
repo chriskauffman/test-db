@@ -9,24 +9,22 @@ class OrganizationKeyValue(SQLObject):
     """Organization Key/Value SQLObject
 
     Attributes:
-        organization (ForeignKey): entity who owns the itemKey/value pair
-        itemKey (StringCol): itemKey name
-        itemValue (StringCol):
+        organization (ForeignKey): entity who owns the key/value pair
+        key (StringCol): key name
+        value (StringCol):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
-        organizationKeyIndex (DatabaseIndex): unique index on (itemKey, person)
+        organizationKeyIndex (DatabaseIndex): unique index on (key, person)
     """
 
     organization: ForeignKey = ForeignKey("Organization", cascade=True, notNone=True)
-    itemKey: StringCol = StringCol(notNone=True)
-    itemValue: StringCol = StringCol(default=None)
+    key: StringCol = StringCol(dbName="key_name", notNone=True)
+    value: StringCol = StringCol(default=None)
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
-    organizationKeyIndex: DatabaseIndex = DatabaseIndex(
-        organization, itemKey, unique=True
-    )
+    organizationKeyIndex: DatabaseIndex = DatabaseIndex(organization, key, unique=True)
 
     @property
     def ownerID(self):
@@ -34,4 +32,4 @@ class OrganizationKeyValue(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.organization.gID}, {self.itemKey}"
+        return f"{self.organization.gID}, {self.key}"

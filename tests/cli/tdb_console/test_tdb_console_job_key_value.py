@@ -32,8 +32,8 @@ def test_job_key_value_delete(capsys, monkeypatch, temporary_db):
     job_key_value = test_db.JobKeyValue(
         connection=temporary_db.connection,
         job=job,
-        itemKey="test_job_key_value_delete",
-        itemValue="test_job_key_value_delete_value",
+        key="test_job_key_value_delete",
+        value="test_job_key_value_delete_value",
     )
     assert (
         test_db.JobKeyValue.get(job_key_value.id, connection=temporary_db.connection)
@@ -44,7 +44,7 @@ def test_job_key_value_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_job_key_value_delete {job.gID} {job_key_value.itemKey}",
+            f"tdb_job_key_value_delete {job.gID} {job_key_value.key}",
             "quit",
         ],
     )
@@ -66,8 +66,8 @@ def test_job_key_value_list(capsys, monkeypatch, temporary_db):
     job_key_value = test_db.JobKeyValue(
         connection=temporary_db.connection,
         job=job,
-        itemKey="test_job_key_value_list",
-        itemValue="test_job_key_value_list_value",
+        key="test_job_key_value_list",
+        value="test_job_key_value_list_value",
     )
     monkeypatch.setattr(
         "sys.argv",
@@ -84,7 +84,7 @@ def test_job_key_value_list(capsys, monkeypatch, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert job_key_value.itemKey in captured.out
+    assert job_key_value.key in captured.out
 
 
 def test_job_key_value_view(capsys, monkeypatch, temporary_db):
@@ -92,14 +92,14 @@ def test_job_key_value_view(capsys, monkeypatch, temporary_db):
     job_key_value = test_db.JobKeyValue(
         connection=temporary_db.connection,
         job=job,
-        itemKey="test_job_key_value_view",
-        itemValue="testest_job_key_value_view_value",
+        key="test_job_key_value_view",
+        value="testest_job_key_value_view_value",
     )
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
-            f"tdb_job_key_value_view {job.gID} {job_key_value.itemKey}",
+            f"tdb_job_key_value_view {job.gID} {job_key_value.key}",
             "quit",
         ],
     )

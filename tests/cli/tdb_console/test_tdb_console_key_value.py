@@ -30,7 +30,7 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
 
 def test_job_delete(capsys, monkeypatch, temporary_db):
     key_value = test_db.KeyValue(
-        connection=temporary_db.connection, itemKey=str(uuid.uuid4()), itemValue="test"
+        connection=temporary_db.connection, key=str(uuid.uuid4()), value="test"
     )
     assert (
         test_db.KeyValue.get(key_value.id, connection=temporary_db.connection)
@@ -41,7 +41,7 @@ def test_job_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_key_value_delete {key_value.itemKey}",
+            f"tdb_key_value_delete {key_value.key}",
             "quit",
         ],
     )
@@ -60,13 +60,13 @@ def test_job_delete(capsys, monkeypatch, temporary_db):
 
 def test_key_value_view(capsys, monkeypatch, temporary_db):
     key_value = test_db.KeyValue(
-        connection=temporary_db.connection, itemKey=str(uuid.uuid4()), itemValue="test"
+        connection=temporary_db.connection, key=str(uuid.uuid4()), value="test"
     )
     monkeypatch.setattr(
         "sys.argv",
         [
             "tdb",
-            f"tdb_key_value_view {key_value.itemKey}",
+            f"tdb_key_value_view {key_value.key}",
             "quit",
         ],
     )
@@ -77,5 +77,5 @@ def test_key_value_view(capsys, monkeypatch, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert key_value.itemKey in captured.out
-    assert key_value.itemValue in captured.out
+    assert key_value.key in captured.out
+    assert key_value.value in captured.out

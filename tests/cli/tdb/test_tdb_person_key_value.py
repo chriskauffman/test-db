@@ -53,7 +53,7 @@ def test_person_key_value_add_bad_person(capsys, monkeypatch, temporary_db):
 def test_person_key_value_delete(capsys, monkeypatch, person, temporary_db):
     test_person_key_value = test_db.PersonKeyValue(
         connection=temporary_db.connection,
-        itemKey="test_delete_person_key_value",
+        key="test_delete_person_key_value",
         person=person,
     )
     assert (
@@ -70,7 +70,7 @@ def test_person_key_value_delete(capsys, monkeypatch, person, temporary_db):
             "person-key-value",
             "delete",
             str(person.gID),
-            test_person_key_value.itemKey,
+            test_person_key_value.key,
         ],
     )
 
@@ -110,7 +110,7 @@ def test_person_key_value_list(capsys, monkeypatch, person, temporary_db):
 
 def test_person_key_value_view(capsys, monkeypatch, person, temporary_db):
     test_key = str(uuid.uuid4())
-    person.getKeyValueByKey(test_key, itemValue="test value")
+    person.getKeyValueByKey(test_key, value="test value")
     monkeypatch.setattr(
         "sys.argv",
         [

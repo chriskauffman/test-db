@@ -139,15 +139,15 @@ class DatabaseController:
         )
         if databaseEncryptionKey:
             try:
-                fernet_salt = KeyValue.byItemKey(
+                fernet_salt = KeyValue.byKey(
                     "TestDB_EncryptedPickleColSalt", connection=self.connection
-                ).itemValue.encode(ENCODING)
+                ).value.encode(ENCODING)
             except sqlobject.SQLObjectNotFound:
                 fernet_salt = KeyValue(
-                    itemKey="TestDB_EncryptedPickleColSalt",
-                    itemValue=secrets.token_hex(16),
+                    key="TestDB_EncryptedPickleColSalt",
+                    value=secrets.token_hex(16),
                     connection=self.connection,
-                ).itemValue.encode(ENCODING)
+                ).value.encode(ENCODING)
             fernet_kdf = PBKDF2HMAC(
                 algorithm=hashes.SHA256(),
                 length=32,
@@ -171,9 +171,9 @@ class DatabaseController:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
             try:
                 return int(
-                    KeyValue.byItemKey(
+                    KeyValue.byKey(
                         "TestDB_ApplicationID", connection=self.connection
-                    ).itemValue
+                    ).value
                 )
             except sqlobject.SQLObjectNotFound:
                 return 0
@@ -183,14 +183,14 @@ class DatabaseController:
     def applicationID(self, applicationID: int) -> None:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
             try:
-                KeyValue.byItemKey(
+                KeyValue.byKey(
                     "TestDB_ApplicationID", connection=self.connection
-                ).itemValue = str(applicationID)
+                ).value = str(applicationID)
             except sqlobject.SQLObjectNotFound:
                 now = datetime.now(timezone.utc)
                 KeyValue(
-                    itemKey="TestDB_ApplicationID",
-                    itemValue=str(applicationID),
+                    key="TestDB_ApplicationID",
+                    value=str(applicationID),
                     createdAt=now,
                     updatedAt=now,
                     connection=self.connection,
@@ -201,9 +201,9 @@ class DatabaseController:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
             try:
                 return int(
-                    KeyValue.byItemKey(
+                    KeyValue.byKey(
                         "TestDB_ApplicationSchemaVersion", connection=self.connection
-                    ).itemValue
+                    ).value
                 )
             except sqlobject.SQLObjectNotFound:
                 return 0
@@ -213,14 +213,14 @@ class DatabaseController:
     def applicationSchemaVersion(self, applicationSchemaVersion: int) -> None:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
             try:
-                KeyValue.byItemKey(
+                KeyValue.byKey(
                     "TestDB_ApplicationSchemaVersion", connection=self.connection
-                ).itemValue = str(applicationSchemaVersion)
+                ).value = str(applicationSchemaVersion)
             except sqlobject.SQLObjectNotFound:
                 now = datetime.now(timezone.utc)
                 KeyValue(
-                    itemKey="TestDB_ApplicationSchemaVersion",
-                    itemValue=str(applicationSchemaVersion),
+                    key="TestDB_ApplicationSchemaVersion",
+                    value=str(applicationSchemaVersion),
                     createdAt=now,
                     updatedAt=now,
                     connection=self.connection,

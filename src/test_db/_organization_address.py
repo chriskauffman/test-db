@@ -18,7 +18,7 @@ class OrganizationAddress(SQLObject):
     """Basic address for use with other objects
 
     Attributes:
-        organization (ForeignKey): entity who owns the itemKey/value pair
+        organization (ForeignKey): organization this address belongs to
         gID (TypeIDCol): global ID for the object
         description (StringCol): name of the object
         street (StringCol): the person's residence street

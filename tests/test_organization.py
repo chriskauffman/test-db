@@ -31,13 +31,13 @@ def test_getKeyValueByKey(temporary_db):
     test_key_value = test_organization.getKeyValueByKey("test_getKeyValueByKey")
 
     assert isinstance(test_key_value, OrganizationKeyValue)
-    assert test_key_value.itemKey == "test_getKeyValueByKey"
+    assert test_key_value.key == "test_getKeyValueByKey"
 
     test_key_value = test_organization.getKeyValueByKey(
-        "test_getKeyValueByKey_2", itemValue="testAccessToken"
+        "test_getKeyValueByKey_2", value="testAccessToken"
     )
 
-    assert test_key_value.itemValue == "testAccessToken"
+    assert test_key_value.value == "testAccessToken"
 
 
 def test_cascade_delete(temporary_db):
@@ -93,7 +93,7 @@ def test_cascade_delete(temporary_db):
     ).count()
     for item in range(5):
         OrganizationKeyValue(
-            itemKey=f"cascadeTest{item}",
+            key=f"cascadeTest{item}",
             organization=test_organization,
             connection=temporary_db.connection,
         )

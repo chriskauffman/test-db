@@ -17,7 +17,7 @@ job_key_value_app = typer.Typer()
 def job_key_value_add(job_gid: str, key: str, value: str):
     job = validate_job(job_gid)
     try:
-        key_value = job.getKeyValueByKey(key, itemValue=value)
+        key_value = job.getKeyValueByKey(key, value=value)
         if _TyperOptions().interactive:
             test_db.KeyValueView(key_value).edit()
     except DuplicateEntryError as exc:

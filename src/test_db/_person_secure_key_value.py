@@ -11,22 +11,22 @@ class PersonSecureKeyValue(SQLObject):
     """Personal KeyValueSecure SQLObject
 
     Attributes:
-        person (ForeignKey): entity who owns the itemKey/value pair
-        itemKey (StringCol): itemKey name
-        itemValue (EncryptedPickleCol):
+        person (ForeignKey): entity who owns the key/value pair
+        key (StringCol): key name
+        value (EncryptedPickleCol):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
-        personKeyIndex (DatabaseIndex): unique index on (itemKey, person)
+        personKeyIndex (DatabaseIndex): unique index on (key, person)
     """
 
     person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
-    itemKey: StringCol = StringCol(notNone=True)
-    itemValue: EncryptedPickleCol = EncryptedPickleCol(default=None)
+    key: StringCol = StringCol(dbName="key_name", notNone=True)
+    value: EncryptedPickleCol = EncryptedPickleCol(default=None)
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
-    personKeyIndex: DatabaseIndex = DatabaseIndex(person, itemKey, unique=True)
+    personKeyIndex: DatabaseIndex = DatabaseIndex(person, key, unique=True)
 
     @property
     def ownerID(self):
@@ -34,4 +34,4 @@ class PersonSecureKeyValue(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.person.gID}, {self.itemKey}"
+        return f"{self.person.gID}, {self.key}"

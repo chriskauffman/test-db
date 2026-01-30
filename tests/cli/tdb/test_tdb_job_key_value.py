@@ -36,7 +36,7 @@ def test_job_key_value_add(capsys, monkeypatch, job, temporary_db):
 def test_job_key_value_delete(capsys, monkeypatch, job, temporary_db):
     test_job_key_value = test_db.JobKeyValue(
         connection=temporary_db.connection,
-        itemKey="test_delete_job_key_value",
+        key="test_delete_job_key_value",
         job=job,
     )
     assert (
@@ -53,7 +53,7 @@ def test_job_key_value_delete(capsys, monkeypatch, job, temporary_db):
             "job-key-value",
             "delete",
             str(job.gID),
-            test_job_key_value.itemKey,
+            test_job_key_value.key,
         ],
     )
 
@@ -93,7 +93,7 @@ def test_job_key_value_list(capsys, monkeypatch, job, temporary_db):
 
 def test_job_key_value_view(capsys, monkeypatch, job, temporary_db):
     test_key = str(uuid.uuid4())
-    job.getKeyValueByKey(test_key, itemValue="test value")
+    job.getKeyValueByKey(test_key, value="test value")
     monkeypatch.setattr(
         "sys.argv",
         [

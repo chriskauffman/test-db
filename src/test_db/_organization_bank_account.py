@@ -44,7 +44,7 @@ class OrganizationBankAccount(SQLObject):
     """BankAccount SQLObject
 
     Attributes:
-        organization (ForeignKey): entity who owns the itemKey/value pair
+        organization (ForeignKey): organization this bank account belongs to
         gID (TypeIDCol): global ID for the object
         description (StringCol): name of the object
         routingNumber (StringCol): bank routing number (generated when not provided)

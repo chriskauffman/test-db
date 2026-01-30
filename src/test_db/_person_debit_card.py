@@ -35,7 +35,7 @@ class PersonDebitCard(SQLObject):
     """DebitCard SQLObject
 
     Attributes:
-        person (ForeignKey): entity who owns the itemKey/value pair
+        person (ForeignKey): persn this debit card belongs to
         gID (TypeIDCol): global ID for the object
         description (StringCol): name of the object
         cardNumber (StringCol): debit card number (generated when not provided)

@@ -31,7 +31,7 @@ def test_organization_key_value_add(capsys, monkeypatch, organization, temporary
 def test_organization_key_value_delete(capsys, monkeypatch, organization, temporary_db):
     test_organization_key_value = test_db.OrganizationKeyValue(
         connection=temporary_db.connection,
-        itemKey="test_delete_organization_key_value",
+        key="test_delete_organization_key_value",
         organization=organization,
     )
     assert (
@@ -48,7 +48,7 @@ def test_organization_key_value_delete(capsys, monkeypatch, organization, tempor
             "organization-key-value",
             "delete",
             str(organization.gID),
-            test_organization_key_value.itemKey,
+            test_organization_key_value.key,
         ],
     )
 
@@ -88,7 +88,7 @@ def test_organization_key_value_list(capsys, monkeypatch, organization, temporar
 
 def test_organization_key_value_view(capsys, monkeypatch, organization, temporary_db):
     test_key = str(uuid.uuid4())
-    organization.getKeyValueByKey(test_key, itemValue="test value")
+    organization.getKeyValueByKey(test_key, value="test value")
     monkeypatch.setattr(
         "sys.argv",
         [

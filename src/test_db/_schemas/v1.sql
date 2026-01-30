@@ -1,7 +1,7 @@
 CREATE TABLE key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    item_key TEXT NOT NULL UNIQUE,
-    item_value TEXT,
+    key_name TEXT NOT NULL UNIQUE,
+    value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
@@ -43,12 +43,12 @@ CREATE UNIQUE INDEX organization_bank_account_organizationRoutingNumberAccountNu
 CREATE TABLE organization_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     organization_id INT NOT NULL CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
-    item_key TEXT NOT NULL,
-    item_value TEXT,
+    key_name TEXT NOT NULL,
+    value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX organization_key_value_organizationKeyIndex ON organization_key_value (organization_id, item_key);
+CREATE UNIQUE INDEX organization_key_value_organizationKeyIndex ON organization_key_value (organization_id, key_name);
 CREATE TABLE person (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
@@ -101,21 +101,21 @@ CREATE UNIQUE INDEX person_debit_card_personCardNumberIndex ON person_debit_card
 CREATE TABLE person_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
-    item_key TEXT NOT NULL,
-    item_value TEXT,
+    key_name TEXT NOT NULL,
+    value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX person_key_value_personKeyIndex ON person_key_value (person_id, item_key);
+CREATE UNIQUE INDEX person_key_value_personKeyIndex ON person_key_value (person_id, key_name);
 CREATE TABLE person_secure_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
-    item_key TEXT NOT NULL,
-    item_value TEXT,
+    key_name TEXT NOT NULL,
+    value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX person_secure_key_value_personKeyIndex ON person_secure_key_value (person_id, item_key);
+CREATE UNIQUE INDEX person_secure_key_value_personKeyIndex ON person_secure_key_value (person_id, key_name);
 CREATE TABLE job (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
@@ -133,9 +133,9 @@ CREATE UNIQUE INDEX job_employeeIDOrganizationIndex ON job (employee_id, organiz
 CREATE TABLE job_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     job_id INT NOT NULL CONSTRAINT job_id_exists REFERENCES job(id) ON DELETE CASCADE,
-    item_key TEXT NOT NULL,
-    item_value TEXT,
+    key_name TEXT NOT NULL,
+    value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX job_key_value_jobKeyIndex ON job_key_value (job_id, item_key);
+CREATE UNIQUE INDEX job_key_value_jobKeyIndex ON job_key_value (job_id, key_name);

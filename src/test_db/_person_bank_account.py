@@ -44,7 +44,7 @@ class PersonBankAccount(SQLObject):
     """BankAccount SQLObject
 
     Attributes:
-        person (ForeignKey): entity who owns the itemKey/value pair
+        person (ForeignKey): person this bank account belongs to
         gID (TypeIDCol): global ID for the object
         description (StringCol): name of the object
         routingNumber (StringCol): bank routing number (generated when not provided)

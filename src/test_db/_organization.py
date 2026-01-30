@@ -92,9 +92,9 @@ class Organization(SQLObject):
         """
         try:
             return self.keyValuesSelect.filter(
-                OrganizationKeyValue.q.itemKey == key
+                OrganizationKeyValue.q.key == key
             ).getOne()
         except SQLObjectNotFound:
             return OrganizationKeyValue(
-                connection=self._connection, organization=self.id, itemKey=key, **kwargs
+                connection=self._connection, organization=self.id, key=key, **kwargs
             )

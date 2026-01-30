@@ -9,18 +9,18 @@ from test_db._person_key_value import PersonKeyValue
 
 
 def key_value_validation(test_key_value, test_key, test_value):
-    assert test_key_value.itemKey == test_key
-    assert test_key_value.itemValue == test_value
+    assert test_key_value.key == test_key
+    assert test_key_value.value == test_value
 
-    test_key_value.itemValue = "updated_value"
-    assert test_key_value.itemValue == "updated_value"
+    test_key_value.value = "updated_value"
+    assert test_key_value.value == "updated_value"
 
 
 def test_key_value(temporary_db):
     test_key = str(uuid.uuid4())
     test_key_value = KeyValue(
-        itemKey=test_key,
-        itemValue="test_value",
+        key=test_key,
+        value="test_value",
         connection=temporary_db.connection,
     )
 
@@ -32,8 +32,8 @@ def test_job_key_value(temporary_db):
     test_job = Job(connection=temporary_db.connection)
     test_key_value = JobKeyValue(
         job=test_job,
-        itemKey="test_job_key_value",
-        itemValue="test_value",
+        key="test_job_key_value",
+        value="test_value",
         connection=temporary_db.connection,
     )
 
@@ -45,8 +45,8 @@ def test_organization_key_value(temporary_db):
     test_organization = Organization(connection=temporary_db.connection)
     test_key_value = OrganizationKeyValue(
         organization=test_organization,
-        itemKey="test_organization_key_value",
-        itemValue="test_value",
+        key="test_organization_key_value",
+        value="test_value",
         connection=temporary_db.connection,
     )
 
@@ -58,8 +58,8 @@ def test_person_key_value(temporary_db):
     test_person = Person(connection=temporary_db.connection)
     test_key_value = PersonKeyValue(
         person=test_person,
-        itemKey="test_person_key_value",
-        itemValue="test_value",
+        key="test_person_key_value",
+        value="test_value",
         connection=temporary_db.connection,
     )
 

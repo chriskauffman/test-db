@@ -9,22 +9,22 @@ class JobKeyValue(SQLObject):
     """Job Key/Value SQLObject
 
     Attributes:
-        job (ForeignKey): entity who owns the itemKey/value pair
-        itemKey (StringCol): itemKey name
-        itemValue (StringCol):
+        job (ForeignKey): entity who owns the key/value pair
+        key (StringCol): key name
+        value (StringCol):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
-        jobKeyIndex (DatabaseIndex): unique index on (itemKey, person)
+        jobKeyIndex (DatabaseIndex): unique index on (key, person)
     """
 
     job: ForeignKey = ForeignKey("Job", cascade=True, notNone=True)
-    itemKey: StringCol = StringCol(notNone=True)
-    itemValue: StringCol = StringCol(default=None)
+    key: StringCol = StringCol(dbName="key_name", notNone=True)
+    value: StringCol = StringCol(default=None)
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
-    jobKeyIndex: DatabaseIndex = DatabaseIndex(job, itemKey, unique=True)
+    jobKeyIndex: DatabaseIndex = DatabaseIndex(job, key, unique=True)
 
     @property
     def ownerID(self):
@@ -32,4 +32,4 @@ class JobKeyValue(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.job.gID}, {self.itemKey}"
+        return f"{self.job.gID}, {self.key}"

@@ -30,8 +30,8 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
 def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
     test_key = str(uuid.uuid4())
     test_db.KeyValue(
-        itemKey=test_key,
-        itemValue="test_value",
+        key=test_key,
+        value="test_value",
         connection=temporary_db.connection,
     )
     monkeypatch.setattr(
@@ -56,7 +56,7 @@ def test_add_key_value_duplicate(capsys, monkeypatch, temporary_db):
 
 def test_key_value_delete(capsys, monkeypatch, temporary_db):
     test_key_value = test_db.KeyValue(
-        connection=temporary_db.connection, itemKey="test_delete_key_value"
+        connection=temporary_db.connection, key="test_delete_key_value"
     )
     assert (
         test_db.KeyValue.get(test_key_value.id, connection=temporary_db.connection)
@@ -69,7 +69,7 @@ def test_key_value_delete(capsys, monkeypatch, temporary_db):
             "tdb",
             "key-value",
             "delete",
-            test_key_value.itemKey,
+            test_key_value.key,
         ],
     )
 
@@ -88,8 +88,8 @@ def test_key_value_delete(capsys, monkeypatch, temporary_db):
 def test_key_value_view(capsys, monkeypatch, person, temporary_db):
     test_key = str(uuid.uuid4())
     test_db.KeyValue(
-        itemKey=test_key,
-        itemValue="test value",
+        key=test_key,
+        value="test value",
         connection=temporary_db.connection,
     )
     monkeypatch.setattr(

@@ -40,8 +40,8 @@ class OrganizationKeyValueCommandSet(BaseCommandSet):
         try:
             key_value = test_db.OrganizationKeyValue(
                 organization=organization,
-                itemKey=args.key,
-                itemValue=args.value,
+                key=args.key,
+                value=args.value,
             )
             if self._cmd.command_interaction:
                 test_db.KeyValueView(key_value).edit()

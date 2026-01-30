@@ -128,10 +128,10 @@ class Person(SQLObject):
             PersonKeyValue:
         """
         try:
-            return self.keyValuesSelect.filter(PersonKeyValue.q.itemKey == key).getOne()
+            return self.keyValuesSelect.filter(PersonKeyValue.q.key == key).getOne()
         except SQLObjectNotFound:
             return PersonKeyValue(
-                connection=self._connection, person=self.id, itemKey=key, **kwargs
+                connection=self._connection, person=self.id, key=key, **kwargs
             )
 
     def getSecureKeyValueByKey(self, key: str, **kwargs) -> PersonSecureKeyValue:
@@ -146,9 +146,9 @@ class Person(SQLObject):
         """
         try:
             return self.secureKeyValuesSelect.filter(
-                PersonSecureKeyValue.q.itemKey == key
+                PersonSecureKeyValue.q.key == key
             ).getOne()
         except SQLObjectNotFound:
             return PersonSecureKeyValue(
-                connection=self._connection, person=self.id, itemKey=key, **kwargs
+                connection=self._connection, person=self.id, key=key, **kwargs
             )

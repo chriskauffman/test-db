@@ -46,13 +46,13 @@ def test_getKeyValueByKey(temporary_db):
     test_key_value = test_person.getKeyValueByKey("test_getKeyValueByKey")
 
     assert isinstance(test_key_value, PersonKeyValue)
-    assert test_key_value.itemKey == "test_getKeyValueByKey"
+    assert test_key_value.key == "test_getKeyValueByKey"
 
     test_key_value = test_person.getKeyValueByKey(
-        "test_getKeyValueByKey_2", itemValue="testAccessToken"
+        "test_getKeyValueByKey_2", value="testAccessToken"
     )
 
-    assert test_key_value.itemValue == "testAccessToken"
+    assert test_key_value.value == "testAccessToken"
 
 
 def test_getSecureKeyValueByKey(temporary_db, db_encryption_key):
@@ -63,13 +63,13 @@ def test_getSecureKeyValueByKey(temporary_db, db_encryption_key):
     )
 
     assert isinstance(test_secure_key_value, PersonSecureKeyValue)
-    assert test_secure_key_value.itemKey == "test_getSecureKeyValueByKey"
+    assert test_secure_key_value.key == "test_getSecureKeyValueByKey"
 
     test_secure_key_value = test_person.getSecureKeyValueByKey(
-        "test_getSecureKeyValueByKey_2", itemValue={"secret_data": "testSecretData"}
+        "test_getSecureKeyValueByKey_2", value={"secret_data": "testSecretData"}
     )
 
-    assert test_secure_key_value.itemValue == {"secret_data": "testSecretData"}
+    assert test_secure_key_value.value == {"secret_data": "testSecretData"}
 
 
 def test_cascade_delete(temporary_db):
@@ -125,7 +125,7 @@ def test_cascade_delete(temporary_db):
     ).count()
     for item in range(5):
         PersonKeyValue(
-            itemKey=f"cascadeTest{item}",
+            key=f"cascadeTest{item}",
             person=test_person,
             connection=temporary_db.connection,
         )

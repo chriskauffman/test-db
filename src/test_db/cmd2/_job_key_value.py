@@ -40,8 +40,8 @@ class JobKeyValueCommandSet(BaseCommandSet):
         try:
             key_value = test_db.JobKeyValue(
                 job=job,
-                itemKey=args.key,
-                itemValue=args.value,
+                key=args.key,
+                value=args.value,
             )
             if self._cmd.command_interaction:
                 test_db.KeyValueView(key_value).edit()

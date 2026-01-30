@@ -58,11 +58,9 @@ class KeyValueView(BaseView):
     def edit(self):
         """Edit a key value"""
         try:
-            if self._key_value.itemValue is None or isinstance(
-                self._key_value.itemValue, str
-            ):
-                self._key_value.itemValue = self._getStrInput(
-                    f"{self._key_value.itemKey}", self._key_value.itemValue
+            if self._key_value.value is None or isinstance(self._key_value.value, str):
+                self._key_value.value = self._getStrInput(
+                    f"{self._key_value.key}", self._key_value.value
                 )
             else:
                 raise NotImplementedError("Only string values are currently supported")
@@ -80,7 +78,7 @@ class KeyValueView(BaseView):
         """Display detailed information of the key value"""
         print(f"Owner ID: {self._key_value.ownerID}")
         try:
-            print(f"Key: {self._key_value.itemKey}")
-            print(f"Value: {self._key_value.itemValue}")
+            print(f"Key: {self._key_value.key}")
+            print(f"Value: {self._key_value.value}")
         except ValueError:
             print("Unable to decrypt - check database encryption key")

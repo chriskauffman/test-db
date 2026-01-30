@@ -162,8 +162,8 @@ class Job(SQLObject):
             JobKeyValue:
         """
         try:
-            return self.keyValuesSelect.filter(JobKeyValue.q.itemKey == key).getOne()
+            return self.keyValuesSelect.filter(JobKeyValue.q.key == key).getOne()
         except SQLObjectNotFound:
             return JobKeyValue(
-                connection=self._connection, job=self.id, itemKey=key, **kwargs
+                connection=self._connection, job=self.id, key=key, **kwargs
             )
