@@ -70,7 +70,7 @@ class KeyValueView(BaseView):
     def view(self):
         """Display brief details of the key value"""
         try:
-            print(self._key_value.visualID)
+            print(self._key_value.visualID, str(self._key_value.value)[:20])
         except ValueError:
             print("Unable to decrypt - check database encryption key")
 
