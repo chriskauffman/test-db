@@ -12,3 +12,8 @@ it will be used to execute tests when `uv run pytest` or `make` is executed. If 
 is unset, tests will run against a sqlite file.
 
 Note: You must install database drivers to support the conection specified, such as `uv add "psycopg[binary]"
+
+### Resetting Databases
+
+`psql -h nas02 -U postgres -f reset_postgresql.sql`
+`mariadb -u root -h nas02 -p < reset_mysql.sql`

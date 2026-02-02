@@ -7,7 +7,7 @@ from typing_extensions import List, Union
 from sqlobject import SQLObject  # type: ignore
 from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
-from test_db import Address, Organization, Person
+from test_db import OrganizationAddress, PersonAddress
 from test_db._views._base_view import BaseView
 
 logger = logging.getLogger(__name__)
@@ -17,47 +17,24 @@ class AddressView(BaseView):
     """Address views
 
     Args:
-        address (Address): The address to view
+        address (Union[OrganizationAddress, PersonAddress]): The address to view
         **kwargs:
             - user_inputs_required (bool):
     """
 
     @classmethod
-    def add(
-        cls,
-        entity: Union[Organization, Person, None] = None,
-        interactive: bool = True,
-        **kwargs,
-    ) -> Address:
-        """Add an address
-
-        Args:
-            entity (Union[Organization, Person, None]): The entity of the address
-            interactive (bool):
-            **kwargs:
-
-        Returns:
-            Address: The created address
-        """
-        address = Address(**kwargs)
-        if entity:
-            entity.addAddress(address)
-        if interactive:
-            AddressView(address).edit()
-        print(address.gID)
-        return address
-
-    @classmethod
     def list(
-        cls, addresses: Union[List[Address], SQLObject.select, None] = None, **kwargs
+        cls,
+        addresses: Union[
+            List[OrganizationAddress], List[PersonAddress], SQLObject.select
+        ],
+        **kwargs,
     ):
         """List all addresses"""
-        if addresses is None:
-            addresses = Address.select(**kwargs)
         for address in addresses:
             AddressView(address).view()
 
-    def __init__(self, address: Address, **kwargs):
+    def __init__(self, address: Union[OrganizationAddress, PersonAddress], **kwargs):
         super().__init__(**kwargs)
         self._address = address
 
@@ -99,6 +76,7 @@ class AddressView(BaseView):
     def viewDetails(self):
         """Display the address's details"""
         print(f"\nAddress ID: {self._address.gID}")
+        print(f"Owner ID:   {self._address.ownerID}")
         print(f"\n{self._address.street}")
         print(
             f"{self._address.locality}, {self._address.region} {self._address.postalCode}"

@@ -13,57 +13,49 @@ import sqlobject  # type: ignore
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Optional
 
-from test_db._address import Address
-from test_db._address_entity import AddressEntity
-from test_db._bank_account import BankAccount
-from test_db._bank_account_entity import BankAccountEntity
 from test_db._global_database_options import _GlobalDatabaseOptions
-from test_db._debit_card import DebitCard
-from test_db._debit_card_entity import DebitCardEntity
-from test_db._entity import Entity
-from test_db._entity_key_value import EntityKeyValue
-from test_db._entity_secure_key_value import EntitySecureKeyValue
-from test_db._organization import Organization
 from test_db._job import Job
+from test_db._job_key_value import JobKeyValue
 from test_db._key_value import KeyValue
+from test_db._organization import Organization
+from test_db._organization_address import OrganizationAddress
+from test_db._organization_bank_account import OrganizationBankAccount
+from test_db._organization_key_value import OrganizationKeyValue
+from test_db._person import Person
+from test_db._person_address import PersonAddress
+from test_db._person_bank_account import PersonBankAccount
+from test_db._person_debit_card import PersonDebitCard
+from test_db._person_key_value import PersonKeyValue
+from test_db._person_secure_key_value import PersonSecureKeyValue
+
 from test_db._listeners import (
     handleRowCreatedSignal,
     handleRowCreateSignal,
     handleRowUpdateSignal,
 )
-from test_db._person import Person
 
 ENCODING = "utf-8"
 IN_MEMORY_DB_FILE = "sqlite:/:memory:"
 
+# Note: order of TABLES matters for creation due to foreign key dependencies
 TABLES = (
-    Address,
-    BankAccount,
-    DebitCard,
-    Entity,
-    EntityKeyValue,
-    EntitySecureKeyValue,
     KeyValue,
     Organization,
+    OrganizationAddress,
+    OrganizationBankAccount,
+    OrganizationKeyValue,
     Person,
+    PersonAddress,
+    PersonBankAccount,
+    PersonDebitCard,
+    PersonKeyValue,
+    PersonSecureKeyValue,
     Job,
-    AddressEntity,
-    BankAccountEntity,
-    DebitCardEntity,
+    JobKeyValue,
 )
 
 # Entity is base class, do not add listeners
-TABLES_WITH_SIGNAL_HANDLING = [
-    table
-    for table in TABLES
-    if table
-    not in (
-        AddressEntity,
-        BankAccountEntity,
-        DebitCardEntity,
-        Entity,
-    )
-]
+TABLES_WITH_SIGNAL_HANDLING = [table for table in TABLES if table not in ()]
 
 APPLICATION_ID = 990001
 CURRENT_APPLICATION_SCHEMA_VERSION = 1
@@ -147,15 +139,15 @@ class DatabaseController:
         )
         if databaseEncryptionKey:
             try:
-                fernet_salt = KeyValue.byItemKey(
+                fernet_salt = KeyValue.byKey(
                     "TestDB_EncryptedPickleColSalt", connection=self.connection
-                ).itemValue.encode(ENCODING)
+                ).value.encode(ENCODING)
             except sqlobject.SQLObjectNotFound:
                 fernet_salt = KeyValue(
-                    itemKey="TestDB_EncryptedPickleColSalt",
-                    itemValue=secrets.token_hex(16),
+                    key="TestDB_EncryptedPickleColSalt",
+                    value=secrets.token_hex(16),
                     connection=self.connection,
-                ).itemValue.encode(ENCODING)
+                ).value.encode(ENCODING)
             fernet_kdf = PBKDF2HMAC(
                 algorithm=hashes.SHA256(),
                 length=32,
@@ -179,9 +171,9 @@ class DatabaseController:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
             try:
                 return int(
-                    KeyValue.byItemKey(
+                    KeyValue.byKey(
                         "TestDB_ApplicationID", connection=self.connection
-                    ).itemValue
+                    ).value
                 )
             except sqlobject.SQLObjectNotFound:
                 return 0
@@ -191,14 +183,14 @@ class DatabaseController:
     def applicationID(self, applicationID: int) -> None:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
             try:
-                KeyValue.byItemKey(
+                KeyValue.byKey(
                     "TestDB_ApplicationID", connection=self.connection
-                ).itemValue = str(applicationID)
+                ).value = str(applicationID)
             except sqlobject.SQLObjectNotFound:
                 now = datetime.now(timezone.utc)
                 KeyValue(
-                    itemKey="TestDB_ApplicationID",
-                    itemValue=str(applicationID),
+                    key="TestDB_ApplicationID",
+                    value=str(applicationID),
                     createdAt=now,
                     updatedAt=now,
                     connection=self.connection,
@@ -209,9 +201,9 @@ class DatabaseController:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
             try:
                 return int(
-                    KeyValue.byItemKey(
+                    KeyValue.byKey(
                         "TestDB_ApplicationSchemaVersion", connection=self.connection
-                    ).itemValue
+                    ).value
                 )
             except sqlobject.SQLObjectNotFound:
                 return 0
@@ -221,14 +213,14 @@ class DatabaseController:
     def applicationSchemaVersion(self, applicationSchemaVersion: int) -> None:
         if self.connection.tableExists(KeyValue.sqlmeta.table):
             try:
-                KeyValue.byItemKey(
+                KeyValue.byKey(
                     "TestDB_ApplicationSchemaVersion", connection=self.connection
-                ).itemValue = str(applicationSchemaVersion)
+                ).value = str(applicationSchemaVersion)
             except sqlobject.SQLObjectNotFound:
                 now = datetime.now(timezone.utc)
                 KeyValue(
-                    itemKey="TestDB_ApplicationSchemaVersion",
-                    itemValue=str(applicationSchemaVersion),
+                    key="TestDB_ApplicationSchemaVersion",
+                    value=str(applicationSchemaVersion),
                     createdAt=now,
                     updatedAt=now,
                     connection=self.connection,

@@ -9,7 +9,10 @@ from sqlobject import (  # type: ignore
     DateTimeCol,
     JSONCol,
     ForeignKey,
+    MultipleJoin,
+    SQLMultipleJoin,
     SQLObject,
+    SQLObjectNotFound,
     StringCol,
 )
 from typeid import TypeID
@@ -20,6 +23,7 @@ from typing_extensions import Optional, Self, Union
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._job_key_value import JobKeyValue
 from test_db._organization import Organization
 from test_db._person import Person
 
@@ -54,6 +58,8 @@ class Job(SQLObject):
         person (ForeignKey): the DB ID of the person
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        keyValues (MultipleJoin):
+        keyValuesSelect (SQLMultipleJoin):
         employeeIDOrganizationIndex (DatabaseIndex):
     """
 
@@ -73,20 +79,28 @@ class Job(SQLObject):
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
+    keyValues: MultipleJoin = MultipleJoin("JobKeyValue")
+    keyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("JobKeyValue")
+
     employeeIDOrganizationIndex: DatabaseIndex = DatabaseIndex(
         employeeID, organization, unique=True
     )
 
     @property
+    def ownerID(self):
+        if self.organization:
+            return self.organization.gID
+        return None
+
+    @property
     def visualID(self):
         viewItems = [
+            str(self.ownerID),
             str(self.gID),
-            self.employeeID,
         ]
         if self.person:
+            viewItems.append(str(self.person.gID))
             viewItems.append(self.person.lastName)
-        if self.organization:
-            viewItems.append(self.organization.name)
         return ", ".join(viewItems)
 
     def _set_gID(self, value):
@@ -136,3 +150,20 @@ class Job(SQLObject):
         return cls.selectBy(
             organization=organization, person=person, connection=connection
         ).getOne()
+
+    def getKeyValueByKey(self, key: str, **kwargs) -> JobKeyValue:
+        """Find and create an JobKeyValue
+
+        Args:
+            key (str): name of the JobKeyValue
+            **kwargs:
+
+        Returns:
+            JobKeyValue:
+        """
+        try:
+            return self.keyValuesSelect.filter(JobKeyValue.q.key == key).getOne()
+        except SQLObjectNotFound:
+            return JobKeyValue(
+                connection=self._connection, job=self.id, key=key, **kwargs
+            )

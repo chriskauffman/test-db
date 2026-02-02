@@ -9,6 +9,7 @@ from sqlobject.dberrors import DuplicateEntryError  # type: ignore
 
 from test_db import Job, Organization, Person
 from test_db._views._base_view import BaseView
+from test_db._views._key_value import KeyValueView
 
 logger = logging.getLogger(__name__)
 
@@ -101,3 +102,5 @@ class JobView(BaseView):
             print(f"Employee:\t{self._job.person}")
         print(f"Created At:\t{self._job.createdAt}")
         print(f"Updated At:\t{self._job.updatedAt}")
+        print("\nJob Key Values:")
+        KeyValueView.list(self._job.keyValues)

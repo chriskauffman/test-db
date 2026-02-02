@@ -11,11 +11,7 @@ from test_db import Organization
 from test_db._views._base_view import BaseView
 from test_db._views._address import AddressView
 from test_db._views._bank_account import BankAccountView
-from test_db._views._debit_card import DebitCardView
-from test_db._views._entity_key_value import EntityKeyValueView
-from test_db._views._entity_secure_key_value import (
-    EntitySecureKeyValueView,
-)
+from test_db._views._key_value import KeyValueView
 from test_db._views._job import JobView
 
 logger = logging.getLogger(__name__)
@@ -85,9 +81,6 @@ class OrganizationView(BaseView):
         self._organization.employerIdentificationNumber = self._getStrInput(
             "EIN", self._organization.employerIdentificationNumber
         )
-        self._organization.externalID = self._getStrInput(
-            "External ID", self._organization.externalID
-        )
         self._organization.phoneNumber = self._getStrInput(
             "Phone Number", self._organization.phoneNumber
         )
@@ -102,7 +95,6 @@ class OrganizationView(BaseView):
         print(f"\nName:\t\t{self._organization.name}")
         print(f"Description:\t{self._organization.description}")
         print(f"EIN:\t\t{self._organization.employerIdentificationNumber}")
-        print(f"External ID:\t{self._organization.externalID}")
         print(f"Phone Number:\t{self._organization.phoneNumber}")
         print(f"Created At:\t{self._organization.createdAt}")
         print(f"Updated At:\t{self._organization.updatedAt}")
@@ -110,11 +102,7 @@ class OrganizationView(BaseView):
         AddressView.list(self._organization.addresses)
         print("\nBank Accounts:")
         BankAccountView.list(self._organization.bankAccounts)
-        print("\nDebit Cards:")
-        DebitCardView.list(self._organization.debitCards)
         print("\nJobs:")
         JobView.list(self._organization.jobs)
         print("\nOrganization Key Values:")
-        EntityKeyValueView.list(self._organization.keyValues)
-        print("\nOrganization Secure Key Values:")
-        EntitySecureKeyValueView.list(self._organization.secureKeyValues)
+        KeyValueView.list(self._organization.keyValues)

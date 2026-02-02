@@ -12,7 +12,10 @@ organization_app = typer.Typer()
 
 @organization_app.command("add")
 def organization_add():
-    test_db.OrganizationView.add(interactive=_TyperOptions().interactive)
+    organization = test_db.Organization()
+    if _TyperOptions().interactive:
+        test_db.OrganizationView(organization).edit()
+    print(organization.gID)
 
 
 @organization_app.command("delete")

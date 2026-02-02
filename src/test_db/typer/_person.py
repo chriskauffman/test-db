@@ -12,7 +12,10 @@ person_app = typer.Typer()
 
 @person_app.command("add")
 def person_add():
-    test_db.PersonView.add(interactive=_TyperOptions().interactive)
+    person = test_db.Person()
+    if _TyperOptions().interactive:
+        test_db.PersonView(person).edit()
+    print(person.gID)
 
 
 @person_app.command("delete")

@@ -1,7 +1,25 @@
-CREATE TABLE address (
+CREATE TABLE key_value (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key_name TEXT NOT NULL UNIQUE,
+    value TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE TABLE sqlite_sequence(name,seq);
+CREATE TABLE organization (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
-    attributes TEXT,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT,
+    employer_identification_number TEXT NOT NULL UNIQUE,
+    phone_number TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE TABLE organization_address (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    organization_id INT NOT NULL CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
+    g_id VARCHAR(90) NOT NULL UNIQUE,
     description TEXT,
     street TEXT,
     locality TEXT,
@@ -11,22 +29,67 @@ CREATE TABLE address (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE TABLE sqlite_sequence(name,seq);
-CREATE TABLE bank_account (
+CREATE TABLE organization_bank_account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    organization_id INT NOT NULL CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
     g_id VARCHAR(90) NOT NULL UNIQUE,
-    attributes TEXT NOT NULL,
     description TEXT,
     routing_number TEXT,
     account_number TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX bank_account_routingNumberAccountNumberIndex ON bank_account (routing_number, account_number);
-CREATE TABLE debit_card (
+CREATE UNIQUE INDEX organization_bank_account_organizationRoutingNumberAccountNumberIndex ON organization_bank_account (organization_id, routing_number, account_number);
+CREATE TABLE organization_key_value (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    organization_id INT NOT NULL CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
+    key_name TEXT NOT NULL,
+    value TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE UNIQUE INDEX organization_key_value_organizationKeyIndex ON organization_key_value (organization_id, key_name);
+CREATE TABLE person (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
-    attributes TEXT NOT NULL,
+    first_name TEXT,
+    last_name TEXT,
+    description TEXT,
+    date_of_birth DATE,
+    social_security_number TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    phone_number TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE TABLE person_address (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
+    g_id VARCHAR(90) NOT NULL UNIQUE,
+    description TEXT,
+    street TEXT,
+    locality TEXT,
+    region TEXT,
+    postal_code TEXT,
+    country TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE TABLE person_bank_account (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
+    g_id VARCHAR(90) NOT NULL UNIQUE,
+    description TEXT,
+    routing_number TEXT,
+    account_number TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+CREATE UNIQUE INDEX person_bank_account_personRoutingNumberAccountNumberIndex ON person_bank_account (person_id, routing_number, account_number);
+CREATE TABLE person_debit_card (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
+    g_id VARCHAR(90) NOT NULL UNIQUE,
     description TEXT,
     card_number TEXT NOT NULL UNIQUE,
     cvv TEXT,
@@ -34,60 +97,25 @@ CREATE TABLE debit_card (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE TABLE entity (
+CREATE UNIQUE INDEX person_debit_card_personCardNumberIndex ON person_debit_card (person_id, card_number);
+CREATE TABLE person_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    attributes TEXT NOT NULL,
-    description TEXT,
-    phone_number TEXT,
-    child_name VARCHAR(255)
-);
-CREATE TABLE entity_key_value (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    entity_id INT NOT NULL CONSTRAINT entity_id_exists REFERENCES entity(id) ON DELETE CASCADE,
-    item_key TEXT NOT NULL,
-    item_value TEXT,
+    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
+    key_name TEXT NOT NULL,
+    value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX entity_key_value_entityKeyIndex ON entity_key_value (entity_id, item_key);
-CREATE TABLE entity_secure_key_value (
+CREATE UNIQUE INDEX person_key_value_personKeyIndex ON person_key_value (person_id, key_name);
+CREATE TABLE person_secure_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    entity_id INT NOT NULL CONSTRAINT entity_id_exists REFERENCES entity(id) ON DELETE CASCADE,
-    item_key TEXT NOT NULL,
-    item_value TEXT,
+    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
+    key_name TEXT NOT NULL,
+    value TEXT,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX entity_secure_key_value_entityKeyIndex ON entity_secure_key_value (entity_id, item_key);
-CREATE TABLE key_value (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    item_key TEXT NOT NULL UNIQUE,
-    item_value TEXT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
-CREATE TABLE organization (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    g_id VARCHAR(90) NOT NULL UNIQUE,
-    name TEXT NOT NULL UNIQUE,
-    employer_identification_number TEXT NOT NULL UNIQUE,
-    external_id TEXT NOT NULL UNIQUE,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    child_name VARCHAR(255)
-);
-CREATE TABLE person (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    g_id VARCHAR(90) NOT NULL UNIQUE,
-    first_name TEXT,
-    last_name TEXT,
-    date_of_birth DATE,
-    social_security_number TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    child_name VARCHAR(255)
-);
+CREATE UNIQUE INDEX person_secure_key_value_personKeyIndex ON person_secure_key_value (person_id, key_name);
 CREATE TABLE job (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
@@ -102,21 +130,12 @@ CREATE TABLE job (
     updated_at TIMESTAMP
 );
 CREATE UNIQUE INDEX job_employeeIDOrganizationIndex ON job (employee_id, organization_id);
-CREATE TABLE address_entity (
+CREATE TABLE job_key_value (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    address_id INT CONSTRAINT address_id_exists REFERENCES address(id) ,
-    entity_id INT CONSTRAINT entity_id_exists REFERENCES entity(id) 
+    job_id INT NOT NULL CONSTRAINT job_id_exists REFERENCES job(id) ON DELETE CASCADE,
+    key_name TEXT NOT NULL,
+    value TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX address_entity_debitCardEntityIndex ON address_entity (address_id, entity_id);
-CREATE TABLE bank_account_entity (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bank_account_id INT CONSTRAINT bank_account_id_exists REFERENCES bank_account(id) ,
-    entity_id INT CONSTRAINT entity_id_exists REFERENCES entity(id) 
-);
-CREATE UNIQUE INDEX bank_account_entity_debitCardEntityIndex ON bank_account_entity (bank_account_id, entity_id);
-CREATE TABLE debit_card_entity (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    debit_card_id INT CONSTRAINT debit_card_id_exists REFERENCES debit_card(id) ,
-    entity_id INT CONSTRAINT entity_id_exists REFERENCES entity(id) 
-);
-CREATE UNIQUE INDEX debit_card_entity_debitCardEntityIndex ON debit_card_entity (debit_card_id, entity_id);
+CREATE UNIQUE INDEX job_key_value_jobKeyIndex ON job_key_value (job_id, key_name);

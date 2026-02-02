@@ -8,7 +8,7 @@ from test_db.tdb import app as tdb
 def test_person_add(capsys, monkeypatch, temporary_db):
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "person", "add"],
+        ["tdb", "person", "add"],
     )
 
     try:
@@ -31,8 +31,6 @@ def test_person_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person",
             "delete",
             str(test_person.gID),
@@ -76,7 +74,7 @@ def test_person_list(capsys, monkeypatch, temporary_db, tmp_path_factory):
     test_db.Person(connection=temporary_db.connection)
     monkeypatch.setattr(
         "sys.argv",
-        ["tdb", "--db-connection-uri", temporary_db.connectionURI, "person", "list"],
+        ["tdb", "person", "list"],
     )
     try:
         tdb()
@@ -92,8 +90,6 @@ def test_person_view(capsys, monkeypatch, person, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "--db-connection-uri",
-            temporary_db.connectionURI,
             "person",
             "view",
             str(person.gID),

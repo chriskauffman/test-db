@@ -1,58 +1,75 @@
 import logging
 
 import faker
-import nanoid
 from sqlobject import (  # type: ignore
     DateTimeCol,
     MultipleJoin,
     SQLMultipleJoin,
     StringCol,
+    SQLObject,
+    SQLObjectNotFound,
 )
 
 from typeid import TypeID
 
-from test_db._entity import Entity
 from test_db._gid import validGID
 from test_db._type_id_col import TypeIDCol
+from test_db._organization_key_value import OrganizationKeyValue
 
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
-class Organization(Entity):
+class Organization(SQLObject):
     """Organization SQLObject
 
     Attributes:
         gID (TypeIDCol): global ID for the object
         name (StringCol): the name of the settings
+        description (StringCol): description of the entity
         employerIdentificationNumber (StringCol): the organization's EIN
-        externalID (StringCol): an alternate ID for the organization
+        phoneNumber (StringCol): the entity's phone number
+        addresses (MultipleJoin):
+        addressesSelect (SQLMultipleJoin):
+        bankAccounts (MultipleJoin): list of bank accounts related to the entity
+        bankAccountsSelect (SQLMultipleJoin):
         jobs (MultipleJoin): the jobs for the organization
         jobsSelect (SQLMultipleJoin): the jobs for the organization
+        keyValues (MultipleJoin):
+        keyValuesSelect (SQLMultipleJoin):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
+        ownerID (str): owner ID for the object
     """
 
     _gIDPrefix: str = "o"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-
     name: StringCol = StringCol(alternateID=True, default=fake.company)
+    description: StringCol = StringCol(default=None)
     employerIdentificationNumber: StringCol = StringCol(
         alternateID=True, default=fake.ein
     )
-    externalID: StringCol = StringCol(alternateID=True, default=nanoid.generate)
+    phoneNumber: StringCol = StringCol(default=fake.basic_phone_number)
 
+    addresses: MultipleJoin = MultipleJoin("OrganizationAddress")
+    addressesSelect: SQLMultipleJoin = SQLMultipleJoin("OrganizationAddress")
+    bankAccounts: MultipleJoin = MultipleJoin("OrganizationBankAccount")
+    bankAccountsSelect: SQLMultipleJoin = SQLMultipleJoin("OrganizationBankAccount")
     jobs: MultipleJoin = MultipleJoin("Job")
     jobsSelect: SQLMultipleJoin = SQLMultipleJoin("Job")
+    keyValues: MultipleJoin = MultipleJoin("OrganizationKeyValue")
+    keyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("OrganizationKeyValue")
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
 
+    ownerID: str = "global"
+
     @property
     def visualID(self):
-        return f"{self.gID} {self.name} {self.externalID}"
+        return f"{self.gID} {self.name}"
 
     def _set_gID(self, value):
         if value:
@@ -62,3 +79,22 @@ class Organization(Entity):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
+
+    def getKeyValueByKey(self, key: str, **kwargs) -> OrganizationKeyValue:
+        """Find and create an OrganizationKeyValue
+
+        Args:
+            key (str): name of the OrganizationKeyValue
+            **kwargs:
+
+        Returns:
+            OrganizationKeyValue:
+        """
+        try:
+            return self.keyValuesSelect.filter(
+                OrganizationKeyValue.q.key == key
+            ).getOne()
+        except SQLObjectNotFound:
+            return OrganizationKeyValue(
+                connection=self._connection, organization=self.id, key=key, **kwargs
+            )

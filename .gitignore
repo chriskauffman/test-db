@@ -1,8 +1,11 @@
 .vscode
+.DS_Store
 *.db
 *.sqlite
 backup/
 log/
+prof/
+tmp/
 test_db.toml
 
 # Byte-compiled / optimized / DLL files

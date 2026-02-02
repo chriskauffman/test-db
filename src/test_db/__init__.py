@@ -7,7 +7,7 @@ Example:
     import test_db
 
     db = test_db.DatabaseController("sqlite:test_db.sqlite", autoCreate=True)
-    new_person = test_db.PersonView.add()
+    new_person = test_db.Person()
 """
 
 import logging
@@ -20,31 +20,33 @@ from sqlobject.dberrors import DuplicateEntryError as DuplicateEntryError  # typ
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Optional
 
-from test_db._address import Address as Address
-from test_db._bank_account import BankAccount as BankAccount
 from test_db._database_controller import (
     DatabaseController as DatabaseController,
 )
 from test_db._database_controller import (
     IN_MEMORY_DB_FILE as IN_MEMORY_DB_FILE,
 )
-from test_db._debit_card import DebitCard as DebitCard
-from test_db._entity_key_value import EntityKeyValue as EntityKeyValue
-from test_db._entity_secure_key_value import (
-    EntitySecureKeyValue as EntitySecureKeyValue,
-)
 from test_db._job import Job as Job
+from test_db._job_key_value import JobKeyValue as JobKeyValue
 from test_db._key_value import KeyValue as KeyValue
 from test_db._organization import Organization as Organization
+from test_db._organization_address import OrganizationAddress as OrganizationAddress
+from test_db._organization_bank_account import (
+    OrganizationBankAccount as OrganizationBankAccount,
+)
+from test_db._organization_key_value import OrganizationKeyValue as OrganizationKeyValue
 from test_db._person import Person as Person
+from test_db._person_address import PersonAddress as PersonAddress
+from test_db._person_bank_account import PersonBankAccount as PersonBankAccount
+from test_db._person_debit_card import PersonDebitCard as PersonDebitCard
+from test_db._person_key_value import PersonKeyValue as PersonKeyValue
+from test_db._person_secure_key_value import (
+    PersonSecureKeyValue as PersonSecureKeyValue,
+)
 
 from test_db._views._address import AddressView as AddressView
 from test_db._views._bank_account import BankAccountView as BankAccountView
 from test_db._views._debit_card import DebitCardView as DebitCardView
-from test_db._views._entity_key_value import EntityKeyValueView as EntityKeyValueView
-from test_db._views._entity_secure_key_value import (
-    EntitySecureKeyValueView as EntitySecureKeyValueView,
-)
 from test_db._views._job import JobView as JobView
 from test_db._views._key_value import KeyValueView as KeyValueView
 from test_db._views._organization import OrganizationView as OrganizationView

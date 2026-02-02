@@ -8,9 +8,6 @@ try:
 except ImportError:
     import readline
 
-from sqlobject import SQLObjectNotFound  # type: ignore
-
-from formencode.validators import Invalid  # type: ignore
 
 import test_db
 
@@ -21,12 +18,6 @@ logger = logging.getLogger(__name__)
 
 @with_default_category("Database")
 class JobCommandSet(BaseCommandSet):
-    def validate_job(self, gid: str):
-        try:
-            return test_db.Job.byGID(gid)
-        except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {str(exc)}")
-
     tdb_job_add_parser = cmd2.Cmd2ArgumentParser()
     tdb_job_add_parser.add_argument(
         "--organization_gid",
@@ -46,11 +37,10 @@ class JobCommandSet(BaseCommandSet):
             organization = self.validate_organization(args.organization_gid)
         if args.person_gid:
             person = self.validate_person(args.person_gid)
-        test_db.JobView.add(
-            organization=organization,
-            person=person,
-            interactive=self._cmd.command_interaction,
-        )
+        new_job = test_db.Job(organization=organization, person=person)
+        if self._cmd.command_interaction:
+            test_db.JobView(new_job).edit()
+        self._cmd.poutput(new_job.gID)
         readline.set_auto_history(True)
 
     gid_parser = cmd2.Cmd2ArgumentParser()

@@ -15,30 +15,38 @@ from typing_extensions import Annotated, Optional
 import test_db
 from test_db._cli_settings import Settings
 from test_db.typer import (
-    address_app,
-    bank_account_app,
-    debit_card_app,
-    entity_key_value_app,
-    entity_secure_key_value_app,
     job_app,
+    job_key_value_app,
     key_value_app,
     organization_app,
+    organization_address_app,
+    organization_bank_account_app,
+    organization_key_value_app,
     person_app,
+    person_address_app,
+    person_bank_account_app,
+    person_debit_card_app,
+    person_key_value_app,
+    person_secure_key_value_app,
 )
 
 
 logger = logging.getLogger()
 
 app = typer.Typer()
-app.add_typer(address_app, name="address")
-app.add_typer(bank_account_app, name="bank-account")
-app.add_typer(debit_card_app, name="debit-card")
-app.add_typer(entity_key_value_app, name="entity-key-value")
-app.add_typer(entity_secure_key_value_app, name="entity-secure-key-value")
 app.add_typer(job_app, name="job")
+app.add_typer(job_key_value_app, name="job-key-value")
 app.add_typer(key_value_app, name="key-value")
 app.add_typer(organization_app, name="organization")
+app.add_typer(organization_address_app, name="organization-address")
+app.add_typer(organization_bank_account_app, name="organization-bank-account")
+app.add_typer(organization_key_value_app, name="organization-key-value")
 app.add_typer(person_app, name="person")
+app.add_typer(person_address_app, name="person-address")
+app.add_typer(person_bank_account_app, name="person-bank-account")
+app.add_typer(person_debit_card_app, name="person-debit-card")
+app.add_typer(person_key_value_app, name="person-key-value")
+app.add_typer(person_secure_key_value_app, name="person-secure-key-value")
 
 
 @app.command()
