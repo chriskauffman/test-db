@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.4.1](https://github.com/chriskauffman/test-db/compare/v0.4.0...v0.4.1) (2026-02-07)
+
+
+### Bug Fixes
+
+* improve acceptNull handling on input; allow key value to accept null/none ([5046a54](https://github.com/chriskauffman/test-db/commit/5046a54862647d0910393aeeab8899efd4250b74))
+* make sure visual ID and view methods display gID first and use correct elements ([2d4523d](https://github.com/chriskauffman/test-db/commit/2d4523dbca4b844af5b9090bbfc7e73f13809532))
+
+
+### Miscellaneous Chores
+
+* release 0.4.1 ([0791282](https://github.com/chriskauffman/test-db/commit/079128256ec0e09df26cb3c050584ad1d96532d6))
+
 ## [0.4.0](https://github.com/chriskauffman/test-db/compare/v0.3.3...v0.4.0) (2026-02-02)
 
 
