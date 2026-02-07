@@ -32,4 +32,4 @@ class OrganizationKeyValue(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.organization.gID}, {self.key}"
+        return f"{self.ownerID}, {self.key}"

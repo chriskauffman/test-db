@@ -95,12 +95,14 @@ class Job(SQLObject):
     @property
     def visualID(self):
         viewItems = [
-            str(self.ownerID),
             str(self.gID),
         ]
+        if self.organization:
+            viewItems.append(str(self.organization.gID))
+            viewItems.append(self.organization.name[:10])
         if self.person:
             viewItems.append(str(self.person.gID))
-            viewItems.append(self.person.lastName)
+            viewItems.append(self.person.lastName[:10])
         return ", ".join(viewItems)
 
     def _set_gID(self, value):

@@ -32,4 +32,4 @@ class JobKeyValue(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.job.gID}, {self.key}"
+        return f"{self.ownerID}, {self.key}"

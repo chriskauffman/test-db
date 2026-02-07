@@ -34,4 +34,4 @@ class PersonSecureKeyValue(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.person.gID}, {self.key}"
+        return f"{self.ownerID}, {self.key}"
