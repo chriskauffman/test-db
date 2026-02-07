@@ -66,12 +66,16 @@ class BaseView:
     def _getInput(
         prompt: str, default: Optional[Any] = None, acceptNull: Optional[bool] = False
     ) -> str:
+        if acceptNull:
+            prompt = f"{prompt} (Optional, use 'NULL' to erase)"
+        else:
+            prompt = f"{prompt} (Required)"
+        if default:
+            prompt = f"{prompt} [{default}]"
+        prompt = f"{prompt}: "
         while True:
-            if default:
-                value = input(f"{prompt} ({default}): ") or default
-            else:
-                value = input(f"{prompt}: ")
-            if value == "NULL":
+            value = input(prompt) or default
+            if value == "NULL" or value is None:
                 value = ""
             if value or acceptNull:
                 return value

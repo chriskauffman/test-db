@@ -60,7 +60,7 @@ class KeyValueView(BaseView):
         try:
             if self._key_value.value is None or isinstance(self._key_value.value, str):
                 self._key_value.value = self._getStrInput(
-                    f"{self._key_value.key}", self._key_value.value
+                    f"{self._key_value.key}", self._key_value.value, acceptNull=True
                 )
             else:
                 raise NotImplementedError("Only string values are currently supported")
