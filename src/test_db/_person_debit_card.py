@@ -4,6 +4,7 @@ import logging
 
 import faker
 from sqlobject import (  # type: ignore
+    events,
     DatabaseIndex,
     DateCol,
     DateTimeCol,
@@ -15,6 +16,7 @@ from typeid import TypeID
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 
 
 logger = logging.getLogger(__name__)
@@ -48,7 +50,7 @@ class PersonDebitCard(SQLObject):
 
     _gIDPrefix: str = "dc"
 
-    person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
+    person: ForeignKey = ForeignKey("Person", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
     cardNumber: StringCol = StringCol(alternateID=True, default=fake.credit_card_number)
@@ -64,7 +66,9 @@ class PersonDebitCard(SQLObject):
 
     @property
     def ownerID(self):
-        return self.person.gID
+        if self.person:
+            return self.person.gID
+        return None
 
     @property
     def visualID(self):
@@ -78,3 +82,7 @@ class PersonDebitCard(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
+
+
+events.listen(handleRowCreateSignal, PersonDebitCard, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, PersonDebitCard, events.RowUpdateSignal)

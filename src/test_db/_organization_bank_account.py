@@ -5,6 +5,7 @@ import faker
 from faker.providers.bank import Provider as BankProvider
 from sqlobject import (  # type: ignore
     connectionForURI,
+    events,
     DatabaseIndex,
     DateTimeCol,
     ForeignKey,
@@ -17,8 +18,10 @@ from typeid import TypeID
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Optional, Self
 
-from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
+
+from test_db._type_id_col import TypeIDCol
 
 
 logger = logging.getLogger(__name__)
@@ -56,7 +59,7 @@ class OrganizationBankAccount(SQLObject):
 
     _gIDPrefix: str = "ba"
 
-    organization: ForeignKey = ForeignKey("Organization", cascade=True, notNone=True)
+    organization: ForeignKey = ForeignKey("Organization", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
     routingNumber: StringCol = StringCol(default=fake.aba)
@@ -71,7 +74,9 @@ class OrganizationBankAccount(SQLObject):
 
     @property
     def ownerID(self):
-        return self.organization.gID
+        if self.organization:
+            return self.organization.gID
+        return None
 
     @property
     def visualID(self):
@@ -110,3 +115,7 @@ class OrganizationBankAccount(SQLObject):
             accountNumber=accountNumber,
             connection=connection,
         ).getOne()
+
+
+events.listen(handleRowCreateSignal, OrganizationBankAccount, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, OrganizationBankAccount, events.RowUpdateSignal)

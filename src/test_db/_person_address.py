@@ -1,11 +1,12 @@
 import logging
 
 import faker
-from sqlobject import DateTimeCol, ForeignKey, SQLObject, StringCol  # type: ignore
+from sqlobject import events, DateTimeCol, ForeignKey, SQLObject, StringCol  # type: ignore
 from typeid import TypeID
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ class PersonAddress(SQLObject):
 
     _gIDPrefix: str = "addr"
 
-    person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
+    person: ForeignKey = ForeignKey("Person", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
     street: StringCol = StringCol(default=fake.street_address)
@@ -46,7 +47,9 @@ class PersonAddress(SQLObject):
 
     @property
     def ownerID(self):
-        return self.person.gID
+        if self.person:
+            return self.person.gID
+        return None
 
     @property
     def visualID(self):
@@ -60,3 +63,7 @@ class PersonAddress(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
+
+
+events.listen(handleRowCreateSignal, PersonAddress, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, PersonAddress, events.RowUpdateSignal)
