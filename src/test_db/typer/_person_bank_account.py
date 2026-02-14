@@ -2,6 +2,7 @@ import logging
 import sys
 
 from formencode.validators import Invalid  # type: ignore
+from rich.progress import track
 from sqlobject import SQLObjectNotFound  # type: ignore
 import typer
 
@@ -29,15 +30,33 @@ def validate_bank_account(gid: str):
 @person_bank_account_app.command("add")
 def person_bank_account_add(person_gid: Optional[str] = None):
     if person_gid:
-        person = validate_person(person_gid)
+        new_bank_account = test_db.PersonBankAccount(person=validate_person(person_gid))
     else:
-        person = test_db.Person()
-        if _TyperOptions().interactive:
-            test_db.PersonView(person).edit()
-    new_bank_account = test_db.PersonBankAccount(person=person)
+        new_bank_account = test_db.PersonBankAccount()
     if _TyperOptions().interactive:
         test_db.BankAccountView(new_bank_account).edit()
     print(new_bank_account.gID)
+
+
+@person_bank_account_app.command("bulk-add")
+def bank_account_bulk_add(count: int = 100, person_gid: Optional[str] = None):
+    person = None
+    if person_gid:
+        person = validate_person(person_gid)
+    logger.debug(
+        "Current counts: persons=%d, bankAccounts=%d",
+        test_db.Person.select().count(),
+        test_db.PersonBankAccount.select().count(),
+    )
+    for i in track(
+        range(count), description=f"Creating {count} personal bank accounts..."
+    ):
+        test_db.PersonBankAccount(person=person)
+    logger.debug(
+        "Current counts: persons=%d, bankAccounts=%d",
+        test_db.Person.select().count(),
+        test_db.PersonBankAccount.select().count(),
+    )
 
 
 @person_bank_account_app.command("delete")
