@@ -37,12 +37,11 @@ class OrganizationAddressCommandSet(BaseCommandSet):
     def do_tdb_organization_address_add(self, args):
         readline.set_auto_history(False)
         if args.organization_gid:
-            organization = self.validate_organization(args.organization_gid)
+            new_address = test_db.OrganizationAddress(
+                organization=self.validate_organization(args.organization_gid)
+            )
         else:
-            organization = test_db.Organization()
-            if self._cmd.command_interaction:
-                test_db.OrganizationView(organization).edit()
-        new_address = test_db.OrganizationAddress(organization=organization)
+            new_address = test_db.OrganizationAddress()
         if self._cmd.command_interaction:
             test_db.AddressView(new_address).edit()
         self._cmd.poutput(new_address.gID)
