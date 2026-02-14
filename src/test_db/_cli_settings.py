@@ -76,7 +76,7 @@ class Settings(BaseSettings):
     log_level_screen: Union[
         int, Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
     ] = Field(
-        default="WARNING", description="log level for screen display of log messages"
+        default="ERROR", description="log level for screen display of log messages"
     )
     log_path: pathlib.Path = Field(
         default=DEFAULT_LOG_PATH, description="directory for logging activity"
