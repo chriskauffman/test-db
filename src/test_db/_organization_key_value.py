@@ -1,6 +1,16 @@
 import logging
 
-from sqlobject import DateTimeCol, ForeignKey, DatabaseIndex, SQLObject, StringCol  # type: ignore
+from sqlobject import (  # type: ignore
+    events,
+    DateTimeCol,
+    ForeignKey,
+    DatabaseIndex,
+    SQLObject,
+    StringCol,
+)
+
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,3 +43,7 @@ class OrganizationKeyValue(SQLObject):
     @property
     def visualID(self):
         return f"{self.ownerID}, {self.key}"
+
+
+events.listen(handleRowCreateSignal, OrganizationKeyValue, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, OrganizationKeyValue, events.RowUpdateSignal)
