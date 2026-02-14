@@ -5,6 +5,7 @@ from faker.providers import BaseProvider
 import nanoid
 from sqlobject import (  # type: ignore
     connectionForURI,
+    events,
     DatabaseIndex,
     DateTimeCol,
     JSONCol,
@@ -24,6 +25,7 @@ from typing_extensions import Optional, Self, Union
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
 from test_db._job_key_value import JobKeyValue
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._organization import Organization
 from test_db._person import Person
 
@@ -169,3 +171,16 @@ class Job(SQLObject):
             return JobKeyValue(
                 connection=self._connection, job=self.id, key=key, **kwargs
             )
+
+
+def handleJobRowCreatedSignal(instance, kwargs, post_funcs):
+    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
+        if not instance.organization:
+            instance.organization = Organization(connection=instance._connection)
+        if not instance.person:
+            instance.person = Person(connection=instance._connection)
+
+
+events.listen(handleJobRowCreatedSignal, Job, events.RowCreatedSignal)
+events.listen(handleRowCreateSignal, Job, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, Job, events.RowUpdateSignal)

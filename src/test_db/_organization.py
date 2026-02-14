@@ -2,6 +2,7 @@ import logging
 
 import faker
 from sqlobject import (  # type: ignore
+    events,
     DateTimeCol,
     MultipleJoin,
     SQLMultipleJoin,
@@ -14,6 +15,9 @@ from typeid import TypeID
 
 from test_db._gid import validGID
 from test_db._type_id_col import TypeIDCol
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
+from test_db._organization_address import OrganizationAddress
+from test_db._organization_bank_account import OrganizationBankAccount
 from test_db._organization_key_value import OrganizationKeyValue
 
 
@@ -98,3 +102,79 @@ class Organization(SQLObject):
             return OrganizationKeyValue(
                 connection=self._connection, organization=self.id, key=key, **kwargs
             )
+
+
+def handleOrganizationRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if kwargs.get("name") is None:
+        while True:
+            kwargs["name"] = fake.company()
+            try:
+                if kwargs.get("connection"):
+                    Organization.byName(kwargs["name"], connection=kwargs["connection"])
+                else:
+                    Organization.byName(kwargs["name"])
+            except SQLObjectNotFound:
+                break
+    if kwargs.get("employerIdentificationNumber") is None:
+        while True:
+            kwargs["employerIdentificationNumber"] = fake.ein()
+            try:
+                if kwargs.get("connection"):
+                    Organization.byEmployerIdentificationNumber(
+                        kwargs["employerIdentificationNumber"],
+                        connection=kwargs["connection"],
+                    )
+                else:
+                    Organization.byEmployerIdentificationNumber(
+                        kwargs["employerIdentificationNumber"]
+                    )
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(handleOrganizationRowCreateSignal, Organization, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, Organization, events.RowUpdateSignal)
+
+
+def handleOrganizationRowCreatedSignal(instance, kwargs, post_funcs):
+    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
+        if not instance.addresses:
+            OrganizationAddress(organization=instance, connection=instance._connection)
+        if not instance.bankAccounts:
+            OrganizationBankAccount(
+                organization=instance, connection=instance._connection
+            )
+
+
+events.listen(
+    handleOrganizationRowCreatedSignal,
+    Organization,
+    events.RowCreatedSignal,
+)
+
+
+def handleOrganizationAddressRowCreatedSignal(instance, kwargs, post_funcs):
+    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
+        if not instance.organization:
+            instance.organization = Organization(connection=instance._connection)
+
+
+events.listen(
+    handleOrganizationAddressRowCreatedSignal,
+    OrganizationAddress,
+    events.RowCreatedSignal,
+)
+
+
+def handleOrganizationBankAccountRowCreatedSignal(instance, kwargs, post_funcs):
+    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
+        if not instance.organization:
+            instance.organization = Organization(connection=instance._connection)
+
+
+events.listen(
+    handleOrganizationBankAccountRowCreatedSignal,
+    OrganizationBankAccount,
+    events.RowCreatedSignal,
+)
