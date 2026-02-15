@@ -1,4 +1,6 @@
 import logging
+
+from rich.progress import track
 import typer
 
 import test_db
@@ -16,6 +18,16 @@ def organization_add():
     if _TyperOptions().interactive:
         test_db.OrganizationView(organization).edit()
     print(organization.gID)
+
+
+@organization_app.command("bulk-add")
+def organization_bulk_add(count: int = 100):
+    logger.debug(
+        "Current organization count: %d", test_db.Organization.select().count()
+    )
+    for i in track(range(count), description=f"Creating {count} organizations..."):
+        test_db.Organization()
+    logger.debug("New organization count: %d", test_db.Organization.select().count())
 
 
 @organization_app.command("delete")

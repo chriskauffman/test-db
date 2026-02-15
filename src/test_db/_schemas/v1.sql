@@ -18,7 +18,7 @@ CREATE TABLE organization (
 );
 CREATE TABLE organization_address (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    organization_id INT NOT NULL CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
+    organization_id INT CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
     g_id VARCHAR(90) NOT NULL UNIQUE,
     description TEXT,
     street TEXT,
@@ -31,7 +31,7 @@ CREATE TABLE organization_address (
 );
 CREATE TABLE organization_bank_account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    organization_id INT NOT NULL CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
+    organization_id INT CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
     g_id VARCHAR(90) NOT NULL UNIQUE,
     description TEXT,
     routing_number TEXT,
@@ -64,7 +64,7 @@ CREATE TABLE person (
 );
 CREATE TABLE person_address (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
+    person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
     g_id VARCHAR(90) NOT NULL UNIQUE,
     description TEXT,
     street TEXT,
@@ -77,7 +77,7 @@ CREATE TABLE person_address (
 );
 CREATE TABLE person_bank_account (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
+    person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
     g_id VARCHAR(90) NOT NULL UNIQUE,
     description TEXT,
     routing_number TEXT,
@@ -88,7 +88,7 @@ CREATE TABLE person_bank_account (
 CREATE UNIQUE INDEX person_bank_account_personRoutingNumberAccountNumberIndex ON person_bank_account (person_id, routing_number, account_number);
 CREATE TABLE person_debit_card (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
+    person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
     g_id VARCHAR(90) NOT NULL UNIQUE,
     description TEXT,
     card_number TEXT NOT NULL UNIQUE,

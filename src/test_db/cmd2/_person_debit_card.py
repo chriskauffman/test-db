@@ -37,12 +37,11 @@ class PersonDebitCardCommandSet(BaseCommandSet):
     def do_tdb_person_debit_card_add(self, args):
         readline.set_auto_history(False)
         if args.person_gid:
-            person = self.validate_person(args.person_gid)
+            new_debit_card = test_db.PersonDebitCard(
+                person=self.validate_person(args.person_gid)
+            )
         else:
-            person = test_db.Person()
-            if self._cmd.command_interaction:
-                test_db.PersonView(person).edit()
-        new_debit_card = test_db.PersonDebitCard(person=person)
+            new_debit_card = test_db.PersonDebitCard()
         if self._cmd.command_interaction:
             test_db.DebitCardView(new_debit_card).edit()
         self._cmd.poutput(new_debit_card.gID)

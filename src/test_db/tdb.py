@@ -30,7 +30,6 @@ from test_db.typer import (
     person_secure_key_value_app,
 )
 
-
 logger = logging.getLogger()
 
 app = typer.Typer()
@@ -57,13 +56,20 @@ def version():
 @app.callback()
 def tdb_app_callback(
     db_connection_uri: Annotated[
-        Optional[str], typer.Option(help="sqlobject connection string")
+        Optional[str],
+        typer.Option("--db-connection-uri", "-d", help="sqlobject connection string"),
     ] = None,
     interactive: Annotated[
-        bool, typer.Option(help="allow interactive prompts for user input")
+        bool,
+        typer.Option(
+            "--interactive", "-i", help="allow interactive prompts for user input"
+        ),
     ] = False,
     upgrade: Annotated[
-        bool, typer.Option(help="upgrade the database if it is out of date")
+        bool,
+        typer.Option(
+            "--upgrade", "-u", help="upgrade the database if it is out of date"
+        ),
     ] = False,
 ) -> None:
     """main callback for test_db typer applications"""

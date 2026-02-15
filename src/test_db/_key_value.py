@@ -1,7 +1,8 @@
 import logging
 
-from sqlobject import DateTimeCol, SQLObject, StringCol  # type: ignore
+from sqlobject import events, DateTimeCol, SQLObject, StringCol  # type: ignore
 
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 
 logger = logging.getLogger(__name__)
 
@@ -30,3 +31,7 @@ class KeyValue(SQLObject):
     @property
     def visualID(self):
         return f"{self.ownerID}, {self.key}"
+
+
+events.listen(handleRowCreateSignal, KeyValue, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, KeyValue, events.RowUpdateSignal)

@@ -28,12 +28,6 @@ from test_db._person_debit_card import PersonDebitCard
 from test_db._person_key_value import PersonKeyValue
 from test_db._person_secure_key_value import PersonSecureKeyValue
 
-from test_db._listeners import (
-    handleRowCreatedSignal,
-    handleRowCreateSignal,
-    handleRowUpdateSignal,
-)
-
 ENCODING = "utf-8"
 IN_MEMORY_DB_FILE = "sqlite:/:memory:"
 
@@ -53,9 +47,6 @@ TABLES = (
     Job,
     JobKeyValue,
 )
-
-# Entity is base class, do not add listeners
-TABLES_WITH_SIGNAL_HANDLING = [table for table in TABLES if table not in ()]
 
 APPLICATION_ID = 990001
 CURRENT_APPLICATION_SCHEMA_VERSION = 1
@@ -121,17 +112,6 @@ class DatabaseController:
         # Database specific configuration
         if "sqlite" in str(self.connectionURI):
             self._rawCursor.execute("PRAGMA foreign_keys = ON")
-
-        for table in TABLES_WITH_SIGNAL_HANDLING:
-            sqlobject.events.listen(
-                handleRowCreateSignal, table, sqlobject.events.RowCreateSignal
-            )
-            sqlobject.events.listen(
-                handleRowUpdateSignal, table, sqlobject.events.RowUpdateSignal
-            )
-            sqlobject.events.listen(
-                handleRowCreatedSignal, table, sqlobject.events.RowCreatedSignal
-            )
 
         databaseEncryptionKey = (
             databaseEncryptionKey

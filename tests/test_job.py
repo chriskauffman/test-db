@@ -3,6 +3,7 @@ import uuid
 
 from sqlobject.dberrors import DuplicateEntryError
 
+import test_db
 from test_db._job import Job
 from test_db._job_key_value import JobKeyValue
 from test_db._organization import Organization
@@ -14,6 +15,18 @@ def test_init(temporary_db):
 
     assert test_job
     assert isinstance(test_job, Job)
+    assert isinstance(test_job.organization, Organization)
+    assert isinstance(test_job.person, Person)
+
+
+def test_autoCreateDependents_children(temporary_db):
+    test_db.autoCreateDependents = False
+    test_job = Job(connection=temporary_db.connection)
+    assert test_job.organization is None
+    assert test_job.person is None
+
+    test_db.autoCreateDependents = True
+    test_job = Job(connection=temporary_db.connection)
     assert isinstance(test_job.organization, Organization)
     assert isinstance(test_job.person, Person)
 

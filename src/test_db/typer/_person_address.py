@@ -2,6 +2,7 @@ import logging
 import sys
 
 from formencode.validators import Invalid  # type: ignore
+from rich.progress import track
 from sqlobject import SQLObjectNotFound  # type: ignore
 import typer
 
@@ -29,15 +30,31 @@ def validate_address(gid: str):
 @person_address_app.command("add")
 def person_address_add(person_gid: Optional[str] = None):
     if person_gid:
-        person = validate_person(person_gid)
+        new_address = test_db.PersonAddress(person=validate_person(person_gid))
     else:
-        person = test_db.Person()
-        if _TyperOptions().interactive:
-            test_db.PersonView(person).edit()
-    new_address = test_db.PersonAddress(person=person)
+        new_address = test_db.PersonAddress()
     if _TyperOptions().interactive:
         test_db.AddressView(new_address).edit()
     print(new_address.gID)
+
+
+@person_address_app.command("bulk-add")
+def address_bulk_add(count: int = 100, person_gid: Optional[str] = None):
+    person = None
+    if person_gid:
+        person = validate_person(person_gid)
+    logger.debug(
+        "Current counts: persons=%d, addresses=%d",
+        test_db.Person.select().count(),
+        test_db.PersonAddress.select().count(),
+    )
+    for i in track(range(count), description=f"Creating {count} personal addresses..."):
+        test_db.PersonAddress(person=person)
+    logger.debug(
+        "Current counts: persons=%d, addresses=%d",
+        test_db.Person.select().count(),
+        test_db.PersonAddress.select().count(),
+    )
 
 
 @person_address_app.command("delete")

@@ -2,6 +2,7 @@ import logging
 import sys
 
 from formencode.validators import Invalid  # type: ignore
+from rich.progress import track
 from sqlobject import SQLObjectNotFound  # type: ignore
 import typer
 
@@ -29,15 +30,35 @@ def validate_bank_account(gid: str):
 @organization_bank_account_app.command("add")
 def organization_bank_account_add(organization_gid: Optional[str] = None):
     if organization_gid:
-        organization = validate_organization(organization_gid)
+        new_bank_account = test_db.OrganizationBankAccount(
+            organization=validate_organization(organization_gid)
+        )
     else:
-        organization = test_db.Organization()
-        if _TyperOptions().interactive:
-            test_db.OrganizationView(organization).edit()
-    new_bank_account = test_db.OrganizationBankAccount(organization=organization)
+        new_bank_account = test_db.OrganizationBankAccount()
     if _TyperOptions().interactive:
         test_db.BankAccountView(new_bank_account).edit()
     print(new_bank_account.gID)
+
+
+@organization_bank_account_app.command("bulk-add")
+def bank_account_bulk_add(count: int = 100, organization_gid: Optional[str] = None):
+    organization = None
+    if organization_gid:
+        organization = validate_organization(organization_gid)
+    logger.debug(
+        "Current counts: organizations=%d, bankAccounts=%d",
+        test_db.Organization.select().count(),
+        test_db.OrganizationBankAccount.select().count(),
+    )
+    for i in track(
+        range(count), description=f"Creating {count} organization bank accounts..."
+    ):
+        test_db.OrganizationBankAccount(organization=organization)
+    logger.debug(
+        "Current counts: organizations=%d, bankAccounts=%d",
+        test_db.Organization.select().count(),
+        test_db.OrganizationBankAccount.select().count(),
+    )
 
 
 @organization_bank_account_app.command("delete")

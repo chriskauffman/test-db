@@ -1,11 +1,19 @@
 import logging
 
 import faker
-from sqlobject import DateTimeCol, ForeignKey, SQLObject, StringCol  # type: ignore
+from sqlobject import (  # type: ignore
+    events,
+    DateTimeCol,
+    ForeignKey,
+    SQLObject,
+    SQLObjectNotFound,
+    StringCol,
+)
 from typeid import TypeID
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +40,7 @@ class PersonAddress(SQLObject):
 
     _gIDPrefix: str = "addr"
 
-    person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
+    person: ForeignKey = ForeignKey("Person", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
     street: StringCol = StringCol(default=fake.street_address)
@@ -46,7 +54,9 @@ class PersonAddress(SQLObject):
 
     @property
     def ownerID(self):
-        return self.person.gID
+        if self.person:
+            return self.person.gID
+        return None
 
     @property
     def visualID(self):
@@ -60,3 +70,40 @@ class PersonAddress(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
+
+
+def handlePersonAddressRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if (
+        kwargs.get("street") is None
+        and kwargs.get("locality") is None
+        and kwargs.get("region") is None
+        and kwargs.get("postalCode") is None
+    ):
+        while True:
+            kwargs["street"] = fake.street_address()
+            kwargs["locality"] = fake.city()
+            kwargs["region"] = fake.state_abbr()
+            kwargs["postalCode"] = fake.postcode()
+            try:
+                if kwargs.get("connection"):
+                    PersonAddress.selectBy(
+                        street=kwargs["street"],
+                        locality=kwargs["locality"],
+                        region=kwargs["region"],
+                        postalCode=kwargs["postalCode"],
+                        connection=kwargs["connection"],
+                    ).getOne()
+                else:
+                    PersonAddress.selectBy(
+                        street=kwargs["street"],
+                        locality=kwargs["locality"],
+                        region=kwargs["region"],
+                        postalCode=kwargs["postalCode"],
+                    ).getOne()
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(handlePersonAddressRowCreateSignal, PersonAddress, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, PersonAddress, events.RowUpdateSignal)
