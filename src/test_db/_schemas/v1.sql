@@ -62,7 +62,6 @@ CREATE TABLE person (
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
-CREATE UNIQUE INDEX person_firstNameLastNameIndex ON person (first_name, last_name);
 CREATE TABLE person_address (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,

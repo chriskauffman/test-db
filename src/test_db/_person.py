@@ -54,7 +54,6 @@ class Person(SQLObject):
         secureKeyValuesSelect (SQLMultipleJoin):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
-        firstNameLastNameIndex (DatabaseIndex): index on first and last name for faster lookup
         ownerID (str): owner ID for the object
     """
 
@@ -92,10 +91,6 @@ class Person(SQLObject):
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
-
-    firstNameLastNameIndex: DatabaseIndex = DatabaseIndex(
-        firstName, lastName, unique=True
-    )
 
     ownerID: str = "global"
 
