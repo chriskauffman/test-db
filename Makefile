@@ -38,7 +38,7 @@ tests/data/test_schema_v1.sqlite: src/test_db/*.py
 
 .PHONY: init
 init: backup log tmp
-	brew install --quiet prettier uv yamllint
+	brew install --quiet mariadb postgresql@17 prettier uv yamllint
 	uv sync --all-groups
 
 backup log tmp:
