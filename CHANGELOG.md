@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.5.0-beta.1](https://github.com/chriskauffman/test-db/compare/v0.5.0-beta.1...v0.5.0-beta.1) (2026-02-15)
+
+
+### release
+
+* beta.1 ([59f3132](https://github.com/chriskauffman/test-db/commit/59f31321014bbce22fb5c7b196b2dffbb8577ecd))
+* relase new alpha version ([cfb5c04](https://github.com/chriskauffman/test-db/commit/cfb5c043e07f480a07e802f59794a19db49916c0))
+
+
+### Features
+
+* **cmd2:** add command updated to use latest automatic data generation ([b7db6ae](https://github.com/chriskauffman/test-db/commit/b7db6ae789060d6e2e110dd8ee19ba42fe5a488c))
+* first test-db version forked from rest-api-test ([#1](https://github.com/chriskauffman/test-db/issues/1)) ([15d4ebc](https://github.com/chriskauffman/test-db/commit/15d4ebc1771ab436453bf1cf317817ea17d8e795))
+* improved handling in create listeners to avoid duplicate data ([18dad7e](https://github.com/chriskauffman/test-db/commit/18dad7ebdaf2eb692168346c0942c4a0b9ae62e9))
+* **tdb:** improved CLI options, shortcut names, such as "-d", now supported ([c505263](https://github.com/chriskauffman/test-db/commit/c505263bf6bd47e5e112e5d6b59527a7f30b9b0f))
+* **typer:** bulk add command added ([f9c87e2](https://github.com/chriskauffman/test-db/commit/f9c87e2e3d5abd5f58c4f40b6d812b26f862af3a))
+* **typer:** bulk add command added; add command updated to use latest automatic data generation ([82e4a3a](https://github.com/chriskauffman/test-db/commit/82e4a3af25587bef06c7ec4d1c160c42681d7050))
+
+
+### Bug Fixes
+
+* **cmd2:** corrected misnamed commands ([#67](https://github.com/chriskauffman/test-db/issues/67)) ([ad0ba9b](https://github.com/chriskauffman/test-db/commit/ad0ba9ba1913d66f8f1b2b9218b54494e31c7ddf)), closes [#66](https://github.com/chriskauffman/test-db/issues/66)
+* **cmd2:** missing return on error condition ([0040af2](https://github.com/chriskauffman/test-db/commit/0040af2034b6235c3e1bd70f46e366a69d3f7eed))
+* **cmd2:** remove `add_help=False` from cmd2 commands ([#70](https://github.com/chriskauffman/test-db/issues/70)) ([d5e1fa1](https://github.com/chriskauffman/test-db/commit/d5e1fa1f4ceb90f6eb2ca51069eac8b224262e04)), closes [#69](https://github.com/chriskauffman/test-db/issues/69)
+* correct list command in utilities for entity key values ([#39](https://github.com/chriskauffman/test-db/issues/39)) ([82b45bc](https://github.com/chriskauffman/test-db/commit/82b45bcebf6a23f8d0b2d2611845a5cc4085f5e0)), closes [#38](https://github.com/chriskauffman/test-db/issues/38)
+* improve acceptNull handling on input; allow key value to accept null/none ([5046a54](https://github.com/chriskauffman/test-db/commit/5046a54862647d0910393aeeab8899efd4250b74))
+* invalid escape sequence ([#33](https://github.com/chriskauffman/test-db/issues/33)) ([ad1a5b4](https://github.com/chriskauffman/test-db/commit/ad1a5b48405b7e4878d3ecb4ba4acf6b141ea1de)), closes [#30](https://github.com/chriskauffman/test-db/issues/30)
+* make sure visual ID and view methods display gID first and use correct elements ([2d4523d](https://github.com/chriskauffman/test-db/commit/2d4523dbca4b844af5b9090bbfc7e73f13809532))
+* organization view missing details ([#23](https://github.com/chriskauffman/test-db/issues/23)) ([a657bab](https://github.com/chriskauffman/test-db/commit/a657bab093208ed9e357d143d8b80de94754ed16)), closes [#22](https://github.com/chriskauffman/test-db/issues/22)
+* **Person:** update typing to indicate that  getPersonalKeyValueSecureByKey always returns a PersonalKeyValueSecure object ([#27](https://github.com/chriskauffman/test-db/issues/27)) ([bc5600a](https://github.com/chriskauffman/test-db/commit/bc5600a91b2a265f4507c03056f77295b20c430b))
+* setup release please for prerelease ([d600f1d](https://github.com/chriskauffman/test-db/commit/d600f1df6ed18c4b11d3da0328085770237ac67a))
+
+
+### Miscellaneous Chores
+
+* release 0.2.0 ([6b8b038](https://github.com/chriskauffman/test-db/commit/6b8b038fb8ea85250f5035bfc6c3d4e9e9084725))
+* release 0.3.0 ([0de0515](https://github.com/chriskauffman/test-db/commit/0de0515e45b5c33304db4336289aa22809d9a40c))
+* release 0.3.1 ([9bc666c](https://github.com/chriskauffman/test-db/commit/9bc666caae8809c941400273442894586d92e324))
+* release 0.3.3 ([783154d](https://github.com/chriskauffman/test-db/commit/783154dfea6bbaa82162cd39929214541b8644b5))
+* release 0.4.0 ([b27e388](https://github.com/chriskauffman/test-db/commit/b27e388e9750ef76fa2a9ceb86ab2141462ce43b))
+* release 0.4.1 ([0791282](https://github.com/chriskauffman/test-db/commit/079128256ec0e09df26cb3c050584ad1d96532d6))
+* release 0.5.0-beta.1 ([87b56e1](https://github.com/chriskauffman/test-db/commit/87b56e131a13d9c3e4b8b13cc2e155bcb8d5e785))
+* **release:** relase new alpha version ([2a82a23](https://github.com/chriskauffman/test-db/commit/2a82a23ddb1aa736d8dc0ad7cfccab8e05064444))
+
 ## [0.4.1](https://github.com/chriskauffman/test-db/compare/v0.4.0...v0.4.1) (2026-02-07)
 
 
