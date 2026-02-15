@@ -10,6 +10,7 @@ from sqlobject import (  # type: ignore
     DateTimeCol,
     ForeignKey,
     SQLObject,
+    SQLObjectNotFound,
     StringCol,
 )
 from typeid import TypeID
@@ -117,5 +118,32 @@ class OrganizationBankAccount(SQLObject):
         ).getOne()
 
 
-events.listen(handleRowCreateSignal, OrganizationBankAccount, events.RowCreateSignal)
+def handleOrganizationBankAccountRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if kwargs.get("routingNumber") is None:
+        kwargs["routingNumber"] = fake.aba()
+    if kwargs.get("accountNumber") is None:
+        while True:
+            kwargs["accountNumber"] = fake.bank_account_number()
+            try:
+                if kwargs.get("connection"):
+                    OrganizationBankAccount.selectBy(
+                        routingNumber=kwargs["routingNumber"],
+                        accountNumber=kwargs["accountNumber"],
+                        connection=kwargs["connection"],
+                    ).getOne()
+                else:
+                    OrganizationBankAccount.selectBy(
+                        routingNumber=kwargs["routingNumber"],
+                        accountNumber=kwargs["accountNumber"],
+                    ).getOne()
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(
+    handleOrganizationBankAccountRowCreateSignal,
+    OrganizationBankAccount,
+    events.RowCreateSignal,
+)
 events.listen(handleRowUpdateSignal, OrganizationBankAccount, events.RowUpdateSignal)

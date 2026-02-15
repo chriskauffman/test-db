@@ -10,6 +10,7 @@ from sqlobject import (  # type: ignore
     DateTimeCol,
     ForeignKey,
     SQLObject,
+    SQLObjectNotFound,
     StringCol,
 )
 from typeid import TypeID
@@ -84,5 +85,23 @@ class PersonDebitCard(SQLObject):
             self._SO_set_gID(TypeID(self._gIDPrefix))
 
 
-events.listen(handleRowCreateSignal, PersonDebitCard, events.RowCreateSignal)
+def handlePersonDebitCardRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if kwargs.get("cardNumber") is None:
+        while True:
+            kwargs["cardNumber"] = fake.credit_card_number()
+            try:
+                if kwargs.get("connection"):
+                    PersonDebitCard.selectBy(
+                        cardNumber=kwargs["cardNumber"], connection=kwargs["connection"]
+                    ).getOne()
+                else:
+                    PersonDebitCard.selectBy(cardNumber=kwargs["cardNumber"]).getOne()
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(
+    handlePersonDebitCardRowCreateSignal, PersonDebitCard, events.RowCreateSignal
+)
 events.listen(handleRowUpdateSignal, PersonDebitCard, events.RowUpdateSignal)

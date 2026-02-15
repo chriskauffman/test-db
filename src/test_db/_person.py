@@ -1,9 +1,9 @@
 import logging
 
 import faker
+import nanoid
 from sqlobject import (  # type: ignore
     events,
-    DatabaseIndex,
     DateCol,
     DateTimeCol,
     MultipleJoin,
@@ -162,31 +162,50 @@ class Person(SQLObject):
 
 def handlePersonRowCreateSignal(instance, kwargs, post_funcs):
     handleRowCreateSignal(instance, kwargs, post_funcs)
-    if (
-        kwargs.get("firstName") is None
-        and kwargs.get("lastName") is None
-        and kwargs.get("email") is None
-    ):
+    if kwargs.get("firstName") is None and kwargs.get("lastName") is None:
         while True:
             kwargs["firstName"] = fake.first_name()
             kwargs["lastName"] = fake.last_name()
-            kwargs["email"] = (
-                f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}@example.com"
-            )
             try:
                 if kwargs.get("connection"):
                     Person.selectBy(
                         firstName=kwargs["firstName"],
                         lastName=kwargs["lastName"],
-                        email=kwargs["email"],
                         connection=kwargs["connection"],
                     ).getOne()
                 else:
                     Person.selectBy(
                         firstName=kwargs["firstName"],
                         lastName=kwargs["lastName"],
-                        email=kwargs["email"],
                     ).getOne()
+            except SQLObjectNotFound:
+                break
+    if kwargs.get("email") is None:
+        for email in (
+            f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}@example.com",
+            f"{kwargs['firstName'][:1].lower()}{kwargs['lastName'].lower()}@example.com",
+            f"{kwargs['firstName'].lower()}{kwargs['lastName'][:1].lower()}@example.com",
+            f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}.{nanoid.generate(size=5)}@example.com",
+        ):
+            try:
+                if kwargs.get("connection"):
+                    Person.byEmail(email, connection=kwargs["connection"])
+                else:
+                    Person.byEmail(email)
+            except SQLObjectNotFound:
+                kwargs["email"] = email
+                break
+    if kwargs.get("phoneNumber") is None:
+        while True:
+            kwargs["phoneNumber"] = fake.basic_phone_number()
+            try:
+                if kwargs.get("connection"):
+                    Person.selectBy(
+                        phoneNumber=kwargs["phoneNumber"],
+                        connection=kwargs["connection"],
+                    ).getOne()
+                else:
+                    Person.selectBy(phoneNumber=kwargs["phoneNumber"]).getOne()
             except SQLObjectNotFound:
                 break
     if kwargs.get("socialSecurityNumber") is None:

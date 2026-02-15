@@ -1,7 +1,14 @@
 import logging
 
 import faker
-from sqlobject import events, DateTimeCol, ForeignKey, SQLObject, StringCol  # type: ignore
+from sqlobject import (  # type: ignore
+    events,
+    DateTimeCol,
+    ForeignKey,
+    SQLObject,
+    SQLObjectNotFound,
+    StringCol,
+)
 from typeid import TypeID
 
 from test_db._type_id_col import TypeIDCol
@@ -65,5 +72,38 @@ class PersonAddress(SQLObject):
             self._SO_set_gID(TypeID(self._gIDPrefix))
 
 
-events.listen(handleRowCreateSignal, PersonAddress, events.RowCreateSignal)
+def handlePersonAddressRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if (
+        kwargs.get("street") is None
+        and kwargs.get("locality") is None
+        and kwargs.get("region") is None
+        and kwargs.get("postalCode") is None
+    ):
+        while True:
+            kwargs["street"] = fake.street_address()
+            kwargs["locality"] = fake.city()
+            kwargs["region"] = fake.state_abbr()
+            kwargs["postalCode"] = fake.postcode()
+            try:
+                if kwargs.get("connection"):
+                    PersonAddress.selectBy(
+                        street=kwargs["street"],
+                        locality=kwargs["locality"],
+                        region=kwargs["region"],
+                        postalCode=kwargs["postalCode"],
+                        connection=kwargs["connection"],
+                    ).getOne()
+                else:
+                    PersonAddress.selectBy(
+                        street=kwargs["street"],
+                        locality=kwargs["locality"],
+                        region=kwargs["region"],
+                        postalCode=kwargs["postalCode"],
+                    ).getOne()
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(handlePersonAddressRowCreateSignal, PersonAddress, events.RowCreateSignal)
 events.listen(handleRowUpdateSignal, PersonAddress, events.RowUpdateSignal)
