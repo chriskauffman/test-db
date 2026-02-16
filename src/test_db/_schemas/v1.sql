@@ -119,11 +119,11 @@ CREATE UNIQUE INDEX person_secure_key_value_personKeyIndex ON person_secure_key_
 CREATE TABLE job (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
-    attributes TEXT NOT NULL,
     description TEXT,
     employee_id TEXT,
     location TEXT,
     pay_group TEXT,
+    position TEXT,
     organization_id INT CONSTRAINT organization_id_exists REFERENCES organization(id) ,
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ,
     created_at TIMESTAMP,
