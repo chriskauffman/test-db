@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0-beta.2](https://github.com/chriskauffman/test-db/compare/v0.5.0-beta.1...v0.5.0-beta.2) (2026-02-17)
+
+
+### Features
+
+* **_job:** job position added and attributes removed ([8e041e5](https://github.com/chriskauffman/test-db/commit/8e041e5eba94b1af2a91eb32006b709fca710307))
+
+
+### Miscellaneous Chores
+
+* release 0.5.0-beta.2 ([8667938](https://github.com/chriskauffman/test-db/commit/8667938997c6e94cb3861f8f01abaceb349136c0))
+
 ## [0.5.0-beta.1](https://github.com/chriskauffman/test-db/compare/v0.5.0-beta.1...v0.5.0-beta.1) (2026-02-15)
 
 
