@@ -25,9 +25,14 @@ type-check:
 test:
 	uv run pytest
 
+.PHONY: coverage
+coverage:
+	uv run coverage run -m pytest && uv run coverage report --show-missing
+
 .PHONY: command-test
 command-test:
-	uv run tdb --version
+	uv run tdb version
+	uv run tdb-console version quit
 
 src/test_db/_schemas/v1.sql: tests/data/test_schema_v1.sqlite
 	sqlite3 --readonly tests/data/test_schema_v1.sqlite .schema > $@
