@@ -8,7 +8,6 @@ from sqlobject import (  # type: ignore
     events,
     DatabaseIndex,
     DateTimeCol,
-    JSONCol,
     ForeignKey,
     MultipleJoin,
     SQLMultipleJoin,
@@ -49,13 +48,11 @@ class Job(SQLObject):
 
     Attributes:
         gID (TypeIDCol): global ID for the object
-        attributes (JSONCol): JSON attributes for the object. **Note** - The DB
-                              isn't updated until the object is saved (no DB updates
-                              when individual fields are changed)
         description (StringCol): description of the object
         employeeID (StringCol): the person's employee ID
         location (StringCol): the job's location
         payGroup (StringCol): the job's pay group
+        position (StringCol): the job's position
         organization (ForeignKey): the DB ID of the organization
         person (ForeignKey): the DB ID of the person
         createdAt (DateTimeCol): creation date
@@ -68,12 +65,12 @@ class Job(SQLObject):
     _gIDPrefix: str = "j"
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
-    attributes: JSONCol = JSONCol(default={}, notNull=True)
     description: StringCol = StringCol(default=None)
 
     employeeID: StringCol = StringCol(default=fake.employee_id)
     location: StringCol = StringCol(default=None)
     payGroup: StringCol = StringCol(default=None)
+    position: StringCol = StringCol(default=fake.job)
 
     organization: ForeignKey = ForeignKey("Organization", default=None)
     person: ForeignKey = ForeignKey("Person", default=None)
@@ -115,22 +112,6 @@ class Job(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
-
-    # def _set_organizationID(self, value):
-    #     if value:
-    #         self._SO_set_organizationID(value)
-    #     else:
-    #         if self.createDependents:
-    #             self._SO_set_organizationID(
-    #                 Organization(connection=self._connection).id
-    #             )
-
-    # def _set_personID(self, value):
-    #     if value:
-    #         self._SO_set_personID(value)
-    #     else:
-    #         if self.createDependents:
-    #             self._SO_set_personID(Person(connection=self._connection).id)
 
     @classmethod
     def byOrganizationAndPerson(

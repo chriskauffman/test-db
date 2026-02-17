@@ -66,6 +66,21 @@ def test_bank_account_add_with_bad_owner(capsys, monkeypatch, temporary_db):
     assert "does not exist" in captured.err
 
 
+def test_bank_account_bulk_add(capsys, monkeypatch, temporary_db):
+    monkeypatch.setattr(
+        "sys.argv",
+        ["tdb", "organization-bank-account", "bulk-add", "--count", "10"],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert not captured.err
+
+
 def test_bank_account_delete(capsys, monkeypatch, temporary_db, organization):
     test_bank_account = test_db.OrganizationBankAccount(
         organization=organization, connection=temporary_db.connection
