@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/chriskauffman/test-db/compare/v0.5.0-beta.2...v0.5.0) (2026-02-19)
+
+
+### Miscellaneous Chores
+
+* release 0.5.0 ([ef69505](https://github.com/chriskauffman/test-db/commit/ef69505aaa07e8fc3713be1798a9a2ded1f36035))
+
 ## [0.5.0-beta.2](https://github.com/chriskauffman/test-db/compare/v0.5.0-beta.1...v0.5.0-beta.2) (2026-02-17)
 
 
