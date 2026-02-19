@@ -4,17 +4,20 @@ import logging
 
 import faker
 from sqlobject import (  # type: ignore
+    events,
     DatabaseIndex,
     DateCol,
     DateTimeCol,
     ForeignKey,
     SQLObject,
+    SQLObjectNotFound,
     StringCol,
 )
 from typeid import TypeID
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 
 
 logger = logging.getLogger(__name__)
@@ -48,7 +51,7 @@ class PersonDebitCard(SQLObject):
 
     _gIDPrefix: str = "dc"
 
-    person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
+    person: ForeignKey = ForeignKey("Person", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
     cardNumber: StringCol = StringCol(alternateID=True, default=fake.credit_card_number)
@@ -64,7 +67,9 @@ class PersonDebitCard(SQLObject):
 
     @property
     def ownerID(self):
-        return self.person.gID
+        if self.person:
+            return self.person.gID
+        return None
 
     @property
     def visualID(self):
@@ -78,3 +83,25 @@ class PersonDebitCard(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
+
+
+def handlePersonDebitCardRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if kwargs.get("cardNumber") is None:
+        while True:
+            kwargs["cardNumber"] = fake.credit_card_number()
+            try:
+                if kwargs.get("connection"):
+                    PersonDebitCard.selectBy(
+                        cardNumber=kwargs["cardNumber"], connection=kwargs["connection"]
+                    ).getOne()
+                else:
+                    PersonDebitCard.selectBy(cardNumber=kwargs["cardNumber"]).getOne()
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(
+    handlePersonDebitCardRowCreateSignal, PersonDebitCard, events.RowCreateSignal
+)
+events.listen(handleRowUpdateSignal, PersonDebitCard, events.RowUpdateSignal)

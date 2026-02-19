@@ -37,12 +37,11 @@ class PersonBankAccountCommandSet(BaseCommandSet):
     def do_tdb_person_bank_account_add(self, args):
         readline.set_auto_history(False)
         if args.person_gid:
-            person = self.validate_person(args.person_gid)
+            new_bank_account = test_db.PersonBankAccount(
+                person=self.validate_person(args.person_gid)
+            )
         else:
-            person = test_db.Person()
-            if self._cmd.command_interaction:
-                test_db.PersonView(person).edit()
-        new_bank_account = test_db.PersonBankAccount(person=person)
+            new_bank_account = test_db.PersonBankAccount()
         if self._cmd.command_interaction:
             test_db.BankAccountView(new_bank_account).edit()
         self._cmd.poutput(new_bank_account.gID)

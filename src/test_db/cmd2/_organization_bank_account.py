@@ -37,12 +37,11 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
     def do_tdb_organization_bank_account_add(self, args):
         readline.set_auto_history(False)
         if args.organization_gid:
-            organization = self.validate_organization(args.organization_gid)
+            new_bank_account = test_db.OrganizationBankAccount(
+                organization=self.validate_organization(args.organization_gid)
+            )
         else:
-            organization = test_db.Organization()
-            if self._cmd.command_interaction:
-                test_db.OrganizationView(organization).edit()
-        new_bank_account = test_db.OrganizationBankAccount(organization=organization)
+            new_bank_account = test_db.OrganizationBankAccount()
         if self._cmd.command_interaction:
             test_db.BankAccountView(new_bank_account).edit()
         self._cmd.poutput(new_bank_account.gID)

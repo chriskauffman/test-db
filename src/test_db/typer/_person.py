@@ -1,4 +1,6 @@
 import logging
+
+from rich.progress import track
 import typer
 
 import test_db
@@ -16,6 +18,14 @@ def person_add():
     if _TyperOptions().interactive:
         test_db.PersonView(person).edit()
     print(person.gID)
+
+
+@person_app.command("bulk-add")
+def person_bulk_add(count: int = 100):
+    logger.debug("Current person count: %d", test_db.Person.select().count())
+    for i in track(range(count), description=f"Creating {count} people..."):
+        test_db.Person()
+    logger.debug("New person count: %d", test_db.Person.select().count())
 
 
 @person_app.command("delete")

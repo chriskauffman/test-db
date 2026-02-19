@@ -66,6 +66,21 @@ def test_address_add_with_bad_owner(capsys, monkeypatch, temporary_db):
     assert "does not exist" in captured.err
 
 
+def test_address_bulk_add(capsys, monkeypatch, temporary_db):
+    monkeypatch.setattr(
+        "sys.argv",
+        ["tdb", "person-address", "bulk-add", "--count", "10"],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert not captured.err
+
+
 def test_address_delete(capsys, monkeypatch, temporary_db, person):
     test_address = test_db.PersonAddress(
         person=person, connection=temporary_db.connection

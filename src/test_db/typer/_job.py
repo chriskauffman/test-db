@@ -1,4 +1,5 @@
 import logging
+from rich.progress import track
 
 import typer
 
@@ -30,6 +31,17 @@ def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = 
     if _TyperOptions().interactive:
         test_db.JobView(job).edit()
     print(job.gID)
+
+
+@job_app.command("bulk-add")
+def job_bulk_add(count: int = 100, organization_gid: Optional[str] = None):
+    organization = None
+    if organization_gid:
+        organization = validate_organization(organization_gid)
+    logger.debug("Current job count: %d", test_db.Job.select().count())
+    for i in track(range(count), description=f"Creating {count} jobs..."):
+        test_db.Job(organization=organization)
+    logger.debug("New job count: %d", test_db.Job.select().count())
 
 
 @job_app.command("delete")

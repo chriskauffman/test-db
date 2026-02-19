@@ -5,10 +5,12 @@ import faker
 from faker.providers.bank import Provider as BankProvider
 from sqlobject import (  # type: ignore
     connectionForURI,
+    events,
     DatabaseIndex,
     DateTimeCol,
     ForeignKey,
     SQLObject,
+    SQLObjectNotFound,
     StringCol,
 )
 from typeid import TypeID
@@ -17,8 +19,10 @@ from typeid import TypeID
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Optional, Self
 
-from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
+
+from test_db._type_id_col import TypeIDCol
 
 
 logger = logging.getLogger(__name__)
@@ -56,7 +60,7 @@ class OrganizationBankAccount(SQLObject):
 
     _gIDPrefix: str = "ba"
 
-    organization: ForeignKey = ForeignKey("Organization", cascade=True, notNone=True)
+    organization: ForeignKey = ForeignKey("Organization", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
     routingNumber: StringCol = StringCol(default=fake.aba)
@@ -71,7 +75,9 @@ class OrganizationBankAccount(SQLObject):
 
     @property
     def ownerID(self):
-        return self.organization.gID
+        if self.organization:
+            return self.organization.gID
+        return None
 
     @property
     def visualID(self):
@@ -110,3 +116,34 @@ class OrganizationBankAccount(SQLObject):
             accountNumber=accountNumber,
             connection=connection,
         ).getOne()
+
+
+def handleOrganizationBankAccountRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if kwargs.get("routingNumber") is None:
+        kwargs["routingNumber"] = fake.aba()
+    if kwargs.get("accountNumber") is None:
+        while True:
+            kwargs["accountNumber"] = fake.bank_account_number()
+            try:
+                if kwargs.get("connection"):
+                    OrganizationBankAccount.selectBy(
+                        routingNumber=kwargs["routingNumber"],
+                        accountNumber=kwargs["accountNumber"],
+                        connection=kwargs["connection"],
+                    ).getOne()
+                else:
+                    OrganizationBankAccount.selectBy(
+                        routingNumber=kwargs["routingNumber"],
+                        accountNumber=kwargs["accountNumber"],
+                    ).getOne()
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(
+    handleOrganizationBankAccountRowCreateSignal,
+    OrganizationBankAccount,
+    events.RowCreateSignal,
+)
+events.listen(handleRowUpdateSignal, OrganizationBankAccount, events.RowUpdateSignal)

@@ -2,7 +2,7 @@
 on: # yamllint disable-line rule:truthy
   push:
     branches:
-      - "release/0.4.0"
+      - "release/0.5.0"
 
 permissions:
   contents: write
@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@v4
         with:
-          target-branch: "release/0.4.0"
+          target-branch: "release/0.5.0"
           # this assumes that you have created a personal access token
           # (PAT) and configured it as a GitHub action secret named
           # `MY_RELEASE_PLEASE_TOKEN` (this secret name is not important).

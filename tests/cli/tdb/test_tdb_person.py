@@ -20,6 +20,21 @@ def test_person_add(capsys, monkeypatch, temporary_db):
     assert captured.out.startswith("p_")
 
 
+def test_person_bulk_add(capsys, monkeypatch, temporary_db):
+    monkeypatch.setattr(
+        "sys.argv",
+        ["tdb", "person", "bulk-add", "--count", "10"],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert not captured.err
+
+
 def test_person_delete(capsys, monkeypatch, temporary_db):
     test_person = test_db.Person(connection=temporary_db.connection)
     assert (

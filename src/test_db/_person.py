@@ -1,7 +1,9 @@
 import logging
 
 import faker
+import nanoid
 from sqlobject import (  # type: ignore
+    events,
     DateCol,
     DateTimeCol,
     MultipleJoin,
@@ -14,6 +16,10 @@ from sqlobject import (  # type: ignore
 from typeid import TypeID
 
 from test_db._gid import validGID
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
+from test_db._person_address import PersonAddress
+from test_db._person_bank_account import PersonBankAccount
+from test_db._person_debit_card import PersonDebitCard
 from test_db._person_key_value import PersonKeyValue
 from test_db._person_secure_key_value import PersonSecureKeyValue
 from test_db._type_id_col import TypeIDCol
@@ -152,3 +158,121 @@ class Person(SQLObject):
             return PersonSecureKeyValue(
                 connection=self._connection, person=self.id, key=key, **kwargs
             )
+
+
+def handlePersonRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if kwargs.get("firstName") is None and kwargs.get("lastName") is None:
+        while True:
+            kwargs["firstName"] = fake.first_name()
+            kwargs["lastName"] = fake.last_name()
+            try:
+                if kwargs.get("connection"):
+                    Person.selectBy(
+                        firstName=kwargs["firstName"],
+                        lastName=kwargs["lastName"],
+                        connection=kwargs["connection"],
+                    ).getOne()
+                else:
+                    Person.selectBy(
+                        firstName=kwargs["firstName"],
+                        lastName=kwargs["lastName"],
+                    ).getOne()
+            except SQLObjectNotFound:
+                break
+    if kwargs.get("email") is None:
+        for email in (
+            f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}@example.com",
+            f"{kwargs['firstName'][:1].lower()}{kwargs['lastName'].lower()}@example.com",
+            f"{kwargs['firstName'].lower()}{kwargs['lastName'][:1].lower()}@example.com",
+            f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}.{nanoid.generate(size=5)}@example.com",
+        ):
+            try:
+                if kwargs.get("connection"):
+                    Person.byEmail(email, connection=kwargs["connection"])
+                else:
+                    Person.byEmail(email)
+            except SQLObjectNotFound:
+                kwargs["email"] = email
+                break
+    if kwargs.get("phoneNumber") is None:
+        while True:
+            kwargs["phoneNumber"] = fake.basic_phone_number()
+            try:
+                if kwargs.get("connection"):
+                    Person.selectBy(
+                        phoneNumber=kwargs["phoneNumber"],
+                        connection=kwargs["connection"],
+                    ).getOne()
+                else:
+                    Person.selectBy(phoneNumber=kwargs["phoneNumber"]).getOne()
+            except SQLObjectNotFound:
+                break
+    if kwargs.get("socialSecurityNumber") is None:
+        while True:
+            kwargs["socialSecurityNumber"] = fake.ssn()
+            try:
+                if kwargs.get("connection"):
+                    Person.bySocialSecurityNumber(
+                        kwargs["socialSecurityNumber"], connection=kwargs["connection"]
+                    )
+                else:
+                    Person.bySocialSecurityNumber(kwargs["socialSecurityNumber"])
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(handlePersonRowCreateSignal, Person, events.RowCreateSignal)
+events.listen(handleRowUpdateSignal, Person, events.RowUpdateSignal)
+
+
+def handlePersonRowCreatedSignal(instance, kwargs, post_funcs):
+    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
+        if not instance.addresses:
+            PersonAddress(person=instance, connection=instance._connection)
+        if not instance.bankAccounts:
+            PersonBankAccount(person=instance, connection=instance._connection)
+        if not instance.debitCards:
+            PersonDebitCard(person=instance, connection=instance._connection)
+
+
+events.listen(handlePersonRowCreatedSignal, Person, events.RowCreatedSignal)
+
+
+def handlePersonAddressRowCreatedSignal(instance, kwargs, post_funcs):
+    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
+        if not instance.person:
+            instance.person = Person(connection=instance._connection)
+
+
+events.listen(
+    handlePersonAddressRowCreatedSignal,
+    PersonAddress,
+    events.RowCreatedSignal,
+)
+
+
+def handlePersonBankAccountRowCreatedSignal(instance, kwargs, post_funcs):
+    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
+        if not instance.person:
+            instance.person = Person(connection=instance._connection)
+
+
+events.listen(
+    handlePersonBankAccountRowCreatedSignal,
+    PersonBankAccount,
+    events.RowCreatedSignal,
+)
+
+
+def handlePersonDebitCardRowCreatedSignal(instance, kwargs, post_funcs):
+    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
+        if not instance.person:
+            instance.person = Person(connection=instance._connection)
+
+
+events.listen(
+    handlePersonDebitCardRowCreatedSignal,
+    PersonDebitCard,
+    events.RowCreatedSignal,
+)

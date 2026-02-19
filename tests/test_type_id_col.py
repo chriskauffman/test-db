@@ -3,12 +3,14 @@ import pytest
 from typeid import TypeID
 
 from sqlobject import connectionForURI, SQLObject
+from formencode import validators  # type: ignore
 
 from test_db._type_id_col import TypeIDCol
 
 
 class ObjectWithTypeId(SQLObject):
-    tid: TypeIDCol = TypeIDCol(alternateID=True, default=None)
+    tid: TypeIDCol = TypeIDCol(alternateID=True, default=TypeID)
+    nullableTid: TypeIDCol = TypeIDCol(default=None)
 
 
 @pytest.fixture(scope="session")
@@ -31,3 +33,9 @@ def test_set_various_values(type_id_db):
         ObjectWithTypeId.byTid(str(test_object.tid), connection=type_id_db)
         is test_object
     )
+
+    assert ObjectWithTypeId(connection=type_id_db)
+    assert ObjectWithTypeId(nullableTid=None, connection=type_id_db)
+
+    with pytest.raises(validators.Invalid):
+        ObjectWithTypeId(tid="___01khke4jvgfjgab8tzxpf8t1sq", connection=type_id_db)

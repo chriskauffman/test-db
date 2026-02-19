@@ -2,6 +2,7 @@ import logging
 import sys
 
 from formencode.validators import Invalid  # type: ignore
+from rich.progress import track
 from sqlobject import SQLObjectNotFound  # type: ignore
 import typer
 
@@ -29,15 +30,35 @@ def validate_address(gid: str):
 @organization_address_app.command("add")
 def organization_address_add(organization_gid: Optional[str] = None):
     if organization_gid:
-        organization = validate_organization(organization_gid)
+        new_address = test_db.OrganizationAddress(
+            organization=validate_organization(organization_gid)
+        )
     else:
-        organization = test_db.Organization()
-        if _TyperOptions().interactive:
-            test_db.OrganizationView(organization).edit()
-    new_address = test_db.OrganizationAddress(organization=organization)
+        new_address = test_db.OrganizationAddress()
     if _TyperOptions().interactive:
         test_db.AddressView(new_address).edit()
     print(new_address.gID)
+
+
+@organization_address_app.command("bulk-add")
+def address_bulk_add(count: int = 100, organization_gid: Optional[str] = None):
+    organization = None
+    if organization_gid:
+        organization = validate_organization(organization_gid)
+    logger.debug(
+        "Current counts: organizations=%d, addresses=%d",
+        test_db.Organization.select().count(),
+        test_db.OrganizationAddress.select().count(),
+    )
+    for i in track(
+        range(count), description=f"Creating {count} organization addresses..."
+    ):
+        test_db.OrganizationAddress(organization=organization)
+    logger.debug(
+        "Current counts: organizations=%d, addresses=%d",
+        test_db.Organization.select().count(),
+        test_db.OrganizationAddress.select().count(),
+    )
 
 
 @organization_address_app.command("delete")

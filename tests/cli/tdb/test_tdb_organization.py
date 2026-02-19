@@ -24,6 +24,21 @@ def test_organization_add(capsys, monkeypatch, temporary_db):
     assert captured.out.startswith("o_")
 
 
+def test_organization_bulk_add(capsys, monkeypatch, temporary_db):
+    monkeypatch.setattr(
+        "sys.argv",
+        ["tdb", "organization", "bulk-add", "--count", "10"],
+    )
+
+    try:
+        tdb()
+    except SystemExit as e:
+        assert e.code == 0
+
+    captured = capsys.readouterr()
+    assert not captured.err
+
+
 def test_organization_delete(capsys, monkeypatch, temporary_db):
     test_organization = test_db.Organization(connection=temporary_db.connection)
     assert (

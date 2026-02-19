@@ -5,10 +5,12 @@ import faker
 from faker.providers.bank import Provider as BankProvider
 from sqlobject import (  # type: ignore
     connectionForURI,
+    events,
     DatabaseIndex,
     DateTimeCol,
     ForeignKey,
     SQLObject,
+    SQLObjectNotFound,
     StringCol,
 )
 from typeid import TypeID
@@ -19,6 +21,7 @@ from typing_extensions import Optional, Self
 
 from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
+from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 
 
 logger = logging.getLogger(__name__)
@@ -56,7 +59,7 @@ class PersonBankAccount(SQLObject):
 
     _gIDPrefix: str = "ba"
 
-    person: ForeignKey = ForeignKey("Person", cascade=True, notNone=True)
+    person: ForeignKey = ForeignKey("Person", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
     routingNumber: StringCol = StringCol(default=fake.aba)
@@ -71,7 +74,9 @@ class PersonBankAccount(SQLObject):
 
     @property
     def ownerID(self):
-        return self.person.gID
+        if self.person:
+            return self.person.gID
+        return None
 
     @property
     def visualID(self):
@@ -110,3 +115,32 @@ class PersonBankAccount(SQLObject):
             accountNumber=accountNumber,
             connection=connection,
         ).getOne()
+
+
+def handlePersonBankAccountRowCreateSignal(instance, kwargs, post_funcs):
+    handleRowCreateSignal(instance, kwargs, post_funcs)
+    if kwargs.get("routingNumber") is None:
+        kwargs["routingNumber"] = fake.aba()
+    if kwargs.get("accountNumber") is None:
+        while True:
+            kwargs["accountNumber"] = fake.bank_account_number()
+            try:
+                if kwargs.get("connection"):
+                    PersonBankAccount.selectBy(
+                        routingNumber=kwargs["routingNumber"],
+                        accountNumber=kwargs["accountNumber"],
+                        connection=kwargs["connection"],
+                    ).getOne()
+                else:
+                    PersonBankAccount.selectBy(
+                        routingNumber=kwargs["routingNumber"],
+                        accountNumber=kwargs["accountNumber"],
+                    ).getOne()
+            except SQLObjectNotFound:
+                break
+
+
+events.listen(
+    handlePersonBankAccountRowCreateSignal, PersonBankAccount, events.RowCreateSignal
+)
+events.listen(handleRowUpdateSignal, PersonBankAccount, events.RowUpdateSignal)
