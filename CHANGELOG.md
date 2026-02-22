@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/chriskauffman/test-db/compare/v0.5.1...v0.5.2) (2026-02-22)
+
+
+### Documentation
+
+* clean up changelog ([19c4918](https://github.com/chriskauffman/test-db/commit/19c4918fea06ef8d5c85da50413e96f713d39858))
+
 ## [0.5.1](https://github.com/chriskauffman/test-db/compare/v0.5.0...v0.5.1) (2026-02-19)
 
 
