@@ -54,7 +54,7 @@ class PersonDebitCard(SQLObject):
     person: ForeignKey = ForeignKey("Person", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
-    cardNumber: StringCol = StringCol(alternateID=True, default=fake.credit_card_number)
+    cardNumber: StringCol = StringCol(default=fake.credit_card_number)
     cvv: StringCol = StringCol(default=fake.credit_card_security_code)
     expirationDate: DateCol = DateCol(default=fake_credit_card_expire_to_date)
 

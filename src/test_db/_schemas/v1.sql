@@ -91,7 +91,7 @@ CREATE TABLE person_debit_card (
     person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
     g_id VARCHAR(90) NOT NULL UNIQUE,
     description TEXT,
-    card_number TEXT NOT NULL UNIQUE,
+    card_number TEXT,
     cvv TEXT,
     expiration_date DATE,
     created_at TIMESTAMP,
