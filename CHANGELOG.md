@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/chriskauffman/test-db/compare/v0.5.2...v0.5.3) (2026-02-25)
+
+
+### Bug Fixes
+
+* **_person_debit_card:** to allow for the same test cards, such as 4444444444444444, across users, cardNumber should not be an alternate ID ([d874fa5](https://github.com/chriskauffman/test-db/commit/d874fa5789d9db5f76c943b262bcc41ba09bfe96))
+
 ## [0.5.2](https://github.com/chriskauffman/test-db/compare/v0.5.1...v0.5.2) (2026-02-22)
 
 
