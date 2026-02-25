@@ -4,6 +4,7 @@ name: Lint and Test on Push of New Release
 on: # yamllint disable-line rule:truthy
   push:
     branches:
+      - "main"
       - "release/*"
     paths:
       - uv.lock
