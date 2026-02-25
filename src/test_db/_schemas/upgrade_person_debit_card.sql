@@ -1,3 +1,5 @@
+-- SQLite migration script
+
 -- Disable foreign key constraints temporarily to prevent issues during the table swap
 PRAGMA foreign_keys=off;
 
@@ -29,6 +31,9 @@ DROP TABLE person_debit_card;
 
 -- 4. Rename the new table to the original table name
 ALTER TABLE person_debit_card_new RENAME TO person_debit_card;
+
+-- 5. Add the unique index back on the person_id and card_number columns
+CREATE UNIQUE INDEX person_debit_card_personCardNumberIndex ON person_debit_card (person_id, card_number);
 
 COMMIT;
 
