@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/chriskauffman/test-db/compare/v0.5.3...v0.5.4) (2026-02-26)
+
+
+### Bug Fixes
+
+* GitHub Action missing main branch ([0f02325](https://github.com/chriskauffman/test-db/commit/0f0232564adb7841e0c0b35f61067fefc481325a))
+
 ## [0.5.3](https://github.com/chriskauffman/test-db/compare/v0.5.2...v0.5.3) (2026-02-25)
 
 
