@@ -30,7 +30,8 @@ from test_db.cmd2 import (
     PersonSecureKeyValueCommandSet,
 )
 
-logger = logging.getLogger()
+root_logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 class Console(cmd2.Cmd):
@@ -107,7 +108,6 @@ def main() -> None:
         )
         sys.exit(1)
 
-    logger.setLevel(logging.DEBUG)
     logging_file_handler = logging.handlers.RotatingFileHandler(
         pathlib.Path(settings.log_path, "tdb_console.log"),
         encoding="utf-8",
@@ -120,14 +120,16 @@ def main() -> None:
             "%(asctime)s - %(module)s - %(levelname)s - %(name)s - %(message)s"
         )
     )
-    logger.addHandler(logging_file_handler)
+    root_logger.addHandler(logging_file_handler)
 
     logging_stream_handler = logging.StreamHandler(sys.stdout)
     logging_stream_handler.setLevel(settings.log_level_screen)
     logging_stream_handler.setFormatter(
-        logging.Formatter("%(levelname)s - %(message)s")
+        logging.Formatter("%(module)s - %(levelname)s - %(message)s")
     )
-    logger.addHandler(logging_stream_handler)
+    root_logger.addHandler(logging_stream_handler)
+    root_logger.setLevel(min(logging_file_handler.level, logging_stream_handler.level))
+
     logger.debug("settings=%s", settings)
 
     test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
