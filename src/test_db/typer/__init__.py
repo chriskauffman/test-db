@@ -40,4 +40,4 @@ from ._person_secure_key_value import (
 logger = logging.getLogger(__name__)
 
 # Options: Available through _TyperOptions
-interactive = False
+interactive: bool = False

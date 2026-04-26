@@ -1,9 +1,9 @@
 import logging
 import sys
 
-from formencode.validators import Invalid  # type: ignore
-from sqlobject import SQLObjectNotFound  # type: ignore
-from sqlobject.dberrors import DuplicateEntryError  # type: ignore
+from formencode.validators import Invalid
+from sqlobject import SQLObjectNotFound
+from sqlobject.dberrors import DuplicateEntryError
 import typer
 
 import test_db

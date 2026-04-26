@@ -11,8 +11,8 @@ from typeid.errors import (
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Optional
 
-from sqlobject.col import Col, SOCol, SOValidator  # type: ignore
-from formencode import validators  # type: ignore
+from sqlobject.col import Col, SOCol, SOValidator
+from formencode import validators
 
 logger = logging.getLogger(__name__)
 

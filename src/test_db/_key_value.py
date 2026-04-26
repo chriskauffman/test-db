@@ -1,6 +1,6 @@
 import logging
 
-from sqlobject import events, DateTimeCol, SQLObject, StringCol  # type: ignore
+from sqlobject import events, DateTimeCol, SQLObject, StringCol
 
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 

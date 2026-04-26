@@ -1,9 +1,9 @@
 import logging
 import sys
 
-from formencode.validators import Invalid  # type: ignore
+from formencode.validators import Invalid
 from rich.progress import track
-from sqlobject import SQLObjectNotFound  # type: ignore
+from sqlobject import SQLObjectNotFound
 import typer
 
 # Using typing_extensions vs typing:

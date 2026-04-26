@@ -4,8 +4,8 @@ import logging
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import List, Union
 
-from sqlobject import SQLObject  # type: ignore
-from sqlobject.dberrors import DuplicateEntryError  # type: ignore
+from sqlobject.sresults import SelectResults
+from sqlobject.dberrors import DuplicateEntryError
 
 from test_db import OrganizationAddress, PersonAddress
 from test_db._views._base_view import BaseView
@@ -25,9 +25,7 @@ class AddressView(BaseView):
     @classmethod
     def list(
         cls,
-        addresses: Union[
-            List[OrganizationAddress], List[PersonAddress], SQLObject.select
-        ],
+        addresses: Union[List[OrganizationAddress], List[PersonAddress], SelectResults],
         **kwargs,
     ):
         """List all addresses"""

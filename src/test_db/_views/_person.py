@@ -4,8 +4,8 @@ import logging
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import List, Union
 
-from sqlobject import SQLObject  # type: ignore
-from sqlobject.dberrors import DuplicateEntryError  # type: ignore
+from sqlobject.sresults import SelectResults
+from sqlobject.dberrors import DuplicateEntryError
 
 from test_db import Person
 from test_db._views._base_view import BaseView
@@ -37,7 +37,7 @@ class PersonView(BaseView):
         return new_person
 
     @classmethod
-    def list(cls, people: Union[List[Person], SQLObject.select, None] = None, **kwargs):
+    def list(cls, people: Union[List[Person], SelectResults, None] = None, **kwargs):
         """List all people"""
         if people is None:
             people = Person.select(**kwargs)

@@ -13,22 +13,8 @@ import cmd2
 from typing_extensions import Optional
 
 import test_db
+from test_db import cmd2 as tdb_cmd2
 from test_db._cli_settings import DEFAULT_CONFIG_PATH, Settings
-from test_db.cmd2 import (
-    JobCommandSet,
-    JobKeyValueCommandSet,
-    KeyValueCommandSet,
-    OrgnizationCommandSet,
-    OrganizationAddressCommandSet,
-    OrganizationBankAccountCommandSet,
-    OrganizationKeyValueCommandSet,
-    PersonCommandSet,
-    PersonAddressCommandSet,
-    PersonBankAccountCommandSet,
-    PersonDebitCardCommandSet,
-    PersonKeyValueCommandSet,
-    PersonSecureKeyValueCommandSet,
-)
 
 root_logger = logging.getLogger()
 logger = logging.getLogger(__name__)
@@ -58,6 +44,7 @@ class Console(cmd2.Cmd):
             )
         )
 
+        assert self._settings.db_connection_uri, "Database connection URI is required"
         self.db_connection_uri = self._settings.db_connection_uri
         self.add_settable(
             cmd2.Settable(
@@ -96,7 +83,7 @@ class Console(cmd2.Cmd):
         self.prompt = f"{self._prompt}: "
 
     def do_version(self, args):
-        print(get_version(__package__))
+        print(get_version(__package__ or "not available"))
 
 
 def main() -> None:
@@ -138,19 +125,19 @@ def main() -> None:
     console = Console(
         settings,
         command_sets=[
-            JobCommandSet(),
-            JobKeyValueCommandSet(),
-            KeyValueCommandSet(),
-            OrgnizationCommandSet(),
-            OrganizationAddressCommandSet(),
-            OrganizationBankAccountCommandSet(),
-            OrganizationKeyValueCommandSet(),
-            PersonCommandSet(),
-            PersonAddressCommandSet(),
-            PersonBankAccountCommandSet(),
-            PersonDebitCardCommandSet(),
-            PersonKeyValueCommandSet(),
-            PersonSecureKeyValueCommandSet(),
+            tdb_cmd2.JobCommandSet(),
+            tdb_cmd2.JobKeyValueCommandSet(),
+            tdb_cmd2.KeyValueCommandSet(),
+            tdb_cmd2.OrgnizationCommandSet(),
+            tdb_cmd2.OrganizationAddressCommandSet(),
+            tdb_cmd2.OrganizationBankAccountCommandSet(),
+            tdb_cmd2.OrganizationKeyValueCommandSet(),
+            tdb_cmd2.PersonCommandSet(),
+            tdb_cmd2.PersonAddressCommandSet(),
+            tdb_cmd2.PersonBankAccountCommandSet(),
+            tdb_cmd2.PersonDebitCardCommandSet(),
+            tdb_cmd2.PersonKeyValueCommandSet(),
+            tdb_cmd2.PersonSecureKeyValueCommandSet(),
         ],
     )
     sys.exit(console.cmdloop())

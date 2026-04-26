@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from sqlobject.dberrors import DuplicateEntryError  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError
 import typer
 
 import test_db

@@ -1,7 +1,7 @@
 import logging
 
 import faker
-from sqlobject import (  # type: ignore
+from sqlobject import (
     events,
     DateTimeCol,
     ForeignKey,
