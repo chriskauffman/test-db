@@ -3,7 +3,7 @@ from datetime import date, datetime
 import logging
 
 import faker
-from sqlobject import (  # type: ignore
+from sqlobject import (
     events,
     DatabaseIndex,
     DateCol,

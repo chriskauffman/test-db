@@ -12,9 +12,9 @@ Example:
 
 import logging
 
-import sqlobject  # type: ignore
+import sqlobject
 from sqlobject import SQLObjectNotFound as SQLObjectNotFound
-from sqlobject.dberrors import DuplicateEntryError as DuplicateEntryError  # type: ignore
+from sqlobject.dberrors import DuplicateEntryError as DuplicateEntryError
 
 # Using typing_extensions vs typing:
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python

@@ -11,6 +11,7 @@ dependencies = [
     "cmd2>=2.7.0",
     "cryptography>=45.0.7",
     "faker>=37.6.0",
+    "gnureadline>=8.3.3",
     "nanoid>=2.0.0",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",
@@ -21,7 +22,7 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["uv_build >= 0.7.19, <0.9.0"]
+requires = ["uv_build>=0.7.19,<0.12.0"]
 build-backend = "uv_build"
 
 [project.scripts]
@@ -30,7 +31,6 @@ tdb-console = "test_db.tdb_console:main"
 
 [dependency-groups]
 dev = [
-    "mypy>=1.13.0",
     "ruff>=0.8.2",
     "pytest>=8.3.4",
     "coverage>=7.6.9",
@@ -38,9 +38,14 @@ dev = [
     "pydoclint>=0.6.10",
     "types-nanoid>=2.0.0.20240601",
     "mysqlclient>=2.2.7",
+    "ty>=0.0.32",
 ]
 
 [tool.pytest.ini_options]
 addopts = "--ignore=tmp"
 log_file = "log/pytest.log"
 log_file_level = "DEBUG"
+
+[tool.ty.analysis]
+# Replace all sqlobject imports with Any
+replace-imports-with-any = ["sqlobject.**", ]

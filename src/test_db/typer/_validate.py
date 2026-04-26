@@ -1,8 +1,8 @@
 import logging
 import sys
 
-from formencode.validators import Invalid  # type: ignore
-from sqlobject import SQLObjectNotFound  # type: ignore
+from formencode.validators import Invalid
+from sqlobject import SQLObjectNotFound
 
 import test_db
 

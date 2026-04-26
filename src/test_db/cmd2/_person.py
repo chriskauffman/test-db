@@ -4,7 +4,7 @@ import cmd2
 from cmd2 import with_default_category
 
 try:
-    import gnureadline as readline  # type: ignore
+    import gnureadline as readline  # ty: ignore[unresolved-import]
 except ImportError:
     import readline
 
@@ -20,7 +20,7 @@ class PersonCommandSet(BaseCommandSet):
     def do_tdb_person_add(self, args):
         readline.set_auto_history(False)
         new_person = test_db.Person()
-        if self._cmd.command_interaction:
+        if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
             test_db.PersonView(new_person).edit()
         self._cmd.poutput(new_person.gID)
         readline.set_auto_history(True)

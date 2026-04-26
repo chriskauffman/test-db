@@ -2,7 +2,7 @@ import logging
 
 import faker
 import nanoid
-from sqlobject import (  # type: ignore
+from sqlobject import (
     events,
     DateCol,
     DateTimeCol,

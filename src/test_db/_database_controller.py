@@ -7,7 +7,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-import sqlobject  # type: ignore
+import sqlobject
 
 # Using typing_extensions vs typing:
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python

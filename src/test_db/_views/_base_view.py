@@ -5,12 +5,16 @@ import logging
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Any, Optional, Union
 
+from sqlobject import StringCol
+
 from typeid import TypeID
 from typeid.errors import (
     InvalidTypeIDStringException,
     PrefixValidationException,
     SuffixValidationException,
 )
+
+from test_db._type_id_col import TypeIDCol
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +32,7 @@ class BaseView:
     @staticmethod
     def _getStrInput(
         prompt: str,
-        default: Optional[str] = None,
+        default: Optional[Union[str, StringCol]] = None,
         numeric: Optional[bool] = False,
         acceptNull: Optional[bool] = False,
     ) -> str:
@@ -47,7 +51,7 @@ class BaseView:
 
     @staticmethod
     def _getTypeIDInput(
-        prompt: str, default: Optional[Union[str, TypeID]] = None
+        prompt: str, default: Optional[Union[str, TypeID, TypeIDCol]] = None
     ) -> TypeID:
         while True:
             user_input = BaseView._getInput(prompt, default, acceptNull=False)

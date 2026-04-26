@@ -3,7 +3,7 @@ import logging
 import faker
 from faker.providers import BaseProvider
 import nanoid
-from sqlobject import (  # type: ignore
+from sqlobject import (
     connectionForURI,
     events,
     DatabaseIndex,

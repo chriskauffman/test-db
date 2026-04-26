@@ -4,8 +4,8 @@ import logging
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import List, Optional, Union
 
-from sqlobject import SQLObject  # type: ignore
-from sqlobject.dberrors import DuplicateEntryError  # type: ignore
+from sqlobject.sresults import SelectResults
+from sqlobject.dberrors import DuplicateEntryError
 
 from test_db import Job, Organization, Person
 from test_db._views._base_view import BaseView
@@ -39,7 +39,7 @@ class JobView(BaseView):
         return new_job
 
     @classmethod
-    def list(cls, jobs: Union[List[Job], SQLObject.select, None] = None, **kwargs):
+    def list(cls, jobs: Union[List[Job], SelectResults, None] = None, **kwargs):
         """List all jobs"""
         if jobs is None:
             jobs = Job.select(**kwargs)

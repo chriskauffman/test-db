@@ -4,13 +4,13 @@ import cmd2
 from cmd2 import with_default_category
 
 try:
-    import gnureadline as readline  # type: ignore
+    import gnureadline as readline  # ty: ignore[unresolved-import]
 except ImportError:
     import readline
 
-from sqlobject import SQLObjectNotFound  # type: ignore
+from sqlobject import SQLObjectNotFound
 
-from formencode.validators import Invalid  # type: ignore
+from formencode.validators import Invalid
 
 import test_db
 
@@ -42,7 +42,7 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
             )
         else:
             new_bank_account = test_db.OrganizationBankAccount()
-        if self._cmd.command_interaction:
+        if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
             test_db.BankAccountView(new_bank_account).edit()
         self._cmd.poutput(new_bank_account.gID)
         readline.set_auto_history(True)

@@ -5,7 +5,7 @@ import pickle
 # https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
 from typing_extensions import Any, Optional
 
-from sqlobject.col import BLOBCol, BinaryValidator, SOBLOBCol  # type: ignore
+from sqlobject.col import BLOBCol, BinaryValidator, SOBLOBCol
 
 
 PICKLE_PROTOCOL = 5  # selecting 5 for Python 3.8+

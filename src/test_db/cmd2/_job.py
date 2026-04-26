@@ -4,7 +4,7 @@ import cmd2
 from cmd2 import with_default_category
 
 try:
-    import gnureadline as readline  # type: ignore
+    import gnureadline as readline  # ty: ignore[unresolved-import]
 except ImportError:
     import readline
 
@@ -38,7 +38,7 @@ class JobCommandSet(BaseCommandSet):
         if args.person_gid:
             person = self.validate_person(args.person_gid)
         new_job = test_db.Job(organization=organization, person=person)
-        if self._cmd.command_interaction:
+        if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
             test_db.JobView(new_job).edit()
         self._cmd.poutput(new_job.gID)
         readline.set_auto_history(True)

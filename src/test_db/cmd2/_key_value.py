@@ -4,14 +4,14 @@ import cmd2
 from cmd2 import with_default_category
 
 try:
-    import gnureadline as readline  # type: ignore
+    import gnureadline as readline  # ty: ignore[unresolved-import]
 except ImportError:
     import readline
 
-from sqlobject import SQLObjectNotFound  # type: ignore
-from sqlobject.dberrors import DuplicateEntryError  # type: ignore
+from sqlobject import SQLObjectNotFound
+from sqlobject.dberrors import DuplicateEntryError
 
-from formencode.validators import Invalid  # type: ignore
+from formencode.validators import Invalid
 
 import test_db
 
@@ -43,7 +43,7 @@ class KeyValueCommandSet(BaseCommandSet):
         readline.set_auto_history(False)
         try:
             key_value = test_db.KeyValue(key=args.key, value=args.value)
-            if self._cmd.command_interaction:
+            if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
                 test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:
             self._cmd.perror(f"error: {str(exc)}")

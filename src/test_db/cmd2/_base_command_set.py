@@ -2,9 +2,9 @@ import logging
 
 from cmd2 import CommandSet, with_default_category
 
-from sqlobject import SQLObjectNotFound  # type: ignore
+from sqlobject import SQLObjectNotFound
 
-from formencode.validators import Invalid  # type: ignore
+from formencode.validators import Invalid
 
 import test_db
 

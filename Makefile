@@ -19,7 +19,7 @@ lint:
 
 .PHONY: type-check
 type-check:
-	uv run mypy src/*
+	uv run ty check
 
 .PHONY: test
 test:
@@ -51,7 +51,6 @@ backup log tmp:
 
 .PHONY: clean
 clean:
-	-rm -rf .mypy_cache
 	-rm -rf .pytest_cache
 	-rm -rf .ruff_cache
 	-rm -rf .venv

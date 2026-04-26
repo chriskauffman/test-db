@@ -1,6 +1,6 @@
 import logging
 
-from sqlobject import (  # type: ignore
+from sqlobject import (
     events,
     DateTimeCol,
     ForeignKey,

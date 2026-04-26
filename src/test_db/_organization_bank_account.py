@@ -3,7 +3,7 @@ import random
 
 import faker
 from faker.providers.bank import Provider as BankProvider
-from sqlobject import (  # type: ignore
+from sqlobject import (
     connectionForURI,
     events,
     DatabaseIndex,
