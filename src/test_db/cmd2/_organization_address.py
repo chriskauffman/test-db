@@ -1,12 +1,6 @@
 import logging
 
 import cmd2
-from cmd2 import with_default_category
-
-try:
-    import gnureadline as readline  # ty: ignore[unresolved-import]
-except ImportError:
-    import readline
 
 from sqlobject import SQLObjectNotFound
 
@@ -19,8 +13,9 @@ from ._base_command_set import BaseCommandSet
 logger = logging.getLogger(__name__)
 
 
-@with_default_category("Database")
 class OrganizationAddressCommandSet(BaseCommandSet):
+    DEFAULT_CATEGORY = "Database"
+
     def validate_address(self, gid: str):
         try:
             return test_db.OrganizationAddress.byGID(gid)
@@ -35,17 +30,15 @@ class OrganizationAddressCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(optional_related_entity_parser)
     def do_tdb_organization_address_add(self, args):
-        readline.set_auto_history(False)
         if args.organization_gid:
             new_address = test_db.OrganizationAddress(
                 organization=self.validate_organization(args.organization_gid)
             )
         else:
             new_address = test_db.OrganizationAddress()
-        if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
+        if self._cmd.command_interaction:
             test_db.AddressView(new_address).edit()
         self._cmd.poutput(new_address.gID)
-        readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
     connect_parser.add_argument(
@@ -70,10 +63,8 @@ class OrganizationAddressCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_organization_address_edit(self, args):
-        readline.set_auto_history(False)
         address = self.validate_address(args.gid)
         test_db.AddressView(address).edit()
-        readline.set_auto_history(True)
 
     @cmd2.with_argparser(optional_related_entity_parser)
     def do_tdb_organization_address_list(self, args):

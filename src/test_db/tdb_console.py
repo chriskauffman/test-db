@@ -26,7 +26,7 @@ class Console(cmd2.Cmd):
     # pylint: disable=unused-argument,too-many-public-methods,too-many-instance-attributes
 
     intro = "Welcome to the ODP simulator.  Type help or ? to list commands.\n"
-    _cmd_history_file = pathlib.Path(DEFAULT_CONFIG_PATH, "tdb_cmd2_history")
+    _cmd_history_file = pathlib.Path(DEFAULT_CONFIG_PATH, "tdb_cmd2_v4_history")
     _prompt = "tdb"
 
     def __init__(self, settings: Settings, **kwargs) -> None:

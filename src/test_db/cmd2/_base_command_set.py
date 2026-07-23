@@ -1,6 +1,6 @@
 import logging
 
-from cmd2 import CommandSet, with_default_category
+from cmd2 import CommandSet
 
 from sqlobject import SQLObjectNotFound
 
@@ -11,8 +11,9 @@ import test_db
 logger = logging.getLogger(__name__)
 
 
-@with_default_category("Database")
 class BaseCommandSet(CommandSet):
+    DEFAULT_CATEGORY = "Database"
+
     def validate_job(self, gid: str):
         try:
             return test_db.Job.byGID(gid)

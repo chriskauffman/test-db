@@ -11,7 +11,6 @@ dependencies = [
     "cmd2>=2.7.0",
     "cryptography>=45.0.7",
     "faker>=37.6.0",
-    "gnureadline>=8.3.3",
     "nanoid>=2.0.0",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",
@@ -48,4 +47,4 @@ log_file_level = "DEBUG"
 
 [tool.ty.analysis]
 # Replace all sqlobject imports with Any
-replace-imports-with-any = ["sqlobject.**", ]
+replace-imports-with-any = ["sqlobject.**", "**._encrypted_pickle_col", "**._type_id_col"]
