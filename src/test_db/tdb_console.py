@@ -13,7 +13,7 @@ import cmd2
 from typing_extensions import Optional
 
 import test_db
-from test_db import cmd2 as tdb_cmd2
+from test_db import console
 from test_db._cli_settings import DEFAULT_CONFIG_PATH, Settings
 
 root_logger = logging.getLogger()
@@ -122,25 +122,25 @@ def main() -> None:
     test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
     test_db.fernetIterations = settings.database_fernet_iterations
 
-    console = Console(
+    con = Console(
         settings,
         command_sets=[
-            tdb_cmd2.JobCommandSet(),
-            tdb_cmd2.JobKeyValueCommandSet(),
-            tdb_cmd2.KeyValueCommandSet(),
-            tdb_cmd2.OrgnizationCommandSet(),
-            tdb_cmd2.OrganizationAddressCommandSet(),
-            tdb_cmd2.OrganizationBankAccountCommandSet(),
-            tdb_cmd2.OrganizationKeyValueCommandSet(),
-            tdb_cmd2.PersonCommandSet(),
-            tdb_cmd2.PersonAddressCommandSet(),
-            tdb_cmd2.PersonBankAccountCommandSet(),
-            tdb_cmd2.PersonDebitCardCommandSet(),
-            tdb_cmd2.PersonKeyValueCommandSet(),
-            tdb_cmd2.PersonSecureKeyValueCommandSet(),
+            console.JobCommandSet(),
+            console.JobKeyValueCommandSet(),
+            console.KeyValueCommandSet(),
+            console.OrgnizationCommandSet(),
+            console.OrganizationAddressCommandSet(),
+            console.OrganizationBankAccountCommandSet(),
+            console.OrganizationKeyValueCommandSet(),
+            console.PersonCommandSet(),
+            console.PersonAddressCommandSet(),
+            console.PersonBankAccountCommandSet(),
+            console.PersonDebitCardCommandSet(),
+            console.PersonKeyValueCommandSet(),
+            console.PersonSecureKeyValueCommandSet(),
         ],
     )
-    sys.exit(console.cmdloop())
+    sys.exit(con.cmdloop())
 
 
 if __name__ == "__main__":

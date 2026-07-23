@@ -1,6 +1,6 @@
 import logging
 
-from test_db import typer as tdb_typer
+from test_db import cli
 
 
 logger = logging.getLogger(__name__)
@@ -9,4 +9,4 @@ logger = logging.getLogger(__name__)
 class _TyperOptions:
     @property
     def interactive(self):
-        return tdb_typer.interactive
+        return cli.interactive
