@@ -892,7 +892,7 @@ wheels = [
 
 [[package]]
 name = "test-db"
-version = "0.5.4"
+version = "0.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "cmd2", version = "3.5.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },

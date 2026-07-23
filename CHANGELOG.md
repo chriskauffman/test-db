@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/chriskauffman/test-db/compare/v0.5.4...v0.6.0) (2026-07-23)
+
+
+### Features
+
+* upgrade to cmd2 v4 ([66a2a9d](https://github.com/chriskauffman/test-db/commit/66a2a9d99da8d89086e6b8a27e1f8e32232edee6))
+
 ## [0.5.4](https://github.com/chriskauffman/test-db/compare/v0.5.3...v0.5.4) (2026-03-01)
 
 
