@@ -14,25 +14,25 @@ from typing_extensions import Annotated, Optional
 
 import test_db
 from test_db._cli_settings import Settings
-from test_db import typer as tdb_typer
+from test_db import cli
 
 root_logger = logging.getLogger()
 logger = logging.getLogger(__name__)
 
 app = typer.Typer()
-app.add_typer(tdb_typer.job_app, name="job")
-app.add_typer(tdb_typer.job_key_value_app, name="job-key-value")
-app.add_typer(tdb_typer.key_value_app, name="key-value")
-app.add_typer(tdb_typer.organization_app, name="organization")
-app.add_typer(tdb_typer.organization_address_app, name="organization-address")
-app.add_typer(tdb_typer.organization_bank_account_app, name="organization-bank-account")
-app.add_typer(tdb_typer.organization_key_value_app, name="organization-key-value")
-app.add_typer(tdb_typer.person_app, name="person")
-app.add_typer(tdb_typer.person_address_app, name="person-address")
-app.add_typer(tdb_typer.person_bank_account_app, name="person-bank-account")
-app.add_typer(tdb_typer.person_debit_card_app, name="person-debit-card")
-app.add_typer(tdb_typer.person_key_value_app, name="person-key-value")
-app.add_typer(tdb_typer.person_secure_key_value_app, name="person-secure-key-value")
+app.add_typer(cli.job_app, name="job")
+app.add_typer(cli.job_key_value_app, name="job-key-value")
+app.add_typer(cli.key_value_app, name="key-value")
+app.add_typer(cli.organization_app, name="organization")
+app.add_typer(cli.organization_address_app, name="organization-address")
+app.add_typer(cli.organization_bank_account_app, name="organization-bank-account")
+app.add_typer(cli.organization_key_value_app, name="organization-key-value")
+app.add_typer(cli.person_app, name="person")
+app.add_typer(cli.person_address_app, name="person-address")
+app.add_typer(cli.person_bank_account_app, name="person-bank-account")
+app.add_typer(cli.person_debit_card_app, name="person-debit-card")
+app.add_typer(cli.person_key_value_app, name="person-key-value")
+app.add_typer(cli.person_secure_key_value_app, name="person-secure-key-value")
 
 
 @app.command()
@@ -60,7 +60,7 @@ def tdb_app_callback(
     ] = False,
 ) -> None:
     """main callback for test_db typer applications"""
-    tdb_typer.interactive = interactive
+    cli.interactive = interactive
     settings = Settings()
 
     db_connection_uri = db_connection_uri or settings.db_connection_uri

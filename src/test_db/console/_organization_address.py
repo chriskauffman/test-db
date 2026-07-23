@@ -1,12 +1,6 @@
 import logging
 
 import cmd2
-from cmd2 import with_default_category
-
-try:
-    import gnureadline as readline  # ty: ignore[unresolved-import]
-except ImportError:
-    import readline
 
 from sqlobject import SQLObjectNotFound
 
@@ -19,33 +13,32 @@ from ._base_command_set import BaseCommandSet
 logger = logging.getLogger(__name__)
 
 
-@with_default_category("Database")
-class PersonAddressCommandSet(BaseCommandSet):
+class OrganizationAddressCommandSet(BaseCommandSet):
+    DEFAULT_CATEGORY = "Database"
+
     def validate_address(self, gid: str):
         try:
-            return test_db.PersonAddress.byGID(gid)
+            return test_db.OrganizationAddress.byGID(gid)
         except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
 
     optional_related_entity_parser = cmd2.Cmd2ArgumentParser()
     optional_related_entity_parser.add_argument(
-        "--person_gid",
+        "--organization_gid",
         help="related organizaiton or person's gID",
     )
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_person_address_add(self, args):
-        readline.set_auto_history(False)
-        if args.person_gid:
-            new_address = test_db.PersonAddress(
-                person=self.validate_person(args.person_gid)
+    def do_tdb_organization_address_add(self, args):
+        if args.organization_gid:
+            new_address = test_db.OrganizationAddress(
+                organization=self.validate_organization(args.organization_gid)
             )
         else:
-            new_address = test_db.PersonAddress()
-        if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
+            new_address = test_db.OrganizationAddress()
+        if self._cmd.command_interaction:
             test_db.AddressView(new_address).edit()
         self._cmd.poutput(new_address.gID)
-        readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
     connect_parser.add_argument(
@@ -53,7 +46,7 @@ class PersonAddressCommandSet(BaseCommandSet):
         help="object's gID",
     )
     connect_parser.add_argument(
-        "person_gid",
+        "organization_gid",
         help="related organizaiton or person's gID",
     )
 
@@ -64,26 +57,24 @@ class PersonAddressCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_address_delete(self, args):
+    def do_tdb_organization_address_delete(self, args):
         address = self.validate_address(args.gid)
         address.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_address_edit(self, args):
-        readline.set_auto_history(False)
+    def do_tdb_organization_address_edit(self, args):
         address = self.validate_address(args.gid)
         test_db.AddressView(address).edit()
-        readline.set_auto_history(True)
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_person_address_list(self, args):
-        if args.person_gid:
-            person = self.validate_person(args.person_gid)
-            test_db.AddressView.list(person.addresses)
+    def do_tdb_organization_address_list(self, args):
+        if args.organization_gid:
+            organization = self.validate_organization(args.organization_gid)
+            test_db.AddressView.list(organization.addresses)
         else:
-            test_db.AddressView.list(test_db.PersonAddress.select())
+            test_db.AddressView.list(test_db.OrganizationAddress.select())
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_address_view(self, args):
+    def do_tdb_organization_address_view(self, args):
         address = self.validate_address(args.gid)
         test_db.AddressView(address).viewDetails()

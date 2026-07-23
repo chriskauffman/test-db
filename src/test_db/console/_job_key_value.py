@@ -1,12 +1,6 @@
 import logging
 
 import cmd2
-from cmd2 import with_default_category
-
-try:
-    import gnureadline as readline  # ty: ignore[unresolved-import]
-except ImportError:
-    import readline
 
 from sqlobject.dberrors import DuplicateEntryError
 
@@ -17,7 +11,6 @@ from ._base_command_set import BaseCommandSet
 logger = logging.getLogger(__name__)
 
 
-@with_default_category("Database")
 class JobKeyValueCommandSet(BaseCommandSet):
     tdb_job_key_value_add_parser = cmd2.Cmd2ArgumentParser()
     tdb_job_key_value_add_parser.add_argument(
@@ -35,7 +28,6 @@ class JobKeyValueCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(tdb_job_key_value_add_parser)
     def do_tdb_job_key_value_add(self, args):
-        readline.set_auto_history(False)
         job = self.validate_job(args.job_gid)
         try:
             key_value = test_db.JobKeyValue(
@@ -43,11 +35,10 @@ class JobKeyValueCommandSet(BaseCommandSet):
                 key=args.key,
                 value=args.value,
             )
-            if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
+            if self._cmd.command_interaction:
                 test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:
             self._cmd.perror(f"error: {str(exc)}")
-        readline.set_auto_history(False)
 
     tdb_job_key_value_delete_parser = cmd2.Cmd2ArgumentParser()
     tdb_job_key_value_delete_parser.add_argument(

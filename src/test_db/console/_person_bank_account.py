@@ -1,12 +1,6 @@
 import logging
 
 import cmd2
-from cmd2 import with_default_category
-
-try:
-    import gnureadline as readline  # ty: ignore[unresolved-import]
-except ImportError:
-    import readline
 
 from sqlobject import SQLObjectNotFound
 
@@ -19,33 +13,32 @@ from ._base_command_set import BaseCommandSet
 logger = logging.getLogger(__name__)
 
 
-@with_default_category("Database")
-class OrganizationBankAccountCommandSet(BaseCommandSet):
+class PersonBankAccountCommandSet(BaseCommandSet):
+    DEFAULT_CATEGORY = "Database"
+
     def validate_bank_account(self, gid: str):
         try:
-            return test_db.OrganizationBankAccount.byGID(gid)
+            return test_db.PersonBankAccount.byGID(gid)
         except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {str(exc)}")
 
     optional_related_entity_parser = cmd2.Cmd2ArgumentParser()
     optional_related_entity_parser.add_argument(
-        "--organization_gid",
+        "--person_gid",
         help="related organizaiton or person's gID",
     )
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_organization_bank_account_add(self, args):
-        readline.set_auto_history(False)
-        if args.organization_gid:
-            new_bank_account = test_db.OrganizationBankAccount(
-                organization=self.validate_organization(args.organization_gid)
+    def do_tdb_person_bank_account_add(self, args):
+        if args.person_gid:
+            new_bank_account = test_db.PersonBankAccount(
+                person=self.validate_person(args.person_gid)
             )
         else:
-            new_bank_account = test_db.OrganizationBankAccount()
-        if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
+            new_bank_account = test_db.PersonBankAccount()
+        if self._cmd.command_interaction:
             test_db.BankAccountView(new_bank_account).edit()
         self._cmd.poutput(new_bank_account.gID)
-        readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
     connect_parser.add_argument(
@@ -53,7 +46,7 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
         help="object's gID",
     )
     connect_parser.add_argument(
-        "organization_gid",
+        "person_gid",
         help="related organizaiton or person's gID",
     )
 
@@ -64,26 +57,24 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_bank_account_delete(self, args):
+    def do_tdb_person_bank_account_delete(self, args):
         bank_account = self.validate_bank_account(args.gid)
         bank_account.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_bank_account_edit(self, args):
-        readline.set_auto_history(False)
+    def do_tdb_person_bank_account_edit(self, args):
         bank_account = self.validate_bank_account(args.gid)
         test_db.BankAccountView(bank_account).edit()
-        readline.set_auto_history(True)
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_organization_bank_account_list(self, args):
-        if args.organization_gid:
-            organization = self.validate_organization(args.organization_gid)
-            test_db.BankAccountView.list(organization.bankAccounts)
+    def do_tdb_person_bank_account_list(self, args):
+        if args.person_gid:
+            person = self.validate_person(args.person_gid)
+            test_db.BankAccountView.list(person.bankAccounts)
         else:
-            test_db.BankAccountView.list(test_db.OrganizationBankAccount.select())
+            test_db.BankAccountView.list(test_db.PersonBankAccount.select())
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_bank_account_view(self, args):
+    def do_tdb_person_bank_account_view(self, args):
         bank_account = self.validate_bank_account(args.gid)
         test_db.BankAccountView(bank_account).viewDetails()

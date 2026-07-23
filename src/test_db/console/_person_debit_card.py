@@ -1,12 +1,6 @@
 import logging
 
 import cmd2
-from cmd2 import with_default_category
-
-try:
-    import gnureadline as readline  # ty: ignore[unresolved-import]
-except ImportError:
-    import readline
 
 from sqlobject import SQLObjectNotFound
 
@@ -19,8 +13,9 @@ from ._base_command_set import BaseCommandSet
 logger = logging.getLogger(__name__)
 
 
-@with_default_category("Database")
 class PersonDebitCardCommandSet(BaseCommandSet):
+    DEFAULT_CATEGORY = "Database"
+
     def validate_debit_card(self, gid: str):
         try:
             return test_db.PersonDebitCard.byGID(gid)
@@ -35,17 +30,15 @@ class PersonDebitCardCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(optional_related_entity_parser)
     def do_tdb_person_debit_card_add(self, args):
-        readline.set_auto_history(False)
         if args.person_gid:
             new_debit_card = test_db.PersonDebitCard(
                 person=self.validate_person(args.person_gid)
             )
         else:
             new_debit_card = test_db.PersonDebitCard()
-        if self._cmd.command_interaction:  # ty: ignore[unresolved-attribute]
+        if self._cmd.command_interaction:
             test_db.DebitCardView(new_debit_card).edit()
         self._cmd.poutput(new_debit_card.gID)
-        readline.set_auto_history(True)
 
     connect_parser = cmd2.Cmd2ArgumentParser()
     connect_parser.add_argument(
@@ -70,10 +63,8 @@ class PersonDebitCardCommandSet(BaseCommandSet):
 
     @cmd2.with_argparser(gid_parser)
     def do_tdb_person_debit_card_edit(self, args):
-        readline.set_auto_history(False)
         debit_card = self.validate_debit_card(args.gid)
         test_db.DebitCardView(debit_card).edit()
-        readline.set_auto_history(True)
 
     @cmd2.with_argparser(optional_related_entity_parser)
     def do_tdb_person_debit_card_list(self, args):
