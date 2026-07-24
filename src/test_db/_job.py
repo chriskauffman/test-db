@@ -1,11 +1,10 @@
 import logging
+from typing import Self
 
 import faker
-from faker.providers import BaseProvider
 import nanoid
+from faker.providers import BaseProvider
 from sqlobject import (
-    connectionForURI,
-    events,
     DatabaseIndex,
     DateTimeCol,
     ForeignKey,
@@ -14,19 +13,17 @@ from sqlobject import (
     SQLObject,
     SQLObjectNotFound,
     StringCol,
+    connectionForURI,
+    events,
 )
 from typeid import TypeID
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional, Self, Union
-
-from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
 from test_db._job_key_value import JobKeyValue
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._organization import Organization
 from test_db._person import Person
+from test_db._type_id_col import TypeIDCol
 
 logger = logging.getLogger(__name__)
 
@@ -116,18 +113,18 @@ class Job(SQLObject):
     @classmethod
     def byOrganizationAndPerson(
         cls,
-        organization: Union[Organization, int],
-        person: Union[Person, int],
-        connection: Optional[connectionForURI] = None,
+        organization: Organization | int,
+        person: Person | int,
+        connection: connectionForURI | None = None,
     ) -> Self:
         """Locate jobs using unique index properties
 
         Simulates SQLObject's automatic by{alternateID} functions
 
         Args:
-            organization (Union[Organization, int]):
-            person (Union[Person, int]):
-            connection (Optional[connectionForURI]):
+            organization (Organization | int):
+            person (Person | int):
+            connection (connectionForURI | None):
 
         Returns:
             Self: Job

@@ -1,9 +1,5 @@
 import logging
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional, Union
-
 from typeid import TypeID
 from typeid.errors import (
     InvalidTypeIDStringException,
@@ -14,12 +10,12 @@ from typeid.errors import (
 logger = logging.getLogger(__name__)
 
 
-def validGID(gID: Union[str, TypeID], gIDPrefix: Optional[str] = None) -> bool:
+def validGID(gID: str | TypeID, gIDPrefix: str | None = None) -> bool:
     """Determines if a string is a valid global ID
 
     Args:
-        gID (Union[str, TypeID]):
-        gIDPrefix (Optional[str]): when provided, the gID must match this prefix
+        gID (str | TypeID):
+        gIDPrefix (str | None): when provided, the gID must match this prefix
 
     Returns:
         bool: True when valid
@@ -33,10 +29,10 @@ def validGID(gID: Union[str, TypeID], gIDPrefix: Optional[str] = None) -> bool:
             return False
         except SuffixValidationException:
             return False
-    elif isinstance(gID, TypeID):
+    if isinstance(gID, TypeID):
         globalTypeID = gID
     else:
         return False
-    if gIDPrefix and globalTypeID.prefix != gIDPrefix:
-        return False
+    if gIDPrefix:
+        return globalTypeID.prefix == gIDPrefix
     return True

@@ -2,10 +2,6 @@ import logging
 
 import test_db
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
-
 logger = logging.getLogger(__name__)
 
 
@@ -15,7 +11,7 @@ class _GlobalDatabaseOptions:
         return test_db.autoCreateDependents
 
     @property
-    def databaseEncryptionKey(self) -> Optional[str]:
+    def databaseEncryptionKey(self) -> str | None:
         return test_db.databaseEncryptionKey
 
     @property

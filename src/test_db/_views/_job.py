@@ -1,11 +1,7 @@
 import logging
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import List, Optional, Union
-
-from sqlobject.sresults import SelectResults
 from sqlobject.dberrors import DuplicateEntryError
+from sqlobject.sresults import SelectResults
 
 from test_db import Job, Organization, Person
 from test_db._views._base_view import BaseView
@@ -26,8 +22,8 @@ class JobView(BaseView):
     @classmethod
     def add(
         cls,
-        organization: Optional[Organization] = None,
-        person: Optional[Person] = None,
+        organization: Organization | None = None,
+        person: Person | None = None,
         interactive: bool = True,
         **kwargs,
     ) -> Job:
@@ -39,7 +35,7 @@ class JobView(BaseView):
         return new_job
 
     @classmethod
-    def list(cls, jobs: Union[List[Job], SelectResults, None] = None, **kwargs):
+    def list(cls, jobs: list[Job] | SelectResults | None = None, **kwargs):
         """List all jobs"""
         if jobs is None:
             jobs = Job.select(**kwargs)

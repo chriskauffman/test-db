@@ -1,5 +1,4 @@
 import pytest
-
 from sqlobject import SQLObjectNotFound
 
 import test_db

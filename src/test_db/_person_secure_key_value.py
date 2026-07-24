@@ -1,12 +1,12 @@
 import logging
 
 from sqlobject import (
-    events,
+    DatabaseIndex,
     DateTimeCol,
     ForeignKey,
-    DatabaseIndex,
     SQLObject,
     StringCol,
+    events,
 )
 
 from test_db._encrypted_pickle_col import EncryptedPickleCol

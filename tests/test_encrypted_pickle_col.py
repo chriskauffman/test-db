@@ -1,13 +1,12 @@
 import base64
 import datetime
-import pytest
 import secrets
 
+import pytest
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
-from sqlobject import connectionForURI, SQLObject
+from sqlobject import SQLObject, connectionForURI
 
 from test_db._encrypted_pickle_col import EncryptedPickleCol
 
@@ -151,7 +150,7 @@ def test_set_various_values(encryption_db, fernet):
         value={
             "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non turpis non ipsum vestibulum tempor vel at risus. Donec molestie mi in leo tempus, ac congue sem congue. Phasellus nec hendrerit neque. In ut ex dolor. Mauris a mattis sem.",
             "amount": 123498776.67,
-            "at": datetime.datetime(2020, 1, 1, 12, 0, 0),
+            "at": datetime.datetime(2020, 1, 1, 12, 0, 0).astimezone(),
         },
         connection=encryption_db,
     )
@@ -162,7 +161,9 @@ def test_set_various_values(encryption_db, fernet):
         == "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non turpis non ipsum vestibulum tempor vel at risus. Donec molestie mi in leo tempus, ac congue sem congue. Phasellus nec hendrerit neque. In ut ex dolor. Mauris a mattis sem."
     )
     assert test_token.value["amount"] == 123498776.67
-    assert test_token.value["at"] == datetime.datetime(2020, 1, 1, 12, 0, 0)
+    assert (
+        test_token.value["at"] == datetime.datetime(2020, 1, 1, 12, 0, 0).astimezone()
+    )
 
     test_token.value = "abc123"
     assert isinstance(test_token.value, str)
@@ -176,6 +177,6 @@ def test_set_various_values(encryption_db, fernet):
     assert isinstance(test_token.value, float)
     assert test_token.value == 1234.11
 
-    test_token.value = datetime.datetime(2020, 1, 1, 12, 0, 0)
+    test_token.value = datetime.datetime(2020, 1, 1, 12, 0, 0).astimezone()
     assert isinstance(test_token.value, datetime.datetime)
-    assert test_token.value == datetime.datetime(2020, 1, 1, 12, 0, 0)
+    assert test_token.value == datetime.datetime(2020, 1, 1, 12, 0, 0).astimezone()

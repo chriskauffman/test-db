@@ -1,16 +1,12 @@
 import logging
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import List, Union
-
-from sqlobject.sresults import SelectResults
 from sqlobject.dberrors import DuplicateEntryError
+from sqlobject.sresults import SelectResults
 
 from test_db import Person
-from test_db._views._base_view import BaseView
 from test_db._views._address import AddressView
 from test_db._views._bank_account import BankAccountView
+from test_db._views._base_view import BaseView
 from test_db._views._debit_card import DebitCardView
 from test_db._views._job import JobView
 from test_db._views._key_value import KeyValueView
@@ -37,7 +33,7 @@ class PersonView(BaseView):
         return new_person
 
     @classmethod
-    def list(cls, people: Union[List[Person], SelectResults, None] = None, **kwargs):
+    def list(cls, people: list[Person] | SelectResults | None = None, **kwargs):
         """List all people"""
         if people is None:
             people = Person.select(**kwargs)

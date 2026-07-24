@@ -1,6 +1,6 @@
-import pytest
 import uuid
 
+import pytest
 from sqlobject.dberrors import DuplicateEntryError
 
 import test_db

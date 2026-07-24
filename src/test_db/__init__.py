@@ -16,15 +16,11 @@ import sqlobject
 from sqlobject import SQLObjectNotFound as SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError as DuplicateEntryError
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
-
-from test_db._database_controller import (
-    DatabaseController as DatabaseController,
-)
 from test_db._database_controller import (
     IN_MEMORY_DB_FILE as IN_MEMORY_DB_FILE,
+)
+from test_db._database_controller import (
+    DatabaseController as DatabaseController,
 )
 from test_db._job import Job as Job
 from test_db._job_key_value import JobKeyValue as JobKeyValue
@@ -43,7 +39,6 @@ from test_db._person_key_value import PersonKeyValue as PersonKeyValue
 from test_db._person_secure_key_value import (
     PersonSecureKeyValue as PersonSecureKeyValue,
 )
-
 from test_db._views._address import AddressView as AddressView
 from test_db._views._bank_account import BankAccountView as BankAccountView
 from test_db._views._debit_card import DebitCardView as DebitCardView
@@ -54,7 +49,7 @@ from test_db._views._person import PersonView as PersonView
 
 # Global database options
 autoCreateDependents: bool = True
-databaseEncryptionKey: Optional[str] = None
+databaseEncryptionKey: str | None = None
 # Django recommendation from 2025
 # https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet
 fernetIterations: int = 1_200_000

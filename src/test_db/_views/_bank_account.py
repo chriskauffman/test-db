@@ -1,11 +1,7 @@
 import logging
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import List, Union
-
-from sqlobject.sresults import SelectResults
 from sqlobject.dberrors import DuplicateEntryError
+from sqlobject.sresults import SelectResults
 
 from test_db import OrganizationBankAccount, PersonBankAccount
 from test_db._views._base_view import BaseView
@@ -17,7 +13,7 @@ class BankAccountView(BaseView):
     """Debit card views
 
     Args:
-        bank_account (Union[OrganizationBankAccount, PersonBankAccount]): The bank account to view
+        bank_account (OrganizationBankAccount | PersonBankAccount): The bank account to view
         **kwargs:
             - user_inputs_required (bool):
     """
@@ -25,9 +21,9 @@ class BankAccountView(BaseView):
     @classmethod
     def list(
         cls,
-        bank_accounts: Union[
-            List[OrganizationBankAccount], List[PersonBankAccount], SelectResults
-        ],
+        bank_accounts: list[OrganizationBankAccount]
+        | list[PersonBankAccount]
+        | SelectResults,
         **kwargs,
     ):
         """List all bank accounts"""
@@ -35,7 +31,7 @@ class BankAccountView(BaseView):
             BankAccountView(bank_account).view()
 
     def __init__(
-        self, bank_account: Union[OrganizationBankAccount, PersonBankAccount], **kwargs
+        self, bank_account: OrganizationBankAccount | PersonBankAccount, **kwargs
     ):
         super().__init__(**kwargs)
         self._bank_account = bank_account

@@ -1,28 +1,24 @@
 import logging
 import random
+from typing import Self
 
 import faker
 from faker.providers.bank import Provider as BankProvider
 from sqlobject import (
-    connectionForURI,
-    events,
     DatabaseIndex,
     DateTimeCol,
     ForeignKey,
     SQLObject,
     SQLObjectNotFound,
     StringCol,
+    connectionForURI,
+    events,
 )
 from typeid import TypeID
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional, Self
-
-from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
-
+from test_db._type_id_col import TypeIDCol
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +92,7 @@ class PersonBankAccount(SQLObject):
         cls,
         routingNumber: str,
         accountNumber: str,
-        connection: Optional[connectionForURI] = None,
+        connection: connectionForURI | None = None,
     ) -> Self:
         """Locate bank accounts using unique index properties
 
@@ -105,7 +101,7 @@ class PersonBankAccount(SQLObject):
         Args:
             routingNumber (str):
             accountNumber (str):
-            connection (Optional[connectionForURI]):
+            connection (connectionForURI | None):
 
         Returns:
             Self: BankAccount

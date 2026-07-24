@@ -1,7 +1,6 @@
 import logging
 
 import cmd2
-
 from sqlobject.dberrors import DuplicateEntryError
 
 import test_db
@@ -38,7 +37,7 @@ class JobKeyValueCommandSet(BaseCommandSet):
             if self._cmd.command_interaction:
                 test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:
-            self._cmd.perror(f"error: {str(exc)}")
+            self._cmd.perror(f"error: {exc!s}")
 
     tdb_job_key_value_delete_parser = cmd2.Cmd2ArgumentParser()
     tdb_job_key_value_delete_parser.add_argument(

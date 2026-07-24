@@ -1,6 +1,6 @@
 import logging
 
-from sqlobject import events, DateTimeCol, SQLObject, StringCol
+from sqlobject import DateTimeCol, SQLObject, StringCol, events
 
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 

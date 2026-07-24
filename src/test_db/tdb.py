@@ -1,20 +1,17 @@
 """test_db maintenance script"""
 
-from importlib.metadata import version as get_version
 import logging
 import logging.handlers
 import pathlib
 import sys
+from importlib.metadata import version as get_version
+from typing import Annotated
 
 import typer
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Annotated, Optional
-
 import test_db
-from test_db._cli_settings import Settings
 from test_db import cli
+from test_db._cli_settings import Settings
 
 root_logger = logging.getLogger()
 logger = logging.getLogger(__name__)
@@ -43,7 +40,7 @@ def version():
 @app.callback()
 def tdb_app_callback(
     db_connection_uri: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--db-connection-uri", "-d", help="sqlobject connection string"),
     ] = None,
     interactive: Annotated[

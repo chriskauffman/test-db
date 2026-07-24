@@ -1,12 +1,8 @@
 import logging
 import pickle
+from typing import Any
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Any, Optional
-
-from sqlobject.col import BLOBCol, BinaryValidator, SOBLOBCol
-
+from sqlobject.col import BinaryValidator, BLOBCol, SOBLOBCol
 
 PICKLE_PROTOCOL = 5  # selecting 5 for Python 3.8+
 
@@ -24,7 +20,7 @@ class EncryptedPickleValidator(BinaryValidator):
         except AttributeError:
             return self.soCol.getDbFernet(state)
 
-    def to_python(self, value, state) -> Optional[Any]:
+    def to_python(self, value, state) -> Any | None:
         if value is None:
             return None
         dbFernet = self.getDbFernet(state)
@@ -33,7 +29,7 @@ class EncryptedPickleValidator(BinaryValidator):
         else:
             raise ValueError("Invalid Fernet config, check dbFernet value")
 
-    def from_python(self, value, state) -> Optional[Any]:
+    def from_python(self, value, state) -> Any | None:
         if value is None:
             return None
         dbFernet = self.getDbFernet(state)
@@ -49,7 +45,7 @@ class SOEncryptedPickleCol(SOBLOBCol):
     def __init__(self, **kw):
         self.dbFernet = kw.pop("dbFernet", None)
         self.pickleProtocol = kw.pop("pickleProtocol", pickle.HIGHEST_PROTOCOL)
-        super(SOEncryptedPickleCol, self).__init__(**kw)
+        super().__init__(**kw)
 
     def createValidators(self):
         return [
@@ -57,7 +53,7 @@ class SOEncryptedPickleCol(SOBLOBCol):
                 name=self.name,
                 pickleProtocol=self.pickleProtocol,
             )
-        ] + super(SOEncryptedPickleCol, self).createValidators()
+        ] + super().createValidators()
 
     def getDbFernet(self, state):
         if self.dbFernet:

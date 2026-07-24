@@ -1,17 +1,12 @@
 import base64
-from datetime import datetime, timezone
 import logging
 import secrets
+from datetime import UTC, datetime
 
+import sqlobject
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-
-import sqlobject
-
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
 
 from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._job import Job
@@ -63,7 +58,7 @@ class DatabaseController:
         connectionURI (str): SQLObject connection URI
         defaultConnection (bool, optional): sets DB as default sqlobject connection
         upgrade (bool, optional): upgrade the database if it is out of date
-        databaseEncryptionKey (Optional[str]):
+        databaseEncryptionKey (str | None):
 
     Raises:
         ValueError: invalid database
@@ -81,7 +76,7 @@ class DatabaseController:
         connectionURI: str,
         defaultConnection: bool = False,
         upgrade: bool = False,
-        databaseEncryptionKey: Optional[str] = None,
+        databaseEncryptionKey: str | None = None,
     ) -> None:
         self.connectionURI = connectionURI
 
@@ -167,7 +162,7 @@ class DatabaseController:
                     "TestDB_ApplicationID", connection=self.connection
                 ).value = str(applicationID)
             except sqlobject.SQLObjectNotFound:
-                now = datetime.now(timezone.utc)
+                now = datetime.now(UTC)
                 KeyValue(
                     key="TestDB_ApplicationID",
                     value=str(applicationID),
@@ -197,7 +192,7 @@ class DatabaseController:
                     "TestDB_ApplicationSchemaVersion", connection=self.connection
                 ).value = str(applicationSchemaVersion)
             except sqlobject.SQLObjectNotFound:
-                now = datetime.now(timezone.utc)
+                now = datetime.now(UTC)
                 KeyValue(
                     key="TestDB_ApplicationSchemaVersion",
                     value=str(applicationSchemaVersion),
@@ -212,9 +207,7 @@ class DatabaseController:
 
     @property
     def _isTestDB(self) -> bool:
-        if self.applicationID == APPLICATION_ID:
-            return True
-        return False
+        return self.applicationID == APPLICATION_ID
 
     @property
     def validSchema(self) -> bool:
@@ -248,7 +241,7 @@ class DatabaseController:
         try:
             self._rawCursor.execute(f"SELECT {column_name} FROM {table_name} LIMIT 1")
             return True
-        except Exception:
+        except sqlobject.dberrors.DBUndefinedColumnError:
             return False
 
     def _tableExists(self, table_name: str) -> bool:
@@ -263,7 +256,7 @@ class DatabaseController:
         try:
             self._rawCursor.execute(f"SELECT 1 FROM {table_name} LIMIT 1")
             return True
-        except Exception:
+        except sqlobject.dberrors.DBUndefinedTableError:
             return False
 
     def _new(self):
