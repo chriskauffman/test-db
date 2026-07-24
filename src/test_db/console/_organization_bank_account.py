@@ -1,10 +1,8 @@
 import logging
 
 import cmd2
-
-from sqlobject import SQLObjectNotFound
-
 from formencode.validators import Invalid
+from sqlobject import SQLObjectNotFound
 
 import test_db
 
@@ -20,7 +18,7 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
         try:
             return test_db.OrganizationBankAccount.byGID(gid)
         except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {str(exc)}")
+            self._cmd.perror(f"error: {exc!s}")
 
     optional_related_entity_parser = cmd2.Cmd2ArgumentParser()
     optional_related_entity_parser.add_argument(

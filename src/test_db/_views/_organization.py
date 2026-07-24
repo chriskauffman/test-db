@@ -1,18 +1,14 @@
 import logging
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import List, Union
-
-from sqlobject.sresults import SelectResults
 from sqlobject.dberrors import DuplicateEntryError
+from sqlobject.sresults import SelectResults
 
 from test_db import Organization
-from test_db._views._base_view import BaseView
 from test_db._views._address import AddressView
 from test_db._views._bank_account import BankAccountView
-from test_db._views._key_value import KeyValueView
+from test_db._views._base_view import BaseView
 from test_db._views._job import JobView
+from test_db._views._key_value import KeyValueView
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +34,7 @@ class OrganizationView(BaseView):
     @classmethod
     def list(
         cls,
-        organizations: Union[List[Organization], SelectResults, None] = None,
+        organizations: list[Organization] | SelectResults | None = None,
         **kwargs,
     ):
         """List all organizations"""

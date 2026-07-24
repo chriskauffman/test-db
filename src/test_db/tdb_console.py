@@ -1,16 +1,12 @@
 """test_db maintenance script"""
 
-from importlib.metadata import version as get_version
 import logging
 import logging.handlers
 import pathlib
 import sys
+from importlib.metadata import version as get_version
 
 import cmd2
-
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
 
 import test_db
 from test_db import console
@@ -56,7 +52,7 @@ class Console(cmd2.Cmd):
             )
         )
 
-        self._db: Optional[test_db.DatabaseController] = None
+        self._db: test_db.DatabaseController | None = None
 
         self._reset_db()
         self._set_prompt()

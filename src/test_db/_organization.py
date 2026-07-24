@@ -2,24 +2,22 @@ import logging
 
 import faker
 from sqlobject import (
-    events,
     DateTimeCol,
     MultipleJoin,
     SQLMultipleJoin,
-    StringCol,
     SQLObject,
     SQLObjectNotFound,
+    StringCol,
+    events,
 )
-
 from typeid import TypeID
 
 from test_db._gid import validGID
-from test_db._type_id_col import TypeIDCol
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._organization_address import OrganizationAddress
 from test_db._organization_bank_account import OrganizationBankAccount
 from test_db._organization_key_value import OrganizationKeyValue
-
+from test_db._type_id_col import TypeIDCol
 
 fake = faker.Faker()
 logger = logging.getLogger(__name__)
@@ -155,9 +153,11 @@ events.listen(
 
 
 def handleOrganizationAddressRowCreatedSignal(instance, kwargs, post_funcs):
-    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
-        if not instance.organization:
-            instance.organization = Organization(connection=instance._connection)
+    if (
+        instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents
+        and not instance.organization
+    ):
+        instance.organization = Organization(connection=instance._connection)
 
 
 events.listen(
@@ -168,9 +168,11 @@ events.listen(
 
 
 def handleOrganizationBankAccountRowCreatedSignal(instance, kwargs, post_funcs):
-    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
-        if not instance.organization:
-            instance.organization = Organization(connection=instance._connection)
+    if (
+        instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents
+        and not instance.organization
+    ):
+        instance.organization = Organization(connection=instance._connection)
 
 
 events.listen(

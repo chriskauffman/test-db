@@ -1,8 +1,7 @@
-import pytest
-
-from sqlobject import SQLObjectNotFound
-
 import uuid
+
+import pytest
+from sqlobject import SQLObjectNotFound
 
 import test_db
 from test_db.tdb_console import main as tdb

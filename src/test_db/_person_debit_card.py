@@ -1,10 +1,9 @@
+import logging
 from calendar import monthrange
 from datetime import date, datetime
-import logging
 
 import faker
 from sqlobject import (
-    events,
     DatabaseIndex,
     DateCol,
     DateTimeCol,
@@ -12,13 +11,13 @@ from sqlobject import (
     SQLObject,
     SQLObjectNotFound,
     StringCol,
+    events,
 )
 from typeid import TypeID
 
-from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
-
+from test_db._type_id_col import TypeIDCol
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +28,9 @@ fake = faker.Faker()
 def fake_credit_card_expire_to_date() -> date:
     """Generates a future expiration date for a credit/debit card"""
     fake_credit_card_expire = fake.credit_card_expire()
-    expire_date = datetime.strptime(fake_credit_card_expire, "%m/%y").date()
+    expire_date = (
+        datetime.strptime(fake_credit_card_expire, "%m/%y").astimezone().date()
+    )
     _, num_days = monthrange(expire_date.year, expire_date.month)
     return expire_date.replace(day=num_days)
 

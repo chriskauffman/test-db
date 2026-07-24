@@ -1,11 +1,9 @@
 import logging
 
 import cmd2
-
+from formencode.validators import Invalid
 from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
-
-from formencode.validators import Invalid
 
 import test_db
 
@@ -21,7 +19,7 @@ class KeyValueCommandSet(BaseCommandSet):
         try:
             return test_db.KeyValue.byKey(key)
         except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {str(exc)}")
+            self._cmd.perror(f"error: {exc!s}")
 
     tdb_add_key_value_parser = cmd2.Cmd2ArgumentParser()
     tdb_add_key_value_parser.add_argument(
@@ -40,7 +38,7 @@ class KeyValueCommandSet(BaseCommandSet):
             if self._cmd.command_interaction:
                 test_db.KeyValueView(key_value).edit()
         except DuplicateEntryError as exc:
-            self._cmd.perror(f"error: {str(exc)}")
+            self._cmd.perror(f"error: {exc!s}")
 
     key_parser = cmd2.Cmd2ArgumentParser()
     key_parser.add_argument(

@@ -1,9 +1,5 @@
 import logging
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import List, Union
-
 from sqlobject.sresults import SelectResults
 
 from test_db import (
@@ -21,7 +17,7 @@ class KeyValueView(BaseView):
     """Key value views
 
     Args:
-        key_value (Union[JobKeyValue, OrganizationKeyValue, PersonKeyValue, PersonSecureKeyValue]): The key value to view
+        key_value (JobKeyValue | OrganizationKeyValue | PersonKeyValue | PersonSecureKeyValue): The key value to view
         **kwargs:
             - user_inputs_required (bool):
     """
@@ -29,16 +25,14 @@ class KeyValueView(BaseView):
     @classmethod
     def list(
         cls,
-        key_values: Union[
-            List[JobKeyValue],
-            List[OrganizationKeyValue],
-            List[PersonKeyValue],
-            List[PersonSecureKeyValue],
-            SelectResults,
-        ],
+        key_values: list[JobKeyValue]
+        | list[OrganizationKeyValue]
+        | list[PersonKeyValue]
+        | list[PersonSecureKeyValue]
+        | SelectResults,
         **kwargs,
     ):
-        """List all people"""
+        """List all key values"""
         try:
             for key_value in key_values:
                 KeyValueView(key_value).view()
@@ -47,9 +41,10 @@ class KeyValueView(BaseView):
 
     def __init__(
         self,
-        key_value: Union[
-            JobKeyValue, OrganizationKeyValue, PersonKeyValue, PersonSecureKeyValue
-        ],
+        key_value: JobKeyValue
+        | OrganizationKeyValue
+        | PersonKeyValue
+        | PersonSecureKeyValue,
         **kwargs,
     ):
         super().__init__(**kwargs)

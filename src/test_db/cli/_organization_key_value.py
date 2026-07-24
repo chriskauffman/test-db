@@ -1,10 +1,11 @@
 import logging
 import sys
 
-from sqlobject.dberrors import DuplicateEntryError
 import typer
+from sqlobject.dberrors import DuplicateEntryError
 
 import test_db
+
 from ._typer_options import _TyperOptions
 from ._validate import validate_organization
 
@@ -21,7 +22,7 @@ def organization_key_value_add(organization_gid: str, key: str, value: str):
         if _TyperOptions().interactive:
             test_db.KeyValueView(key_value).edit()
     except DuplicateEntryError as exc:
-        sys.stderr.write(f"error: {str(exc)}")
+        sys.stderr.write(f"error: {exc!s}")
         sys.exit(1)
 
 

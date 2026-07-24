@@ -2,19 +2,18 @@ import logging
 
 import faker
 from sqlobject import (
-    events,
     DateTimeCol,
     ForeignKey,
     SQLObject,
     SQLObjectNotFound,
     StringCol,
+    events,
 )
 from typeid import TypeID
 
-from test_db._type_id_col import TypeIDCol
 from test_db._gid import validGID
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
-
+from test_db._type_id_col import TypeIDCol
 
 logger = logging.getLogger(__name__)
 

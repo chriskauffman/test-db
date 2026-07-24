@@ -1,11 +1,7 @@
 import logging
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import List, Union
-
-from sqlobject.sresults import SelectResults
 from sqlobject.dberrors import DuplicateEntryError
+from sqlobject.sresults import SelectResults
 
 from test_db import OrganizationAddress, PersonAddress
 from test_db._views._base_view import BaseView
@@ -17,7 +13,7 @@ class AddressView(BaseView):
     """Address views
 
     Args:
-        address (Union[OrganizationAddress, PersonAddress]): The address to view
+        address (OrganizationAddress | PersonAddress): The address to view
         **kwargs:
             - user_inputs_required (bool):
     """
@@ -25,14 +21,14 @@ class AddressView(BaseView):
     @classmethod
     def list(
         cls,
-        addresses: Union[List[OrganizationAddress], List[PersonAddress], SelectResults],
+        addresses: list[OrganizationAddress] | list[PersonAddress] | SelectResults,
         **kwargs,
     ):
         """List all addresses"""
         for address in addresses:
             AddressView(address).view()
 
-    def __init__(self, address: Union[OrganizationAddress, PersonAddress], **kwargs):
+    def __init__(self, address: OrganizationAddress | PersonAddress, **kwargs):
         super().__init__(**kwargs)
         self._address = address
 

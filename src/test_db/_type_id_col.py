@@ -1,5 +1,7 @@
 import logging
 
+from formencode import validators
+from sqlobject.col import Col, SOCol, SOValidator
 from typeid import TypeID
 from typeid.errors import (
     InvalidTypeIDStringException,
@@ -7,18 +9,11 @@ from typeid.errors import (
     SuffixValidationException,
 )
 
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
-
-from sqlobject.col import Col, SOCol, SOValidator
-from formencode import validators
-
 logger = logging.getLogger(__name__)
 
 
 class TypeIDValidator(SOValidator):
-    def to_python(self, value, state) -> Optional[TypeID]:
+    def to_python(self, value, state) -> TypeID | None:
         if value is None:
             return None
         if isinstance(value, str):
@@ -26,13 +21,13 @@ class TypeIDValidator(SOValidator):
         if isinstance(value, TypeID):
             return value
         raise validators.Invalid(
-            "expected string in the TypeIDCol '%s', "
-            "got %s %r instead" % (self.name, type(value), value),
+            f"expected string in the TypeIDCol '{self.name}', "
+            f"got {type(value)} {value} instead",
             value,
             state,
         )
 
-    def from_python(self, value, state) -> Optional[str]:
+    def from_python(self, value, state) -> str | None:
         if value is None:
             return None
         if isinstance(value, str):
@@ -46,16 +41,16 @@ class TypeIDValidator(SOValidator):
             except SuffixValidationException:
                 pass
             raise validators.Invalid(
-                "expected str(TypeID) in the TypeIDCol '%s', "
-                "got %s %r instead" % (self.name, type(value), value),
+                f"expected str(TypeID) in the TypeIDCol '{self.name}', "
+                f"got {type(value)} {value} instead",
                 value,
                 state,
             )
         if isinstance(value, TypeID):
             return str(value)
         raise validators.Invalid(
-            "expected TypeID in the TypeIDCol '%s', "
-            "got %s %r instead" % (self.name, type(value), value),
+            f"expected TypeID in the TypeIDCol '{self.name}', "
+            f"got {type(value)} {value} instead",
             value,
             state,
         )
@@ -63,9 +58,7 @@ class TypeIDValidator(SOValidator):
 
 class SOTypeIDCol(SOCol):
     def createValidators(self):
-        return [TypeIDValidator(name=self.name)] + super(
-            SOTypeIDCol, self
-        ).createValidators()
+        return [TypeIDValidator(name=self.name)] + super().createValidators()
 
     # Python TypeID documentation specifies max length of 90 characters
     def _sqlType(self):

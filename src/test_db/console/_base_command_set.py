@@ -1,10 +1,8 @@
 import logging
 
 from cmd2 import CommandSet
-
-from sqlobject import SQLObjectNotFound
-
 from formencode.validators import Invalid
+from sqlobject import SQLObjectNotFound
 
 import test_db
 
@@ -18,16 +16,16 @@ class BaseCommandSet(CommandSet):
         try:
             return test_db.Job.byGID(gid)
         except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {str(exc)}")
+            self._cmd.perror(f"error: {exc!s}")
 
     def validate_organization(self, gid: str):
         try:
             return test_db.Organization.byGID(gid)
         except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {str(exc)}")
+            self._cmd.perror(f"error: {exc!s}")
 
     def validate_person(self, gid: str):
         try:
             return test_db.Person.byGID(gid)
         except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {str(exc)}")
+            self._cmd.perror(f"error: {exc!s}")

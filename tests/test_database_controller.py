@@ -2,7 +2,6 @@ import os
 import shutil
 
 import test_db
-
 from test_db._database_controller import DatabaseController
 from test_db._person import Person
 

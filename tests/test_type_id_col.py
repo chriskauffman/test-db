@@ -1,9 +1,7 @@
 import pytest
-
-from typeid import TypeID
-
-from sqlobject import connectionForURI, SQLObject
 from formencode import validators
+from sqlobject import SQLObject, connectionForURI
+from typeid import TypeID
 
 from test_db._type_id_col import TypeIDCol
 

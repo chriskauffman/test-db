@@ -1,12 +1,8 @@
 import datetime
 import logging
-
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Any, Optional, Union
+from typing import Any
 
 from sqlobject import StringCol
-
 from typeid import TypeID
 from typeid.errors import (
     InvalidTypeIDStringException,
@@ -21,20 +17,20 @@ logger = logging.getLogger(__name__)
 
 class BaseView:
     @staticmethod
-    def _getDateInput(prompt: str, default: Optional[str] = None) -> datetime.datetime:
+    def _getDateInput(prompt: str, default: str | None = None) -> datetime.datetime:
         while True:
             date_input = BaseView._getInput(f"{prompt} MM/DD/YYYY", default)
             try:
-                return datetime.datetime.strptime(date_input, "%m/%d/%Y")
+                return datetime.datetime.strptime(date_input, "%m/%d/%Y").astimezone()
             except ValueError:
                 logger.error("bad date - MM-DD-YYYY required")
 
     @staticmethod
     def _getStrInput(
         prompt: str,
-        default: Optional[Union[str, StringCol]] = None,
-        numeric: Optional[bool] = False,
-        acceptNull: Optional[bool] = False,
+        default: str | StringCol | None = None,
+        numeric: bool | None = False,
+        acceptNull: bool | None = False,
     ) -> str:
         while True:
             string_input = BaseView._getInput(prompt, default, acceptNull=acceptNull)
@@ -51,7 +47,7 @@ class BaseView:
 
     @staticmethod
     def _getTypeIDInput(
-        prompt: str, default: Optional[Union[str, TypeID, TypeIDCol]] = None
+        prompt: str, default: str | TypeID | TypeIDCol | None = None
     ) -> TypeID:
         while True:
             user_input = BaseView._getInput(prompt, default, acceptNull=False)
@@ -68,7 +64,7 @@ class BaseView:
 
     @staticmethod
     def _getInput(
-        prompt: str, default: Optional[Any] = None, acceptNull: Optional[bool] = False
+        prompt: str, default: Any | None = None, acceptNull: bool | None = False
     ) -> str:
         if acceptNull:
             prompt = f"{prompt} (Optional, use 'NULL' to erase)"
@@ -118,15 +114,12 @@ class BaseView:
 
     def delete(self):
         """Delete the object"""
-        pass
 
     def edit(self):
         """Edit the object"""
-        pass
 
     def view(self):
         """Display the object"""
-        pass
 
     def viewDetails(self):
         """Display the object's details"""

@@ -1,6 +1,7 @@
+import uuid
+
 import pytest
 from sqlobject import SQLObjectNotFound
-import uuid
 
 import test_db
 from test_db.tdb import app as tdb

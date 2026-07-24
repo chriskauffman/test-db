@@ -3,7 +3,6 @@ import logging
 import faker
 import nanoid
 from sqlobject import (
-    events,
     DateCol,
     DateTimeCol,
     MultipleJoin,
@@ -11,8 +10,8 @@ from sqlobject import (
     SQLObject,
     SQLObjectNotFound,
     StringCol,
+    events,
 )
-
 from typeid import TypeID
 
 from test_db._gid import validGID
@@ -240,9 +239,11 @@ events.listen(handlePersonRowCreatedSignal, Person, events.RowCreatedSignal)
 
 
 def handlePersonAddressRowCreatedSignal(instance, kwargs, post_funcs):
-    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
-        if not instance.person:
-            instance.person = Person(connection=instance._connection)
+    if (
+        instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents
+        and not instance.person
+    ):
+        instance.person = Person(connection=instance._connection)
 
 
 events.listen(
@@ -253,9 +254,11 @@ events.listen(
 
 
 def handlePersonBankAccountRowCreatedSignal(instance, kwargs, post_funcs):
-    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
-        if not instance.person:
-            instance.person = Person(connection=instance._connection)
+    if (
+        instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents
+        and not instance.person
+    ):
+        instance.person = Person(connection=instance._connection)
 
 
 events.listen(
@@ -266,9 +269,11 @@ events.listen(
 
 
 def handlePersonDebitCardRowCreatedSignal(instance, kwargs, post_funcs):
-    if instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents:
-        if not instance.person:
-            instance.person = Person(connection=instance._connection)
+    if (
+        instance._connection.tdbGlobalDatabaseOptions.autoCreateDependents
+        and not instance.person
+    ):
+        instance.person = Person(connection=instance._connection)
 
 
 events.listen(
