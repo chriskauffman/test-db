@@ -53,7 +53,7 @@ def address_bulk_add(count: int = 100, person_gid: str | None = None):
             range(count), description=f"Creating {count} personal addresses..."
         ):
             test_db.PersonAddress(person=person, connection=trans)
-        trans.commit()
+        trans.commit(close=True)
     except Exception:
         trans.rollback()
         raise

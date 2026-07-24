@@ -42,7 +42,7 @@ def job_bulk_add(count: int = 100, organization_gid: str | None = None):
     try:
         for i in track(range(count), description=f"Creating {count} jobs..."):
             test_db.Job(organization=organization, connection=trans)
-        trans.commit()
+        trans.commit(close=True)
     except Exception:
         trans.rollback()
         raise

@@ -30,7 +30,7 @@ def person_bulk_add(count: int = 100):
     try:
         for i in track(range(count), description=f"Creating {count} people..."):
             test_db.Person(connection=trans)
-        trans.commit()
+        trans.commit(close=True)
     except Exception:
         trans.rollback()
         raise

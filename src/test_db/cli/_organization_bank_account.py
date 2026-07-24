@@ -55,7 +55,7 @@ def bank_account_bulk_add(count: int = 100, organization_gid: str | None = None)
             range(count), description=f"Creating {count} organization bank accounts..."
         ):
             test_db.OrganizationBankAccount(organization=organization, connection=trans)
-        trans.commit()
+        trans.commit(close=True)
     except Exception:
         trans.rollback()
         raise
