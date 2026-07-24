@@ -222,42 +222,7 @@ class DatabaseController:
                 self.applicationSchemaVersion,
             )
             return False
-        for table in TABLES:
-            if not self._tableExists(table.sqlmeta.table):
-                logger.debug("Table %s missing", table)
-                return False
         return True
-
-    def _columnExists(self, table_name: str, column_name: str) -> bool:
-        """Determine if table exists in DB
-
-        Args:
-            table_name (str): name of the table
-            column_name (str): name of the column
-
-        Returns:
-            bool: True if column exists
-        """
-        try:
-            self._rawCursor.execute(f"SELECT {column_name} FROM {table_name} LIMIT 1")
-            return True
-        except sqlobject.dberrors.DBUndefinedColumnError:
-            return False
-
-    def _tableExists(self, table_name: str) -> bool:
-        """Determine if table exists in DB
-
-        Args:
-            table_name (str): name of the table
-
-        Returns:
-            bool: True if table exists
-        """
-        try:
-            self._rawCursor.execute(f"SELECT 1 FROM {table_name} LIMIT 1")
-            return True
-        except sqlobject.dberrors.DBUndefinedTableError:
-            return False
 
     def _new(self):
         """Setup new database"""
