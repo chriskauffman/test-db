@@ -802,7 +802,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "coverage", specifier = ">=7.6.9" },
-    { name = "mysqlclient", specifier = ">=2.2.7" },
+    { name = "mysqlclient", specifier = ">=2.2.8" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.2" },
     { name = "pydoclint", specifier = ">=0.6.10" },
     { name = "pytest", specifier = ">=8.3.4" },
