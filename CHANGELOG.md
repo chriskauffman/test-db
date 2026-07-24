@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/chriskauffman/test-db/compare/v0.6.0...v0.7.0) (2026-07-24)
+
+
+### Features
+
+* adding transactions to increase the speed of bulk add ([1fbfadd](https://github.com/chriskauffman/test-db/commit/1fbfaddb890e8e6407183b4364b4c67ebab22abf))
+
+
+### Bug Fixes
+
+* needed `close=True` on commits to avoid rollback warnings ([8517f0f](https://github.com/chriskauffman/test-db/commit/8517f0fd82dc785196ea2ce8e7e71f36c58ad60f))
+* no reliable way to validate tables or columns across multiple databases ([9e33178](https://github.com/chriskauffman/test-db/commit/9e331780b89965bc6a2a6cdc19df566a2084a8a8))
+
 ## [0.6.0](https://github.com/chriskauffman/test-db/compare/v0.5.4...v0.6.0) (2026-07-23)
 
 
