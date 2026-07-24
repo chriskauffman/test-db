@@ -92,7 +92,7 @@ class OrganizationBankAccount(SQLObject):
         cls,
         routingNumber: str,
         accountNumber: str,
-        connection: connectionForURI | None = None,
+        connection: connectionForURI = None,
     ) -> Self:
         """Locate bank accounts using unique index properties
 
@@ -101,7 +101,7 @@ class OrganizationBankAccount(SQLObject):
         Args:
             routingNumber (str):
             accountNumber (str):
-            connection (connectionForURI | None):
+            connection (connectionForURI):
 
         Returns:
             Self: BankAccount

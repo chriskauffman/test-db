@@ -115,7 +115,7 @@ class Job(SQLObject):
         cls,
         organization: Organization | int,
         person: Person | int,
-        connection: connectionForURI | None = None,
+        connection: connectionForURI = None,
     ) -> Self:
         """Locate jobs using unique index properties
 
@@ -124,7 +124,7 @@ class Job(SQLObject):
         Args:
             organization (Organization | int):
             person (Person | int):
-            connection (connectionForURI | None):
+            connection (connectionForURI):
 
         Returns:
             Self: Job
