@@ -1,9 +1,11 @@
 import logging
 
-from rich.progress import track
+import sqlobject
 import typer
+from rich.progress import track
 
 import test_db
+
 from ._typer_options import _TyperOptions
 from ._validate import validate_person
 
@@ -23,8 +25,15 @@ def person_add():
 @person_app.command("bulk-add")
 def person_bulk_add(count: int = 100):
     logger.debug("Current person count: %d", test_db.Person.select().count())
-    for i in track(range(count), description=f"Creating {count} people..."):
-        test_db.Person()
+    conn = sqlobject.sqlhub.processConnection
+    trans = conn.transaction()
+    try:
+        for i in track(range(count), description=f"Creating {count} people..."):
+            test_db.Person(connection=trans)
+        trans.commit()
+    except Exception:
+        trans.rollback()
+        raise
     logger.debug("New person count: %d", test_db.Person.select().count())
 
 

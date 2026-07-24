@@ -1,13 +1,11 @@
 import logging
+
+import sqlobject
+import typer
 from rich.progress import track
 
-import typer
-
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
-
 import test_db
+
 from ._typer_options import _TyperOptions
 from ._validate import validate_job, validate_organization, validate_person
 
@@ -17,7 +15,7 @@ job_app = typer.Typer()
 
 
 @job_app.command("add")
-def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = None):
+def job_add(organization_gid: str | None = None, person_gid: str | None = None):
     organization = None
     person = None
     if organization_gid:
@@ -34,13 +32,20 @@ def job_add(organization_gid: Optional[str] = None, person_gid: Optional[str] = 
 
 
 @job_app.command("bulk-add")
-def job_bulk_add(count: int = 100, organization_gid: Optional[str] = None):
+def job_bulk_add(count: int = 100, organization_gid: str | None = None):
     organization = None
     if organization_gid:
         organization = validate_organization(organization_gid)
     logger.debug("Current job count: %d", test_db.Job.select().count())
-    for i in track(range(count), description=f"Creating {count} jobs..."):
-        test_db.Job(organization=organization)
+    conn = sqlobject.sqlhub.processConnection
+    trans = conn.transaction()
+    try:
+        for i in track(range(count), description=f"Creating {count} jobs..."):
+            test_db.Job(organization=organization, connection=trans)
+        trans.commit()
+    except Exception:
+        trans.rollback()
+        raise
     logger.debug("New job count: %d", test_db.Job.select().count())
 
 

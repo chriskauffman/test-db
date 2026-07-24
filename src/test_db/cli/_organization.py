@@ -1,9 +1,11 @@
 import logging
 
-from rich.progress import track
+import sqlobject
 import typer
+from rich.progress import track
 
 import test_db
+
 from ._typer_options import _TyperOptions
 from ._validate import validate_organization
 
@@ -25,8 +27,15 @@ def organization_bulk_add(count: int = 100):
     logger.debug(
         "Current organization count: %d", test_db.Organization.select().count()
     )
-    for i in track(range(count), description=f"Creating {count} organizations..."):
-        test_db.Organization()
+    conn = sqlobject.sqlhub.processConnection
+    trans = conn.transaction()
+    try:
+        for i in track(range(count), description=f"Creating {count} organizations..."):
+            test_db.Organization(connection=trans)
+        trans.commit()
+    except Exception:
+        trans.rollback()
+        raise
     logger.debug("New organization count: %d", test_db.Organization.select().count())
 
 

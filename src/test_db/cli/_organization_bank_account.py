@@ -1,16 +1,14 @@
 import logging
 import sys
 
+import sqlobject
+import typer
 from formencode.validators import Invalid
 from rich.progress import track
 from sqlobject import SQLObjectNotFound
-import typer
-
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
 
 import test_db
+
 from ._typer_options import _TyperOptions
 from ._validate import validate_organization
 
@@ -23,12 +21,12 @@ def validate_bank_account(gid: str):
     try:
         return test_db.OrganizationBankAccount.byGID(gid)
     except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {str(exc)}")
+        sys.stderr.write(f"error: {exc!s}")
         sys.exit(1)
 
 
 @organization_bank_account_app.command("add")
-def organization_bank_account_add(organization_gid: Optional[str] = None):
+def organization_bank_account_add(organization_gid: str | None = None):
     if organization_gid:
         new_bank_account = test_db.OrganizationBankAccount(
             organization=validate_organization(organization_gid)
@@ -41,7 +39,7 @@ def organization_bank_account_add(organization_gid: Optional[str] = None):
 
 
 @organization_bank_account_app.command("bulk-add")
-def bank_account_bulk_add(count: int = 100, organization_gid: Optional[str] = None):
+def bank_account_bulk_add(count: int = 100, organization_gid: str | None = None):
     organization = None
     if organization_gid:
         organization = validate_organization(organization_gid)
@@ -50,10 +48,17 @@ def bank_account_bulk_add(count: int = 100, organization_gid: Optional[str] = No
         test_db.Organization.select().count(),
         test_db.OrganizationBankAccount.select().count(),
     )
-    for i in track(
-        range(count), description=f"Creating {count} organization bank accounts..."
-    ):
-        test_db.OrganizationBankAccount(organization=organization)
+    conn = sqlobject.sqlhub.processConnection
+    trans = conn.transaction()
+    try:
+        for i in track(
+            range(count), description=f"Creating {count} organization bank accounts..."
+        ):
+            test_db.OrganizationBankAccount(organization=organization, connection=trans)
+        trans.commit()
+    except Exception:
+        trans.rollback()
+        raise
     logger.debug(
         "Current counts: organizations=%d, bankAccounts=%d",
         test_db.Organization.select().count(),
@@ -74,7 +79,7 @@ def organization_bank_account_edit(gid: str):
 
 
 @organization_bank_account_app.command("list")
-def organization_bank_account_list(organization_gid: Optional[str] = None):
+def organization_bank_account_list(organization_gid: str | None = None):
     if organization_gid:
         organization = validate_organization(organization_gid)
         test_db.BankAccountView.list(organization.bankAccounts)

@@ -1,16 +1,16 @@
 import logging
 import sys
 
+# Using typing_extensions vs typing:
+# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
+import sqlobject
+import typer
 from formencode.validators import Invalid
 from rich.progress import track
 from sqlobject import SQLObjectNotFound
-import typer
-
-# Using typing_extensions vs typing:
-# https://stackoverflow.com/questions/71944041/using-modern-typing-features-on-older-versions-of-python
-from typing_extensions import Optional
 
 import test_db
+
 from ._typer_options import _TyperOptions
 from ._validate import validate_person
 
@@ -23,12 +23,12 @@ def validate_debit_card(gid: str):
     try:
         return test_db.PersonDebitCard.byGID(gid)
     except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {str(exc)}")
+        sys.stderr.write(f"error: {exc!s}")
         sys.exit(1)
 
 
 @person_debit_card_app.command("add")
-def person_debit_card_add(person_gid: Optional[str] = None):
+def person_debit_card_add(person_gid: str | None = None):
     if person_gid:
         new_debit_card = test_db.PersonDebitCard(person=validate_person(person_gid))
     else:
@@ -39,7 +39,7 @@ def person_debit_card_add(person_gid: Optional[str] = None):
 
 
 @person_debit_card_app.command("bulk-add")
-def debit_card_bulk_add(count: int = 100, person_gid: Optional[str] = None):
+def debit_card_bulk_add(count: int = 100, person_gid: str | None = None):
     person = None
     if person_gid:
         person = validate_person(person_gid)
@@ -48,10 +48,17 @@ def debit_card_bulk_add(count: int = 100, person_gid: Optional[str] = None):
         test_db.Person.select().count(),
         test_db.PersonDebitCard.select().count(),
     )
-    for i in track(
-        range(count), description=f"Creating {count} personal debit cards..."
-    ):
-        test_db.PersonDebitCard(person=person)
+    conn = sqlobject.sqlhub.processConnection
+    trans = conn.transaction()
+    try:
+        for i in track(
+            range(count), description=f"Creating {count} personal debit cards..."
+        ):
+            test_db.PersonDebitCard(person=person, connection=trans)
+        trans.commit()
+    except Exception:
+        trans.rollback()
+        raise
     logger.debug(
         "Current counts: persons=%d, debitCards=%d",
         test_db.Person.select().count(),
@@ -72,7 +79,7 @@ def person_debit_card_edit(gid: str):
 
 
 @person_debit_card_app.command("list")
-def person_debit_card_list(person_gid: Optional[str] = None):
+def person_debit_card_list(person_gid: str | None = None):
     if person_gid:
         person = validate_person(person_gid)
         test_db.DebitCardView.list(person.debitCards)
