@@ -1,7 +1,7 @@
 [project]
 name = "test-db"
 version = "0.7.0"
-description = "Add your description here"
+description = "Test database tool with auto-generated test data for SQLite, PostgreSQL, and MySQL"
 readme = "README.md"
 authors = [
     { name = "Christopher Kauffman", email = "chriskauffman@vollgas.net" }

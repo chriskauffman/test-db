@@ -1,4 +1,4 @@
-# dex-tools Makefile
+# test-db Makefile
 
 .PHONY: build
 build: lint type-check test src/test_db/_schemas/v1.sql
