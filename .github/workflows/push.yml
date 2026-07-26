@@ -48,7 +48,7 @@ jobs:
       - name: Install the project dependencies
         run: uv sync --locked --all-groups
       - name: Run security audit
-        run: uv pip audit
+        run: uv audit
   build:
     name: Build
     runs-on: ubuntu-latest
