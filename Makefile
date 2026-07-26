@@ -1,7 +1,7 @@
 # test-db Makefile
 
 .PHONY: build
-build: lint type-check test src/test_db/_schemas/v1.sql
+build: lint type-check test security-audit src/test_db/_schemas/v1.sql
 	uv build
 
 .PHONY:
@@ -16,6 +16,10 @@ lint:
 	uv run pydoclint --style google src/
 	uv run pydoclint --style google tests/
 	yamllint .github/
+
+.PHONY: security-audit
+security-audit:
+	uv audit
 
 .PHONY: type-check
 type-check:
