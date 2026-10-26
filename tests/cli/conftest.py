@@ -22,4 +22,4 @@ def set_env(db_encryption_key, temporary_db, tmp_path_factory):
     os.environ["LOG_LEVEL_FILE"] = "DEBUG"
     os.environ["LOG_PATH"] = str(tmp_path_factory.mktemp("log"))
     # setting DB connection to avoid defaulting to a real DB in tests
-    os.environ["DB_CONNECTION_URI"] = temporary_db.connectionURI
+    os.environ["DB_CONNECTION_URI"] = temporary_db.connectionURI.get_secret_value()

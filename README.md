@@ -90,6 +90,34 @@ it will be used to execute tests when `uv run pytest` or `make` is executed. If 
 
 Note: You must install database drivers to support the connection specified, such as `uv add "psycopg[binary]"` or `uv add mysqlclient`.
 
+### Protecting Credentials & Standard Config Files
+
+`test-db` protects sensitive database credentials by handling connection strings as `SecretStr` objects, masking credentials in debug logs, error dumps, and console outputs.
+
+To adhere to security best practices and keep credentials out of connection strings, command history, and environment variables entirely, use standard database authentication files:
+
+- **PostgreSQL (`~/.pgpass`)**:
+  Store credentials in `~/.pgpass` (`chmod 0600 ~/.pgpass`):
+  ```
+  localhost:5432:testdb:myuser:mypassword
+  ```
+  Then connect with a passwordless URI:
+  ```bash
+  export DB_CONNECTION_URI="postgresql://myuser@localhost:5432/testdb"
+  ```
+- **MySQL / MariaDB (`~/.my.cnf`)**:
+  Store credentials in `~/.my.cnf` (`chmod 0600 ~/.my.cnf`):
+  ```ini
+  [client]
+  user=myuser
+  password=mypassword
+  host=localhost
+  ```
+  Then connect with a passwordless URI:
+  ```bash
+  export DB_CONNECTION_URI="mysql://myuser@localhost:3306/testdb"
+  ```
+
 ### Execution directly without install
 
 Run commands without installation:
