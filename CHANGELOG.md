@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0](https://github.com/chriskauffman/test-db/compare/v0.7.0...v0.8.0) (2026-10-26)
+
+
+### Features
+
+* Improved handling of DB connection string to limit exposure of … ([cdcd439](https://github.com/chriskauffman/test-db/commit/cdcd4394c20afc9eba588f3f6ed23f88de28804a))
+* Improved handling of DB connection string to limit exposure of DB secrets ([8bd3b6e](https://github.com/chriskauffman/test-db/commit/8bd3b6e33fc08d4c82aa8b20e2d02766e1a6b23a)), closes [#98](https://github.com/chriskauffman/test-db/issues/98)
+
 ## [0.7.0](https://github.com/chriskauffman/test-db/compare/v0.6.0...v0.7.0) (2026-07-24)
 
 
