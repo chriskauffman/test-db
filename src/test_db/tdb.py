@@ -8,6 +8,7 @@ from importlib.metadata import version as get_version
 from typing import Annotated
 
 import typer
+from pydantic import SecretStr
 
 import test_db
 from test_db import cli
@@ -60,9 +61,16 @@ def tdb_app_callback(
     cli.interactive = interactive
     settings = Settings()
 
-    db_connection_uri = db_connection_uri or settings.db_connection_uri
+    selected_db_connection_uri = (
+        SecretStr(db_connection_uri)
+        if db_connection_uri
+        else settings.db_connection_uri
+    )
 
-    if not db_connection_uri:
+    if (
+        not selected_db_connection_uri
+        or not selected_db_connection_uri.get_secret_value()
+    ):
         sys.stderr.write("error: no database specified, use db_connection_uri")
         sys.exit(1)
 
@@ -100,7 +108,7 @@ def tdb_app_callback(
     test_db.fernetIterations = settings.database_fernet_iterations
 
     test_db.DatabaseController(
-        db_connection_uri,
+        selected_db_connection_uri,
         defaultConnection=True,
     )
 

@@ -62,8 +62,9 @@ class Settings(BaseSettings):
     database_fernet_iterations: int = Field(
         default=1_200_000, description="number of iterations for fernet key generation"
     )
-    db_connection_uri: str | None = Field(
-        default=f"sqlite:{DEFAULT_DB_PATH}", description="sqlobject connection URI"
+    db_connection_uri: SecretStr | None = Field(
+        default=SecretStr(f"sqlite:{DEFAULT_DB_PATH}"),
+        description="sqlobject connection URI",
     )
     log_level_file: int | Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = (
         Field(default="INFO", description="log level for file storage of log messages")

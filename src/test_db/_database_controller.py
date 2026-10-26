@@ -7,6 +7,7 @@ import sqlobject
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from pydantic import SecretStr
 
 from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._job import Job
@@ -55,7 +56,7 @@ class DatabaseController:
     Basic class to handle the connection, configuration and upgrade of a test_db
 
     Args:
-        connectionURI (str): SQLObject connection URI
+        connectionURI (str | SecretStr): SQLObject connection URI
         defaultConnection (bool, optional): sets DB as default sqlobject connection
         upgrade (bool, optional): upgrade the database if it is out of date
         databaseEncryptionKey (str | None):
@@ -67,20 +68,25 @@ class DatabaseController:
         applicationID (int): database application ID unique to test_db
         applicationSchemaVersion (int): test_db schema version number
         connection (sqlobject.connectionForURI)
-        connectionURI (str): location of DB file
+        connectionURI (SecretStr): location of DB file
         validSchema (bool): True if schema passes checks
     """
 
     def __init__(
         self,
-        connectionURI: str,
+        connectionURI: str | SecretStr,
         defaultConnection: bool = False,
         upgrade: bool = False,
         databaseEncryptionKey: str | None = None,
     ) -> None:
-        self.connectionURI = connectionURI
+        if isinstance(connectionURI, SecretStr):
+            self.connectionURI = connectionURI
+        else:
+            self.connectionURI = SecretStr(connectionURI)
 
-        self.connection = sqlobject.connectionForURI(self.connectionURI)
+        self.connection = sqlobject.connectionForURI(
+            self.connectionURI.get_secret_value()
+        )
         self.connection.tdbGlobalDatabaseOptions = _GlobalDatabaseOptions()
 
         self._raw = self.connection.getConnection()
@@ -105,7 +111,7 @@ class DatabaseController:
                 raise ValueError("not a test_db file")
 
         # Database specific configuration
-        if "sqlite" in str(self.connectionURI):
+        if "sqlite" in self.connectionURI.get_secret_value():
             self._rawCursor.execute("PRAGMA foreign_keys = ON")
 
         databaseEncryptionKey = (

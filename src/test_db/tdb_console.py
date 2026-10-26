@@ -7,6 +7,7 @@ import sys
 from importlib.metadata import version as get_version
 
 import cmd2
+from pydantic import SecretStr
 
 import test_db
 from test_db import console
@@ -45,7 +46,7 @@ class Console(cmd2.Cmd):
         self.add_settable(
             cmd2.Settable(
                 "db_connection_uri",
-                str,
+                SecretStr,
                 "Database connection URI",
                 self,
                 onchange_cb=self._onchange_db_connection_uri,
