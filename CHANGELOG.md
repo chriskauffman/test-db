@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.1](https://github.com/chriskauffman/test-db/compare/v0.8.0...v0.8.1) (2026-10-29)
+
+
+### Bug Fixes
+
+* persist database encryption iteration settings ([53a9733](https://github.com/chriskauffman/test-db/commit/53a9733954edfc400cf2c84bfb2def3f9cb52b02))
+* persist database encryption iteration settings ([3f437b9](https://github.com/chriskauffman/test-db/commit/3f437b9a3c55b657e85ff2aa622b2381453e0d48)), closes [#101](https://github.com/chriskauffman/test-db/issues/101)
+
 ## [0.8.0](https://github.com/chriskauffman/test-db/compare/v0.7.0...v0.8.0) (2026-10-26)
 
 
