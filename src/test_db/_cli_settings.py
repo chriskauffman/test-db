@@ -60,7 +60,8 @@ class Settings(BaseSettings):
         description="key to be used for encrypting sensitive database contents",
     )
     database_fernet_iterations: int = Field(
-        default=1_200_000, description="number of iterations for fernet key generation"
+        default=1_200_000,
+        description="PBKDF2 iterations when initializing encryption metadata",
     )
     db_connection_uri: SecretStr | None = Field(
         default=SecretStr(f"sqlite:{DEFAULT_DB_PATH}"),

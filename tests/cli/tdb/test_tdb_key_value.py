@@ -110,3 +110,19 @@ def test_key_value_view(capsys, monkeypatch, person, temporary_db):
 
     captured = capsys.readouterr()
     assert test_key in captured.out
+
+
+@pytest.mark.parametrize("command", ["edit", "delete"])
+def test_encryption_iterations_key_is_restricted(
+    capsys, monkeypatch, temporary_db, command
+):
+    key = "TestDB_EncryptedPickleColIterations"
+    before = test_db.KeyValue.byKey(key, connection=temporary_db.connection).value
+    monkeypatch.setattr("sys.argv", ["tdb", "key-value", command, key])
+    with pytest.raises(SystemExit) as exc:
+        tdb()
+    assert exc.value.code == 1
+    assert "restricted" in capsys.readouterr().err
+    assert (
+        test_db.KeyValue.byKey(key, connection=temporary_db.connection).value == before
+    )

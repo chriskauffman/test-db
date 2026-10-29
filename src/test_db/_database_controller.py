@@ -2,12 +2,15 @@ import base64
 import logging
 import secrets
 from datetime import UTC, datetime
+from types import SimpleNamespace
 
 import sqlobject
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from pydantic import SecretStr
+from sqlobject import sqlbuilder
+from sqlobject.col import BinaryValidator
 
 from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._job import Job
@@ -122,22 +125,74 @@ class DatabaseController:
             try:
                 fernet_salt = KeyValue.byKey(
                     "TestDB_EncryptedPickleColSalt", connection=self.connection
-                ).value.encode(ENCODING)
+                ).value
             except sqlobject.SQLObjectNotFound:
-                fernet_salt = KeyValue(
-                    key="TestDB_EncryptedPickleColSalt",
-                    value=secrets.token_hex(16),
+                fernet_salt = None
+            try:
+                iterations_record = KeyValue.byKey(
+                    "TestDB_EncryptedPickleColIterations",
                     connection=self.connection,
-                ).value.encode(ENCODING)
+                )
+            except sqlobject.SQLObjectNotFound:
+                iterations_record = None
+                fernet_iterations = (
+                    self.connection.tdbGlobalDatabaseOptions.fernetIterations
+                )
+            else:
+                if not fernet_salt:
+                    raise ValueError("Encryption metadata is missing its salt")
+                try:
+                    fernet_iterations = int(iterations_record.value)
+                except (TypeError, ValueError) as exc:
+                    raise ValueError(
+                        "Encryption iterations must be a positive integer"
+                    ) from exc
+            if type(fernet_iterations) is not int or fernet_iterations <= 0:
+                raise ValueError("Encryption iterations must be a positive integer")
+            new_salt = fernet_salt is None
+            if new_salt:
+                fernet_salt = secrets.token_hex(16)
             fernet_kdf = PBKDF2HMAC(
                 algorithm=hashes.SHA256(),
                 length=32,
-                salt=fernet_salt,
-                iterations=self.connection.tdbGlobalDatabaseOptions.fernetIterations,
+                salt=fernet_salt.encode(ENCODING),
+                iterations=fernet_iterations,
             )
             fernet_key_material = databaseEncryptionKey.encode(ENCODING)
             key = base64.urlsafe_b64encode(fernet_kdf.derive(fernet_key_material))
-            self.connection.dbFernet = Fernet(key)
+            fernet = Fernet(key)
+            if iterations_record is None:
+                if not new_salt:
+                    # Authenticate legacy ciphertext before pinning an unverified count.
+                    query = sqlbuilder.Select(
+                        PersonSecureKeyValue.q.value,
+                        where=sqlbuilder.ISNOTNULL(PersonSecureKeyValue.q.value),
+                        limit=1,
+                    )
+                    row = self.connection.queryOne(self.connection.sqlrepr(query))
+                    if row is not None:
+                        token = BinaryValidator(name="value").to_python(
+                            row[0], SimpleNamespace(connection=self.connection)
+                        )
+                        try:
+                            fernet.decrypt(token)
+                        except InvalidToken as exc:
+                            raise ValueError(
+                                "Unable to authenticate legacy encrypted data; "
+                                "check the original password and iteration count"
+                            ) from exc
+                if new_salt:
+                    KeyValue(
+                        key="TestDB_EncryptedPickleColSalt",
+                        value=fernet_salt,
+                        connection=self.connection,
+                    )
+                KeyValue(
+                    key="TestDB_EncryptedPickleColIterations",
+                    value=str(fernet_iterations),
+                    connection=self.connection,
+                )
+            self.connection.dbFernet = fernet
         else:
             logger.warning(
                 "databaseEncryptionKey not set, encrypted storage not available"
