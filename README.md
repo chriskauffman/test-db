@@ -118,6 +118,29 @@ To adhere to security best practices and keep credentials out of connection stri
   export DB_CONNECTION_URI="mysql://myuser@localhost:3306/testdb"
   ```
 
+### Encryption Settings
+
+Set `DATABASE_ENCRYPTION_KEY` (or `database_encryption_key` in `test_db.toml`)
+to enable encrypted storage. `DATABASE_FERNET_ITERATIONS`
+(`database_fernet_iterations` in TOML) defaults to 1,200,000 and must be a
+positive integer when initializing encryption metadata. Library users can set
+`test_db.fernetIterations`.
+
+The database stores the iteration count alongside its encryption salt. Once
+stored, that count takes precedence over the configured value: changing the
+configuration does not re-encrypt existing data or change the database's key.
+The salt and iteration metadata cannot be edited or deleted through the
+key-value CLI or console commands.
+
+Older databases containing only a salt need the **original password and iteration
+count** on their first encrypted open after upgrading. Before recording the
+count, test-db authenticates one existing non-null encrypted value without
+unpickling it. If authentication fails, the encryption metadata is left unchanged:
+restore the original password/count and retry. A legacy database with no non-null
+encrypted values can adopt the configured count immediately. This migration
+does not repair already-corrupted or mixed-key data; back up databases before
+upgrading. Opening without an encryption key leaves encryption metadata untouched.
+
 ### Execution directly without install
 
 Run commands without installation:
