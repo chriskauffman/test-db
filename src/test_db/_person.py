@@ -179,6 +179,10 @@ def handlePersonRowCreateSignal(instance, kwargs, post_funcs):
                     ).getOne()
             except SQLObjectNotFound:
                 break
+    if kwargs.get("firstName") is None:
+        kwargs["firstName"] = fake.first_name()
+    if kwargs.get("lastName") is None:
+        kwargs["lastName"] = fake.last_name()
     if kwargs.get("email") is None:
         for email in (
             f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}@example.com",

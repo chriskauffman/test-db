@@ -1,4 +1,5 @@
 import faker
+import pytest
 from typeid import TypeID
 
 import test_db
@@ -16,6 +17,33 @@ def test_init(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
     assert test_person
+
+
+@pytest.mark.parametrize(
+    "names",
+    [
+        {"firstName": "Jane"},
+        {"lastName": "Doe"},
+        {"firstName": "Jane", "lastName": None},
+        {"firstName": None, "lastName": "Doe"},
+    ],
+)
+@pytest.mark.parametrize("supplied_email", [False, True])
+def test_partial_names(temporary_db, names, supplied_email):
+    email = fake.unique.email() if supplied_email else None
+    test_person = Person(**names, email=email, connection=temporary_db.connection)
+    test_person.sync()
+
+    assert test_person.firstName
+    assert test_person.lastName
+    for field, value in names.items():
+        if value is not None:
+            assert getattr(test_person, field) == value
+    if supplied_email:
+        assert test_person.email == email
+    else:
+        assert test_person.email.startswith(test_person.firstName[:1].lower())
+        assert test_person.email.endswith("@example.com")
 
 
 def test_string_gID(temporary_db):
