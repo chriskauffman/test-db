@@ -54,7 +54,7 @@ class PersonKeyValueCommandSet(BaseCommandSet):
     @cmd2.with_argparser(tdb_person_key_value_delete_parser)
     def do_tdb_person_key_value_delete(self, args):
         person = self.validate_person(args.person_gid)
-        key_value = person.getKeyValueByKey(args.key)
+        key_value = self.validate_key_value(person.keyValuesSelect, args.key)
         if key_value:
             key_value.destroySelf()
 
@@ -82,6 +82,6 @@ class PersonKeyValueCommandSet(BaseCommandSet):
     @cmd2.with_argparser(tdb_person_key_value_view_parser)
     def do_tdb_person_key_value_view(self, args):
         person = self.validate_person(args.person_gid)
-        key_value = person.getKeyValueByKey(args.key)
+        key_value = self.validate_key_value(person.keyValuesSelect, args.key)
         if key_value:
             test_db.KeyValueView(key_value).viewDetails()

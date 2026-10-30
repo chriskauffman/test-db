@@ -7,7 +7,7 @@ from sqlobject.dberrors import DuplicateEntryError
 import test_db
 
 from ._typer_options import _TyperOptions
-from ._validate import validate_job
+from ._validate import validate_job, validate_key_value
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def job_key_value_add(job_gid: str, key: str, value: str):
 @job_key_value_app.command("delete")
 def job_key_value_delete(job_gid: str, key: str):
     job = validate_job(job_gid)
-    key_value = job.getKeyValueByKey(key)
+    key_value = validate_key_value(job.keyValuesSelect, key)
     if key_value:
         key_value.destroySelf()
 
@@ -50,7 +50,6 @@ def job_key_value_list(job_gid: str):
 @job_key_value_app.command("view")
 def job_key_value_view(job_gid: str, key: str):
     job = validate_job(job_gid)
-    # ToDo: Needs fix: key will always exist
-    key_value = job.getKeyValueByKey(key)
+    key_value = validate_key_value(job.keyValuesSelect, key)
     if key_value:
         test_db.KeyValueView(key_value).viewDetails()

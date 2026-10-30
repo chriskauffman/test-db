@@ -7,7 +7,7 @@ from sqlobject.dberrors import DuplicateEntryError
 import test_db
 
 from ._typer_options import _TyperOptions
-from ._validate import validate_person
+from ._validate import validate_key_value, validate_person
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def person_secure_key_value_add(person_gid: str, key: str, value: str):
 @person_secure_key_value_app.command("delete")
 def person_secure_key_value_delete(person_gid: str, key: str):
     person = validate_person(person_gid)
-    key_value = person.getSecureKeyValueByKey(key)
+    key_value = validate_key_value(person.secureKeyValuesSelect, key)
     if key_value:
         key_value.destroySelf()
 
@@ -50,7 +50,6 @@ def person_secure_key_value_list(person_gid: str):
 @person_secure_key_value_app.command("view")
 def person_secure_key_value_view(person_gid: str, key: str):
     person = validate_person(person_gid)
-    # ToDo: Needs fix: key will always exist
-    key_value = person.getSecureKeyValueByKey(key)
+    key_value = validate_key_value(person.secureKeyValuesSelect, key)
     if key_value:
         test_db.KeyValueView(key_value).viewDetails()
