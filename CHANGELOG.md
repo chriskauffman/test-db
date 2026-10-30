@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.8.2](https://github.com/chriskauffman/test-db/compare/v0.8.1...v0.8.2) (2026-10-30)
+
+
+### Bug Fixes
+
+* accept valid string global IDs ([6f96f54](https://github.com/chriskauffman/test-db/commit/6f96f54a10c7d1914d33e5a3fd87c17010f26de8))
+* accept valid string global IDs ([4c2ac24](https://github.com/chriskauffman/test-db/commit/4c2ac244e5892cdba64bc717e278e6c5f7ed2b3c)), closes [#105](https://github.com/chriskauffman/test-db/issues/105)
+* enforce SQLite foreign keys on all connections ([8f9b451](https://github.com/chriskauffman/test-db/commit/8f9b4511dfe40bbf048809b9a4da914ed9e0ea9f))
+* enforce SQLite foreign keys on all connections ([22cc950](https://github.com/chriskauffman/test-db/commit/22cc950d12a2277a8bc03726d4b70251e345b868)), closes [#104](https://github.com/chriskauffman/test-db/issues/104)
+* generate missing names for person creation ([2b9b787](https://github.com/chriskauffman/test-db/commit/2b9b7879a87f988606749e4d47176d20fccf0bae))
+* generate missing names for person creation ([3276dd4](https://github.com/chriskauffman/test-db/commit/3276dd4314ae1e27d6201299bcc3f88be3549b98)), closes [#106](https://github.com/chriskauffman/test-db/issues/106)
+* handle InvalidToken when reading encrypted key values ([9a5e6d7](https://github.com/chriskauffman/test-db/commit/9a5e6d7b8873acbce1b01498092b901e659279f5))
+* handle InvalidToken when reading encrypted key values ([fbcdb9d](https://github.com/chriskauffman/test-db/commit/fbcdb9d81f18eaba3bb8c2faff8ee7c2b6f8ad85)), closes [#109](https://github.com/chriskauffman/test-db/issues/109)
+* keep key view and delete operations lookup-only ([75eb526](https://github.com/chriskauffman/test-db/commit/75eb52692e074574071c6e1815dac1ffd9181a84))
+* keep key view and delete operations lookup-only ([842a95e](https://github.com/chriskauffman/test-db/commit/842a95e33160b636feaf0e9df7c88244bf28faa5)), closes [#107](https://github.com/chriskauffman/test-db/issues/107)
+* reject duplicate keys when adding key values ([a9948e2](https://github.com/chriskauffman/test-db/commit/a9948e20901df81800edcbe068bbe75707c97698))
+* reject duplicate keys when adding key values ([e7fe68f](https://github.com/chriskauffman/test-db/commit/e7fe68ff3c3a8582f3d3ef99d7e927a13b0e0863)), closes [#108](https://github.com/chriskauffman/test-db/issues/108)
+
 ## [0.8.1](https://github.com/chriskauffman/test-db/compare/v0.8.0...v0.8.1) (2026-10-29)
 
 
