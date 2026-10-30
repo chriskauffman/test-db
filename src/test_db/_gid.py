@@ -29,7 +29,7 @@ def validGID(gID: str | TypeID, gIDPrefix: str | None = None) -> bool:
             return False
         except SuffixValidationException:
             return False
-    if isinstance(gID, TypeID):
+    elif isinstance(gID, TypeID):
         globalTypeID = gID
     else:
         return False
