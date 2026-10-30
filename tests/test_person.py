@@ -1,4 +1,5 @@
 import faker
+from typeid import TypeID
 
 import test_db
 from test_db._person import Person
@@ -15,6 +16,17 @@ def test_init(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
     assert test_person
+
+
+def test_string_gID(temporary_db):
+    gID = TypeID("p")
+    test_person = Person(gID=str(gID), connection=temporary_db.connection)
+    assert test_person.gID == gID
+
+    new_gID = TypeID("p")
+    test_person.gID = str(new_gID)
+    test_person.sync()
+    assert test_person.gID == new_gID
 
 
 def test__set_email(temporary_db):
