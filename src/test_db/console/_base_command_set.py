@@ -1,6 +1,7 @@
 import logging
 
 from cmd2 import CommandSet
+from cryptography.fernet import InvalidToken
 from formencode.validators import Invalid
 from sqlobject import SQLObjectNotFound
 
@@ -17,6 +18,8 @@ class BaseCommandSet(CommandSet):
             return key_values.filter(key_values.sourceClass.q.key == key).getOne()
         except SQLObjectNotFound:
             self._cmd.perror(f"error: key {key!r} does not exist")
+        except InvalidToken:
+            self._cmd.perror("error: Unable to decrypt - check database encryption key")
 
     def validate_job(self, gid: str):
         try:

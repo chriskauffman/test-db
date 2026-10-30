@@ -67,7 +67,7 @@ class PersonSecureKeyValueCommandSet(BaseCommandSet):
     @cmd2.with_argparser(tdb_person_secure_key_value_list_parser)
     def do_tdb_person_secure_key_value_list(self, args):
         person = self.validate_person(args.person_gid)
-        test_db.KeyValueView.list(person.secureKeyValues)
+        test_db.KeyValueView.list(person.secureKeyValuesSelect)
 
     tdb_person_secure_key_value_view_parser = cmd2.Cmd2ArgumentParser()
     tdb_person_secure_key_value_view_parser.add_argument(

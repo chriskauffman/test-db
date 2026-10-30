@@ -1,5 +1,6 @@
 import logging
 
+from cryptography.fernet import InvalidToken
 from sqlobject.dberrors import DuplicateEntryError
 from sqlobject.sresults import SelectResults
 
@@ -107,5 +108,5 @@ class PersonView(BaseView):
         print("\nPersonal Secure Key Values:")
         try:
             KeyValueView.list(self._person.secureKeyValues)
-        except ValueError:
+        except (ValueError, InvalidToken):
             print("Unable to decrypt - check database encryption key")
