@@ -1,6 +1,7 @@
 import base64
 import logging
 import secrets
+import sqlite3
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
@@ -53,6 +54,14 @@ CURRENT_APPLICATION_SCHEMA_VERSION = 1
 logger = logging.getLogger(__name__)
 
 
+class _SQLiteConnection(sqlite3.Connection):
+    """Enable foreign-key enforcement on each physical SQLite connection."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.execute("PRAGMA foreign_keys = ON").close()
+
+
 class DatabaseController:
     """DatabaseController
 
@@ -91,6 +100,10 @@ class DatabaseController:
             self.connectionURI.get_secret_value()
         )
         self.connection.tdbGlobalDatabaseOptions = _GlobalDatabaseOptions()
+        if self.connection.dbName == "sqlite":
+            # URI arguments cannot carry a callable factory; keep the cached adapter.
+            self.connection._connOptions["factory"] = _SQLiteConnection
+            self.connection.query("PRAGMA foreign_keys = ON")
 
         self._raw = self.connection.getConnection()
         self._rawCursor = self._raw.cursor()
@@ -112,10 +125,6 @@ class DatabaseController:
                 self._new()
             else:
                 raise ValueError("not a test_db file")
-
-        # Database specific configuration
-        if "sqlite" in self.connectionURI.get_secret_value():
-            self._rawCursor.execute("PRAGMA foreign_keys = ON")
 
         databaseEncryptionKey = (
             databaseEncryptionKey
