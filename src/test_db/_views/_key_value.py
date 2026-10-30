@@ -1,5 +1,6 @@
 import logging
 
+from cryptography.fernet import InvalidToken
 from sqlobject.sresults import SelectResults
 
 from test_db import (
@@ -36,7 +37,7 @@ class KeyValueView(BaseView):
         try:
             for key_value in key_values:
                 KeyValueView(key_value).view()
-        except ValueError:
+        except (ValueError, InvalidToken):
             print("Unable to decrypt - check database encryption key")
 
     def __init__(
@@ -59,14 +60,14 @@ class KeyValueView(BaseView):
                 )
             else:
                 raise NotImplementedError("Only string values are currently supported")
-        except ValueError:
+        except (ValueError, InvalidToken):
             print("Unable to decrypt - check database encryption key")
 
     def view(self):
         """Display brief details of the key value"""
         try:
             print(self._key_value.visualID, str(self._key_value.value)[:20])
-        except ValueError:
+        except (ValueError, InvalidToken):
             print("Unable to decrypt - check database encryption key")
 
     def viewDetails(self):
@@ -75,5 +76,5 @@ class KeyValueView(BaseView):
         try:
             print(f"Key: {self._key_value.key}")
             print(f"Value: {self._key_value.value}")
-        except ValueError:
+        except (ValueError, InvalidToken):
             print("Unable to decrypt - check database encryption key")

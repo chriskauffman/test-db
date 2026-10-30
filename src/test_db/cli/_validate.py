@@ -1,6 +1,7 @@
 import logging
 import sys
 
+from cryptography.fernet import InvalidToken
 from formencode.validators import Invalid
 from sqlobject import SQLObjectNotFound
 
@@ -14,6 +15,9 @@ def validate_key_value(key_values, key: str):
         return key_values.filter(key_values.sourceClass.q.key == key).getOne()
     except SQLObjectNotFound:
         sys.stderr.write(f"error: key {key!r} does not exist\n")
+        sys.exit(1)
+    except InvalidToken:
+        sys.stderr.write("error: Unable to decrypt - check database encryption key\n")
         sys.exit(1)
 
 

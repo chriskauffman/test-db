@@ -37,14 +37,14 @@ def person_secure_key_value_delete(person_gid: str, key: str):
 @person_secure_key_value_app.command("edit")
 def key_value_edit(person_gid: str, key: str):
     person = validate_person(person_gid)
-    key_value = person.getSecureKeyValueByKey(key)
+    key_value = validate_key_value(person.secureKeyValuesSelect, key)
     test_db.KeyValueView(key_value).edit()
 
 
 @person_secure_key_value_app.command("list")
 def person_secure_key_value_list(person_gid: str):
     person = validate_person(person_gid)
-    test_db.KeyValueView.list(person.secureKeyValues)
+    test_db.KeyValueView.list(person.secureKeyValuesSelect)
 
 
 @person_secure_key_value_app.command("view")
