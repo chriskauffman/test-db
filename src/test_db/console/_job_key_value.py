@@ -52,7 +52,7 @@ class JobKeyValueCommandSet(BaseCommandSet):
     @cmd2.with_argparser(tdb_job_key_value_delete_parser)
     def do_tdb_job_key_value_delete(self, args):
         job = self.validate_job(args.job_gid)
-        key_value = job.getKeyValueByKey(args.key)
+        key_value = self.validate_key_value(job.keyValuesSelect, args.key)
         if key_value:
             key_value.destroySelf()
 
@@ -80,6 +80,6 @@ class JobKeyValueCommandSet(BaseCommandSet):
     @cmd2.with_argparser(tdb_job_key_value_view_parser)
     def do_tdb_job_key_value_view(self, args):
         job = self.validate_job(args.job_gid)
-        key_value = job.getKeyValueByKey(args.key)
+        key_value = self.validate_key_value(job.keyValuesSelect, args.key)
         if key_value:
             test_db.KeyValueView(key_value).viewDetails()

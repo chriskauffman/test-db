@@ -12,6 +12,12 @@ logger = logging.getLogger(__name__)
 class BaseCommandSet(CommandSet):
     DEFAULT_CATEGORY = "Database"
 
+    def validate_key_value(self, key_values, key: str):
+        try:
+            return key_values.filter(key_values.sourceClass.q.key == key).getOne()
+        except SQLObjectNotFound:
+            self._cmd.perror(f"error: key {key!r} does not exist")
+
     def validate_job(self, gid: str):
         try:
             return test_db.Job.byGID(gid)

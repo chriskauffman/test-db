@@ -7,7 +7,7 @@ from sqlobject.dberrors import DuplicateEntryError
 import test_db
 
 from ._typer_options import _TyperOptions
-from ._validate import validate_organization
+from ._validate import validate_key_value, validate_organization
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def organization_key_value_add(organization_gid: str, key: str, value: str):
 @organization_key_value_app.command("delete")
 def organization_key_value_delete(organization_gid: str, key: str):
     organization = validate_organization(organization_gid)
-    key_value = organization.getKeyValueByKey(key)
+    key_value = validate_key_value(organization.keyValuesSelect, key)
     if key_value:
         key_value.destroySelf()
 
@@ -50,7 +50,6 @@ def organization_key_value_list(organization_gid: str):
 @organization_key_value_app.command("view")
 def organization_key_value_view(organization_gid: str, key: str):
     organization = validate_organization(organization_gid)
-    # ToDo: Needs fix: key will always exist
-    key_value = organization.getKeyValueByKey(key)
+    key_value = validate_key_value(organization.keyValuesSelect, key)
     if key_value:
         test_db.KeyValueView(key_value).viewDetails()
