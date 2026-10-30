@@ -18,7 +18,9 @@ organization_key_value_app = typer.Typer()
 def organization_key_value_add(organization_gid: str, key: str, value: str):
     organization = validate_organization(organization_gid)
     try:
-        key_value = organization.getKeyValueByKey(key, value=value)
+        key_value = test_db.OrganizationKeyValue(
+            organization=organization, key=key, value=value
+        )
         if _TyperOptions().interactive:
             test_db.KeyValueView(key_value).edit()
     except DuplicateEntryError as exc:
