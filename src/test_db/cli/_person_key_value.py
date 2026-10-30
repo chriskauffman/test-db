@@ -18,7 +18,7 @@ person_key_value_app = typer.Typer()
 def person_key_value_add(person_gid: str, key: str, value: str):
     person = validate_person(person_gid)
     try:
-        key_value = person.getKeyValueByKey(key, value=value)
+        key_value = test_db.PersonKeyValue(person=person, key=key, value=value)
         if _TyperOptions().interactive:
             test_db.KeyValueView(key_value).edit()
     except DuplicateEntryError as exc:
