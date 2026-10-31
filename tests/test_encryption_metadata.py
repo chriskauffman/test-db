@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 import sqlobject
-from cryptography.fernet import Fernet, InvalidToken
+from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
@@ -13,6 +13,7 @@ from test_db import DatabaseController, KeyValue, Person, PersonSecureKeyValue
 
 SALT_KEY = "TestDB_EncryptedPickleColSalt"
 ITERATIONS_KEY = "TestDB_EncryptedPickleColIterations"
+CHECK_KEY = "TestDB_EncryptedPickleColCheck"
 PASSWORD = "regression-test-password"
 ITERATIONS = 1_000
 LEGACY_SALT = "0123456789abcdef0123456789abcdef"
@@ -241,7 +242,14 @@ def test_no_password_leaves_encryption_metadata_unchanged(
     db.close()
 
 
-def test_wrong_password_cannot_read_persisted_ciphertext(encryption_uri):
+def _check_values(uri):
+    with sqlite3.connect(uri.removeprefix("sqlite:")) as connection:
+        return connection.execute(
+            "SELECT value FROM key_value WHERE key_name = ?", (CHECK_KEY,)
+        ).fetchall()
+
+
+def test_wrong_password_is_refused(encryption_uri):
     db = _open(encryption_uri)
     record_id = PersonSecureKeyValue(
         person=Person(connection=db.connection),
@@ -251,14 +259,36 @@ def test_wrong_password_cannot_read_persisted_ciphertext(encryption_uri):
     ).id
     before = _metadata(encryption_uri)
     db.close()
-    db = _open(encryption_uri, password="wrong-password")
-    with pytest.raises(InvalidToken):
-        _ = PersonSecureKeyValue.get(record_id, connection=db.connection).value
+    with pytest.raises(ValueError, match="wrong database encryption key"):
+        _open(encryption_uri, password="wrong-password")
     assert _metadata(encryption_uri) == before
-    db.close()
     db = _open(encryption_uri)
     assert (
         PersonSecureKeyValue.get(record_id, connection=db.connection).value
         == "original value"
     )
     db.close()
+
+
+def test_check_value_created_once(encryption_uri):
+    _open(encryption_uri).close()
+    first = _check_values(encryption_uri)
+    assert len(first) == 1
+    _open(encryption_uri).close()
+    assert _check_values(encryption_uri) == first
+
+
+def test_legacy_open_backfills_check_value(legacy_database):
+    uri, _ = legacy_database
+    assert _check_values(uri) == []
+    _open(uri).close()
+    assert len(_check_values(uri)) == 1
+    with pytest.raises(ValueError, match="wrong database encryption key"):
+        _open(uri, password="wrong-password")
+
+
+def test_legacy_wrong_password_does_not_pin_check_value(legacy_database):
+    uri, _ = legacy_database
+    with pytest.raises(ValueError, match="legacy encrypted data"):
+        _open(uri, password="wrong-password")
+    assert _check_values(uri) == []

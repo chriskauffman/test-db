@@ -59,6 +59,7 @@ RESTRICTED_KEYS = (
     "TestDB_ApplicationSchemaVersion",
     "TestDB_EncryptedPickleColSalt",
     "TestDB_EncryptedPickleColIterations",
+    "TestDB_EncryptedPickleColCheck",
 )
 
 logger = logging.getLogger(__name__)

@@ -1,6 +1,9 @@
+import pickle
+import sqlite3
+
 import pytest
 import sqlobject
-from cryptography.fernet import InvalidToken
+from cryptography.fernet import Fernet, InvalidToken
 
 import test_db
 from test_db._views._key_value import KeyValueView
@@ -8,7 +11,6 @@ from test_db.tdb import app as cli
 from test_db.tdb_console import main as console
 
 PASSWORD = "regression-test-password"
-WRONG_PASSWORD = "wrong-password"
 ITERATIONS = 1_000
 KEY = "secret"
 DECRYPTION_ERROR = "Unable to decrypt"
@@ -16,7 +18,11 @@ DECRYPTION_ERROR = "Unable to decrypt"
 
 @pytest.fixture
 def wrong_key_database(tmp_path, monkeypatch):
-    """Persist encrypted data with one key, then reopen it with another"""
+    """Persist a secure value whose ciphertext was written under a different key
+
+    Opening a database with the wrong password is refused, so the only way to
+    meet an undecryptable value is a row written under another key.
+    """
     monkeypatch.setattr(test_db, "fernetIterations", ITERATIONS)
     uri = f"sqlite:{tmp_path / 'wrong-key.sqlite'}"
     db = test_db.DatabaseController(uri, databaseEncryptionKey=PASSWORD)
@@ -30,9 +36,13 @@ def wrong_key_database(tmp_path, monkeypatch):
     person_gid = str(person.gID)
     db.close()
 
+    foreign_token = Fernet(Fernet.generate_key()).encrypt(pickle.dumps("foreign"))
+    with sqlite3.connect(uri.removeprefix("sqlite:")) as raw:
+        raw.execute("UPDATE person_secure_key_value SET value = ?", (foreign_token,))
+
     # SQLObject caches connections and rows; force reads from persisted data.
     sqlobject.connectionForURI(uri).cache.clear()
-    db = test_db.DatabaseController(uri, databaseEncryptionKey=WRONG_PASSWORD)
+    db = test_db.DatabaseController(uri, databaseEncryptionKey=PASSWORD)
     yield db, uri, person_gid
     db.close()
 
@@ -57,7 +67,7 @@ def test_list_reports_decryption_error(capsys, wrong_key_database):
 @pytest.mark.parametrize("command", ["list", "view", "edit"])
 def test_cli_reports_decryption_error(capsys, monkeypatch, wrong_key_database, command):
     _, uri, person_gid = wrong_key_database
-    monkeypatch.setenv("DATABASE_ENCRYPTION_KEY", WRONG_PASSWORD)
+    monkeypatch.setenv("DATABASE_ENCRYPTION_KEY", PASSWORD)
     arguments = [person_gid] if command == "list" else [person_gid, KEY]
     monkeypatch.setattr(
         "sys.argv",
@@ -78,7 +88,7 @@ def test_console_reports_decryption_error(
 ):
     _, uri, person_gid = wrong_key_database
     monkeypatch.setenv("DB_CONNECTION_URI", uri)
-    monkeypatch.setenv("DATABASE_ENCRYPTION_KEY", WRONG_PASSWORD)
+    monkeypatch.setenv("DATABASE_ENCRYPTION_KEY", PASSWORD)
     arguments = f"{person_gid}" if command == "list" else f"{person_gid} {KEY}"
     monkeypatch.setattr(
         "sys.argv",

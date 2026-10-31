@@ -29,6 +29,8 @@ from test_db._person_key_value import PersonKeyValue
 from test_db._person_secure_key_value import PersonSecureKeyValue
 
 ENCODING = "utf-8"
+ENCRYPTION_CHECK_KEY = "TestDB_EncryptedPickleColCheck"
+ENCRYPTION_CHECK_VALUE = b"test_db"
 IN_MEMORY_DB_FILE = "sqlite:/:memory:"
 
 # Note: order of TABLES matters for creation due to foreign key dependencies
@@ -156,6 +158,12 @@ class DatabaseController:
                     raise ValueError(
                         "Encryption iterations must be a positive integer"
                     ) from exc
+            try:
+                check_record = KeyValue.byKey(
+                    ENCRYPTION_CHECK_KEY, connection=self.connection
+                )
+            except sqlobject.SQLObjectNotFound:
+                check_record = None
             if type(fernet_iterations) is not int or fernet_iterations <= 0:
                 raise ValueError("Encryption iterations must be a positive integer")
             new_salt = fernet_salt is None
@@ -170,35 +178,51 @@ class DatabaseController:
             fernet_key_material = databaseEncryptionKey.encode(ENCODING)
             key = base64.urlsafe_b64encode(fernet_kdf.derive(fernet_key_material))
             fernet = Fernet(key)
+            if check_record is not None:
+                try:
+                    verified = (
+                        fernet.decrypt(check_record.value.encode(ENCODING))
+                        == ENCRYPTION_CHECK_VALUE
+                    )
+                except InvalidToken:
+                    verified = False
+                if not verified:
+                    raise ValueError("wrong database encryption key")
+            elif not new_salt:
+                # Authenticate legacy ciphertext before pinning an unverified key.
+                query = sqlbuilder.Select(
+                    PersonSecureKeyValue.q.value,
+                    where=sqlbuilder.ISNOTNULL(PersonSecureKeyValue.q.value),
+                    limit=1,
+                )
+                row = self.connection.queryOne(self.connection.sqlrepr(query))
+                if row is not None:
+                    token = BinaryValidator(name="value").to_python(
+                        row[0], SimpleNamespace(connection=self.connection)
+                    )
+                    try:
+                        fernet.decrypt(token)
+                    except InvalidToken as exc:
+                        raise ValueError(
+                            "Unable to authenticate legacy encrypted data; "
+                            "check the original password and iteration count"
+                        ) from exc
+            if new_salt:
+                KeyValue(
+                    key="TestDB_EncryptedPickleColSalt",
+                    value=fernet_salt,
+                    connection=self.connection,
+                )
             if iterations_record is None:
-                if not new_salt:
-                    # Authenticate legacy ciphertext before pinning an unverified count.
-                    query = sqlbuilder.Select(
-                        PersonSecureKeyValue.q.value,
-                        where=sqlbuilder.ISNOTNULL(PersonSecureKeyValue.q.value),
-                        limit=1,
-                    )
-                    row = self.connection.queryOne(self.connection.sqlrepr(query))
-                    if row is not None:
-                        token = BinaryValidator(name="value").to_python(
-                            row[0], SimpleNamespace(connection=self.connection)
-                        )
-                        try:
-                            fernet.decrypt(token)
-                        except InvalidToken as exc:
-                            raise ValueError(
-                                "Unable to authenticate legacy encrypted data; "
-                                "check the original password and iteration count"
-                            ) from exc
-                if new_salt:
-                    KeyValue(
-                        key="TestDB_EncryptedPickleColSalt",
-                        value=fernet_salt,
-                        connection=self.connection,
-                    )
                 KeyValue(
                     key="TestDB_EncryptedPickleColIterations",
                     value=str(fernet_iterations),
+                    connection=self.connection,
+                )
+            if check_record is None:
+                KeyValue(
+                    key=ENCRYPTION_CHECK_KEY,
+                    value=fernet.encrypt(ENCRYPTION_CHECK_VALUE).decode(ENCODING),
                     connection=self.connection,
                 )
             self.connection.dbFernet = fernet
