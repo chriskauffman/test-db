@@ -74,7 +74,7 @@ class DatabaseController:
         databaseEncryptionKey (str | None):
 
     Raises:
-        ValueError: invalid database
+        ValueError: database is not a test_db, or needs an upgrade
 
     Instance Attributes:
         applicationID (int): database application ID unique to test_db
@@ -273,7 +273,9 @@ class DatabaseController:
 
     @property
     def _isEmptyDB(self) -> bool:
-        return self.applicationID == 0 and self.applicationSchemaVersion == 0
+        # Only a database with no tables at all is safe to initialise; anything
+        # else that isn't a test_db belongs to someone else.
+        return not self.connection.listTables()
 
     @property
     def _isTestDB(self) -> bool:
