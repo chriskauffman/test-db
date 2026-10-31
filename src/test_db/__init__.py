@@ -6,7 +6,7 @@ views to assist applications and utilities in managing test data.
 Example:
     import test_db
 
-    db = test_db.DatabaseController("sqlite:test_db.sqlite", autoCreate=True)
+    db = test_db.DatabaseController("sqlite:test_db.sqlite")
     new_person = test_db.Person()
 """
 

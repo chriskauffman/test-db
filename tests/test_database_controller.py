@@ -1,5 +1,6 @@
 import os
 import shutil
+import sqlite3
 
 import pytest
 import sqlobject
@@ -231,3 +232,19 @@ def test_open_empty_existing_file(tmp_path_factory):
     test_users = Person.select(connection=test_db.connection)
 
     assert not test_users.count()
+
+
+def test_open_foreign_database_refused(tmp_path):
+    db_file = tmp_path / "foreign.sqlite"
+    raw = sqlite3.connect(db_file)
+    raw.execute("CREATE TABLE t (x)")
+    raw.commit()
+    raw.close()
+
+    with pytest.raises(ValueError, match="not a test_db file"):
+        DatabaseController(f"sqlite:{db_file}")
+
+    raw = sqlite3.connect(db_file)
+    tables = [r[0] for r in raw.execute("SELECT name FROM sqlite_master")]
+    raw.close()
+    assert tables == ["t"]
