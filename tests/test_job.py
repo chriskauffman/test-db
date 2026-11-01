@@ -112,3 +112,83 @@ def test_cascade_delete(temporary_db):
         ).count()
         == 0
     )
+
+
+def _count(cls, connection):
+    return cls.select(connection=connection).count()
+
+
+def test_person_delete_cascades_to_jobs_and_dependents(temporary_db, monkeypatch):
+    monkeypatch.setattr(test_db, "autoCreateDependents", False)
+    conn = temporary_db.connection
+    classes = (
+        test_db.Job,
+        test_db.JobKeyValue,
+        test_db.PersonAddress,
+        test_db.PersonBankAccount,
+        test_db.PersonDebitCard,
+        test_db.PersonKeyValue,
+        test_db.PersonSecureKeyValue,
+    )
+    before = {cls: _count(cls, conn) for cls in classes}
+
+    person = test_db.Person(connection=conn)
+    other_person = test_db.Person(connection=conn)
+    organization = test_db.Organization(connection=conn)
+    job = test_db.Job(person=person, organization=organization, connection=conn)
+    test_db.JobKeyValue(job=job, key="k", value="v", connection=conn)
+    test_db.PersonAddress(person=person, connection=conn)
+    test_db.PersonBankAccount(person=person, connection=conn)
+    test_db.PersonDebitCard(person=person, connection=conn)
+    test_db.PersonKeyValue(person=person, key="k", value="v", connection=conn)
+    test_db.PersonSecureKeyValue(person=person, key="k", value="v", connection=conn)
+    other_job = test_db.Job(
+        person=other_person, organization=organization, connection=conn
+    )
+
+    person.destroySelf()
+
+    for cls in classes:
+        expected = before[cls] + (1 if cls is test_db.Job else 0)
+        assert _count(cls, conn) == expected, cls.__name__
+    assert test_db.Job.get(other_job.id, connection=conn).person == other_person
+    assert test_db.Organization.get(organization.id, connection=conn)
+
+
+def test_organization_delete_cascades_to_jobs(temporary_db, monkeypatch):
+    monkeypatch.setattr(test_db, "autoCreateDependents", False)
+    conn = temporary_db.connection
+    jobs_before = _count(test_db.Job, conn)
+    job_key_values_before = _count(test_db.JobKeyValue, conn)
+
+    person = test_db.Person(connection=conn)
+    organization = test_db.Organization(connection=conn)
+    other_organization = test_db.Organization(connection=conn)
+    job = test_db.Job(person=person, organization=organization, connection=conn)
+    test_db.JobKeyValue(job=job, key="k", value="v", connection=conn)
+    other_job = test_db.Job(
+        person=person, organization=other_organization, connection=conn
+    )
+
+    organization.destroySelf()
+
+    assert _count(test_db.Job, conn) == jobs_before + 1
+    assert _count(test_db.JobKeyValue, conn) == job_key_values_before
+    assert (
+        test_db.Job.get(other_job.id, connection=conn).organization
+        == other_organization
+    )
+    assert test_db.Person.get(person.id, connection=conn)
+
+
+def test_job_delete_keeps_person_and_organization(temporary_db, monkeypatch):
+    monkeypatch.setattr(test_db, "autoCreateDependents", False)
+    conn = temporary_db.connection
+    person = test_db.Person(connection=conn)
+    organization = test_db.Organization(connection=conn)
+    job = test_db.Job(person=person, organization=organization, connection=conn)
+
+    job.destroySelf()
+
+    assert test_db.Person.get(person.id, connection=conn)
+    assert test_db.Organization.get(organization.id, connection=conn)

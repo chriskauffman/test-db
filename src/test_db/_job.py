@@ -69,8 +69,8 @@ class Job(SQLObject):
     payGroup: StringCol = StringCol(default=None)
     position: StringCol = StringCol(default=fake.job)
 
-    organization: ForeignKey = ForeignKey("Organization", default=None)
-    person: ForeignKey = ForeignKey("Person", default=None)
+    organization: ForeignKey = ForeignKey("Organization", cascade=True, default=None)
+    person: ForeignKey = ForeignKey("Person", cascade=True, default=None)
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
