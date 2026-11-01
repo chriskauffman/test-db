@@ -108,8 +108,7 @@ def tdb_app_callback(
     test_db.fernetIterations = settings.database_fernet_iterations
 
     test_db.DatabaseController(
-        selected_db_connection_uri,
-        defaultConnection=True,
+        selected_db_connection_uri, defaultConnection=True, upgrade=upgrade
     )
 
 
