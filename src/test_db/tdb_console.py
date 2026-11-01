@@ -72,8 +72,9 @@ class Console(cmd2.Cmd):
             self._db = test_db.DatabaseController(
                 self.db_connection_uri, defaultConnection=True
             )
-        except ValueError:
+        except ValueError as exc:
             self._db = None
+            self.perror(f"error: {exc}")
 
     def _set_prompt(self):
         """Set Prompt"""
