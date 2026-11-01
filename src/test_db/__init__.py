@@ -12,7 +12,6 @@ Example:
 
 import logging
 
-import sqlobject
 from sqlobject import SQLObjectNotFound as SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError as DuplicateEntryError
 
@@ -63,26 +62,3 @@ RESTRICTED_KEYS = (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def validConnection(connection: sqlobject.connectionForURI = None) -> bool:
-    """Checks for valid caonnection to DatabaseController, if connection not supplied checks
-    default connection
-
-    Args:
-        connection (sqlobject.connectionForURI, optional):
-
-    Returns:
-        bool: True if connection is valid
-    """
-    if connection:
-        return isinstance(
-            connection, sqlobject.sqlite.sqliteconnection.SQLiteConnection
-        )
-    try:
-        return isinstance(
-            sqlobject.sqlhub.processConnection,
-            sqlobject.sqlite.sqliteconnection.SQLiteConnection,
-        )
-    except AttributeError:
-        return False
