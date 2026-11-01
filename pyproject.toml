@@ -17,7 +17,6 @@ dependencies = [
     "sqlobject>=3.13.0",
     "typeid-python>=0.3.2",
     "typer>=0.19.2",
-    "typing-extensions>=4.15.0",
 ]
 
 [build-system]
