@@ -124,8 +124,8 @@ CREATE TABLE job (
     location TEXT,
     pay_group TEXT,
     position TEXT,
-    organization_id INT CONSTRAINT organization_id_exists REFERENCES organization(id) ,
-    person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ,
+    organization_id INT CONSTRAINT organization_id_exists REFERENCES organization(id) ON DELETE CASCADE,
+    person_id INT CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
