@@ -1,16 +1,13 @@
 import logging
-import sys
 
 import sqlobject
 import typer
-from formencode.validators import Invalid
 from rich.progress import track
-from sqlobject import SQLObjectNotFound
 
 import test_db
 
 from ._typer_options import _TyperOptions
-from ._validate import validate_person
+from ._validate import validate, validate_person
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +15,7 @@ person_bank_account_app = typer.Typer()
 
 
 def validate_bank_account(gid: str):
-    try:
-        return test_db.PersonBankAccount.byGID(gid)
-    except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {exc!s}")
-        sys.exit(1)
+    return validate(test_db.PersonBankAccount.byGID, gid)
 
 
 @person_bank_account_app.command("add")
