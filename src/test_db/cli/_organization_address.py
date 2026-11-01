@@ -1,16 +1,13 @@
 import logging
-import sys
 
 import sqlobject
 import typer
-from formencode.validators import Invalid
 from rich.progress import track
-from sqlobject import SQLObjectNotFound
 
 import test_db
 
 from ._typer_options import _TyperOptions
-from ._validate import validate_organization
+from ._validate import validate, validate_organization
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +15,7 @@ organization_address_app = typer.Typer()
 
 
 def validate_address(gid: str):
-    try:
-        return test_db.OrganizationAddress.byGID(gid)
-    except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {exc!s}")
-        sys.exit(1)
+    return validate(test_db.OrganizationAddress.byGID, gid)
 
 
 @organization_address_app.command("add")

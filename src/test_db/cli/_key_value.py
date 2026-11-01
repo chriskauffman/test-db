@@ -2,13 +2,12 @@ import logging
 import sys
 
 import typer
-from formencode.validators import Invalid
-from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
 import test_db
 
 from ._typer_options import _TyperOptions
+from ._validate import validate
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +15,7 @@ key_value_app = typer.Typer()
 
 
 def validate_key(key: str):
-    try:
-        return test_db.KeyValue.byKey(key)
-    except (Invalid, SQLObjectNotFound) as exc:
-        sys.stderr.write(f"error: {exc!s}")
-        sys.exit(1)
+    return validate(test_db.KeyValue.byKey, key)
 
 
 @key_value_app.command("add")

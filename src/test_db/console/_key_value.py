@@ -1,8 +1,6 @@
 import logging
 
 import cmd2
-from formencode.validators import Invalid
-from sqlobject import SQLObjectNotFound
 from sqlobject.dberrors import DuplicateEntryError
 
 import test_db
@@ -16,10 +14,7 @@ class KeyValueCommandSet(BaseCommandSet):
     DEFAULT_CATEGORY = "Database"
 
     def validate_key(self, key: str):
-        try:
-            return test_db.KeyValue.byKey(key)
-        except (Invalid, SQLObjectNotFound) as exc:
-            self._cmd.perror(f"error: {exc!s}")
+        return self.validate(test_db.KeyValue.byKey, key)
 
     tdb_add_key_value_parser = cmd2.Cmd2ArgumentParser()
     tdb_add_key_value_parser.add_argument(
