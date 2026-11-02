@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.8.3](https://github.com/chriskauffman/test-db/compare/v0.8.2...v0.8.3) (2026-11-02)
+
+
+### Bug Fixes
+
+* cascade job deletes from person and organization ([6fae405](https://github.com/chriskauffman/test-db/commit/6fae405848fcb0effc94c396ae151181021179a7))
+* cascade job deletes from person and organization ([bcb9dad](https://github.com/chriskauffman/test-db/commit/bcb9dadf63c4ed6e9039e1f7aa15690d46709f37)), closes [#119](https://github.com/chriskauffman/test-db/issues/119)
+* console hides why the database would not open ([e7a99cf](https://github.com/chriskauffman/test-db/commit/e7a99cf6a0d29307954923636cab46b29176c243))
+* console hides why the database would not open ([d5ffaa1](https://github.com/chriskauffman/test-db/commit/d5ffaa1e936e0dc9b5bc300245284a239bf273b2)), closes [#122](https://github.com/chriskauffman/test-db/issues/122)
+* **console:** stop after invalid gID ([4e7881a](https://github.com/chriskauffman/test-db/commit/4e7881a801dc12d04e3d004cc5f36b84d03ab2fb))
+* **console:** stop after invalid gID ([e5ab5d2](https://github.com/chriskauffman/test-db/commit/e5ab5d2a1f0d92b32d1532a3b8feac2c78c2bc31))
+* refuse to initialise a database that is not empty ([d0fcdd6](https://github.com/chriskauffman/test-db/commit/d0fcdd63f81002a7b05ebdc8e272e49f5096feb4))
+* refuse to initialise a database that is not empty ([c06e4fc](https://github.com/chriskauffman/test-db/commit/c06e4fc8c0af7d8eda4f7f3ed1c5f0c53b5a2dc7)), closes [#117](https://github.com/chriskauffman/test-db/issues/117)
+* remove unused validConnection helper ([310661b](https://github.com/chriskauffman/test-db/commit/310661ba068a9135c5d4d8750a1270584c64530e))
+* remove unused validConnection helper ([63bfb93](https://github.com/chriskauffman/test-db/commit/63bfb93c97d1abdae3087eab02cde7162e2b17e7)), closes [#125](https://github.com/chriskauffman/test-db/issues/125)
+* tdb --upgrade flag is never passed to DatabaseController ([c5fdb3b](https://github.com/chriskauffman/test-db/commit/c5fdb3b789866e4eb96383924a96085f43f588d7))
+* tdb --upgrade flag is never passed to DatabaseController ([d7b9172](https://github.com/chriskauffman/test-db/commit/d7b91728f85445ae64f1737f8c2c44a1fd41b558)), closes [#120](https://github.com/chriskauffman/test-db/issues/120)
+* typing-extensions no longer needed ([3b3f21b](https://github.com/chriskauffman/test-db/commit/3b3f21b284fa764b23c6b9a922c22e57fc051590))
+* typing-extensions no longer needed ([e8e9aa1](https://github.com/chriskauffman/test-db/commit/e8e9aa17dd596152d3764f4aa4106981f380ac7f)), closes [#126](https://github.com/chriskauffman/test-db/issues/126)
+* verify the database encryption key on open ([45d372f](https://github.com/chriskauffman/test-db/commit/45d372f0ae8a6a5d38a0fc4996e9621e5182ef05))
+* verify the database encryption key on open ([795749e](https://github.com/chriskauffman/test-db/commit/795749e5e321a30ec7e6ae0f6b9423e0ec1d91cc)), closes [#118](https://github.com/chriskauffman/test-db/issues/118)
+
+
+### Documentation
+
+* add issue 121 planning notes ([9fc3095](https://github.com/chriskauffman/test-db/commit/9fc309515247c0aed7bbd883bdf2fbef0978677f))
+
 ## [0.8.2](https://github.com/chriskauffman/test-db/compare/v0.8.1...v0.8.2) (2026-10-30)
 
 
