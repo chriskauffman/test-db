@@ -218,3 +218,14 @@ def test_cascade_delete(temporary_db):
         == 0
     )
     test_db.autoCreateDependents = True
+
+
+def test_delete_person_with_job(temporary_db):
+    person = Person(connection=temporary_db.connection)
+    job = test_db.Job(person=person, connection=temporary_db.connection)
+
+    person.destroySelf()
+
+    assert (
+        test_db.Job.selectBy(id=job.id, connection=temporary_db.connection).count() == 0
+    )
