@@ -55,8 +55,7 @@ class OrganizationKeyValueCommandSet(BaseCommandSet):
     def do_tdb_organization_key_value_delete(self, args):
         organization = self.validate_organization(args.organization_gid)
         key_value = self.validate_key_value(organization.keyValuesSelect, args.key)
-        if key_value:
-            key_value.destroySelf()
+        key_value.destroySelf()
 
     tdb_organization_key_value_list_parser = cmd2.Cmd2ArgumentParser()
     tdb_organization_key_value_list_parser.add_argument(
@@ -83,5 +82,4 @@ class OrganizationKeyValueCommandSet(BaseCommandSet):
     def do_tdb_organization_key_value_view(self, args):
         organization = self.validate_organization(args.organization_gid)
         key_value = self.validate_key_value(organization.keyValuesSelect, args.key)
-        if key_value:
-            test_db.KeyValueView(key_value).viewDetails()
+        test_db.KeyValueView(key_value).viewDetails()

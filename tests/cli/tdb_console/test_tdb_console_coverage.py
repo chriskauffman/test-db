@@ -25,6 +25,7 @@ def test_validate_job_not_found(capsys, monkeypatch, temporary_db):
 
     captured = capsys.readouterr()
     assert "error:" in captured.out or "error:" in captured.err
+    assert "AttributeError" not in captured.out + captured.err
 
 
 def test_validate_person_not_found(capsys, monkeypatch, temporary_db):

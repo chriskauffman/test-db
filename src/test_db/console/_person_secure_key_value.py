@@ -55,8 +55,7 @@ class PersonSecureKeyValueCommandSet(BaseCommandSet):
     def do_tdb_person_secure_key_value_delete(self, args):
         person = self.validate_person(args.person_gid)
         key_value = self.validate_key_value(person.secureKeyValuesSelect, args.key)
-        if key_value:
-            key_value.destroySelf()
+        key_value.destroySelf()
 
     tdb_person_secure_key_value_list_parser = cmd2.Cmd2ArgumentParser()
     tdb_person_secure_key_value_list_parser.add_argument(
@@ -83,5 +82,4 @@ class PersonSecureKeyValueCommandSet(BaseCommandSet):
     def do_tdb_person_secure_key_value_view(self, args):
         person = self.validate_person(args.person_gid)
         key_value = self.validate_key_value(person.secureKeyValuesSelect, args.key)
-        if key_value:
-            test_db.KeyValueView(key_value).viewDetails()
+        test_db.KeyValueView(key_value).viewDetails()
