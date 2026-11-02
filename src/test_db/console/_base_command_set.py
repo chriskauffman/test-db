@@ -16,6 +16,7 @@ class BaseCommandSet(CommandSet):
             return lookup(fn, *args)
         except NotFoundError as exc:
             self._cmd.perror(f"error: {exc!s}")
+            raise
 
     def validate_key_value(self, key_values, key: str):
         return self.validate(get_key_value, key_values, key)
