@@ -270,6 +270,17 @@ def test_wrong_password_is_refused(encryption_uri):
     db.close()
 
 
+def test_wrong_password_does_not_close_cached_connection(encryption_uri):
+    db = _open(encryption_uri)
+    person = Person(connection=db.connection)
+
+    with pytest.raises(ValueError, match="wrong database encryption key"):
+        _open(encryption_uri, password="wrong-password")
+
+    assert Person.get(person.id, connection=db.connection).id == person.id
+    db.close()
+
+
 def test_check_value_created_once(encryption_uri):
     _open(encryption_uri).close()
     first = _check_values(encryption_uri)

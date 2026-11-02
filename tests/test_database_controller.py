@@ -248,3 +248,16 @@ def test_open_foreign_database_refused(tmp_path):
     tables = [r[0] for r in raw.execute("SELECT name FROM sqlite_master")]
     raw.close()
     assert tables == ["t"]
+
+
+def test_failed_open_closes_connection(tmp_path):
+    db_file = tmp_path / "foreign.sqlite"
+    raw = sqlite3.connect(db_file)
+    raw.execute("CREATE TABLE t (x)")
+    raw.commit()
+    raw.close()
+
+    with pytest.raises(ValueError, match="not a test_db file"):
+        DatabaseController(f"sqlite:{db_file}")
+
+    assert f"sqlite:{db_file}" not in sqlobject.connectionForURI.__self__.cachedURIs

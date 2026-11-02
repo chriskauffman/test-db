@@ -75,8 +75,8 @@ class DatabaseController:
         upgrade (bool, optional): upgrade the database if it is out of date
         databaseEncryptionKey (str | None):
 
-    Raises:
-        ValueError: database is not a test_db, or needs an upgrade
+    Initialization failures raise ValueError when the database is foreign,
+    outdated, or cannot be opened with the supplied encryption settings.
 
     Instance Attributes:
         applicationID (int): database application ID unique to test_db
@@ -98,9 +98,50 @@ class DatabaseController:
         else:
             self.connectionURI = SecretStr(connectionURI)
 
-        self.connection = sqlobject.connectionForURI(
-            self.connectionURI.get_secret_value()
+        uri = self.connectionURI.get_secret_value()
+        opener = sqlobject.connectionForURI.__self__
+        self._connection_was_cached = uri in opener.cachedURIs
+        self.connection = sqlobject.connectionForURI(uri)
+        self._connection_uri = uri
+        self._initialize(
+            defaultConnection=defaultConnection,
+            upgrade=upgrade,
+            databaseEncryptionKey=databaseEncryptionKey,
         )
+
+    def _initialize(
+        self,
+        defaultConnection: bool,
+        upgrade: bool,
+        databaseEncryptionKey: str | None,
+    ) -> None:
+        try:
+            self._initialize_without_cleanup(
+                defaultConnection=defaultConnection,
+                upgrade=upgrade,
+                databaseEncryptionKey=databaseEncryptionKey,
+            )
+        except Exception:
+            self._cleanup_failed_initialization()
+            raise
+
+    def _cleanup_failed_initialization(self) -> None:
+        if getattr(self, "_rawCursor", None) is not None:
+            self._rawCursor.close()
+        if getattr(self, "_raw", None) is not None:
+            self.connection.releaseConnection(self._raw)
+        if not self._connection_was_cached:
+            opener = sqlobject.connectionForURI.__self__
+            if opener.cachedURIs.get(self._connection_uri) is self.connection:
+                opener.cachedURIs.pop(self._connection_uri)
+            self.connection.close()
+
+    def _initialize_without_cleanup(
+        self,
+        defaultConnection: bool,
+        upgrade: bool,
+        databaseEncryptionKey: str | None,
+    ) -> None:
         self.connection.tdbGlobalDatabaseOptions = _GlobalDatabaseOptions()
         if self.connection.dbName == "sqlite":
             # URI arguments cannot carry a callable factory; keep the cached adapter.
