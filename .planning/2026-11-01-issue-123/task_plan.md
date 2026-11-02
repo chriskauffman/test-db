@@ -4,7 +4,7 @@
 Add regression coverage for issue 123's database and person-deletion failure paths.
 
 ## Next Step
-Hand the uncommitted issue 123 branch to the user for review.
+Await review and merge of PR #143.
 
 ## Current Phase
 Phase 1
@@ -29,7 +29,7 @@ Phase 1
 
 ### Phase 4: Delivery
 - [x] Review the diff with Ponytail
-- [x] Leave changes uncommitted and report results
+- [x] Commit and open PR #143
 - **Status:** complete
 
 ## Decisions Made
