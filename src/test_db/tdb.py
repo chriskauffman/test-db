@@ -40,6 +40,7 @@ def version():
 
 @app.callback()
 def tdb_app_callback(
+    ctx: typer.Context,
     db_connection_uri: Annotated[
         str | None,
         typer.Option("--db-connection-uri", "-d", help="sqlobject connection string"),
@@ -107,9 +108,10 @@ def tdb_app_callback(
     test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
     test_db.fernetIterations = settings.database_fernet_iterations
 
-    test_db.DatabaseController(
+    db = test_db.DatabaseController(
         selected_db_connection_uri, defaultConnection=True, upgrade=upgrade
     )
+    ctx.call_on_close(db.close)
 
 
 def main():
