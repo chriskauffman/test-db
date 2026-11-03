@@ -221,6 +221,17 @@ def test_sqlite_configures_preexisting_cached_connection(tmp_path, monkeypatch):
         db.close()
 
 
+def test_close_does_not_close_preexisting_cached_connection(tmp_path):
+    uri = f"sqlite:{tmp_path / 'cached-close.sqlite'}"
+    connection = sqlobject.connectionForURI(uri)
+    db = DatabaseController(uri)
+
+    db.close()
+
+    assert connection.queryOne("PRAGMA foreign_keys") == (1,)
+    connection.close()
+
+
 def test_open_empty_existing_file(tmp_path_factory):
     db_file = tmp_path_factory.mktemp("data") / "test_open_empty_existing_file.sqlite"
     shutil.copy2("tests/data/test_empty.sqlite", db_file)

@@ -128,8 +128,10 @@ class DatabaseController:
     def _cleanup_failed_initialization(self) -> None:
         if getattr(self, "_rawCursor", None) is not None:
             self._rawCursor.close()
+            del self._rawCursor
         if getattr(self, "_raw", None) is not None:
             self.connection.releaseConnection(self._raw)
+            del self._raw
         if not self._connection_was_cached:
             opener = sqlobject.connectionForURI.__self__
             if opener.cachedURIs.get(self._connection_uri) is self.connection:
@@ -417,8 +419,18 @@ class DatabaseController:
     def close(self):
         """Close the database"""
         try:
-            if sqlobject.sqlhub.processConnection == self.connection:
+            if (
+                not getattr(self, "_connection_was_cached", False)
+                and sqlobject.sqlhub.processConnection == self.connection
+            ):
                 sqlobject.sqlhub.processConnection = None
         except AttributeError:
             pass
-        self.connection.close()
+        if getattr(self, "_rawCursor", None) is not None:
+            self._rawCursor.close()
+            del self._rawCursor
+        if getattr(self, "_raw", None) is not None:
+            self.connection.releaseConnection(self._raw)
+            del self._raw
+        if not getattr(self, "_connection_was_cached", False):
+            self.connection.close()
