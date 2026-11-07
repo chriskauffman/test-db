@@ -11,7 +11,11 @@ from pydantic import SecretStr
 
 import test_db
 from test_db import console
-from test_db._cli_settings import DEFAULT_CONFIG_PATH, Settings
+from test_db._cli_settings import (
+    DEFAULT_CONFIG_PATH,
+    Settings,
+    initialize_default_paths,
+)
 
 root_logger = logging.getLogger()
 logger = logging.getLogger(__name__)
@@ -85,6 +89,11 @@ class Console(cmd2.Cmd):
 
 
 def main() -> None:
+    if sys.argv[1:] in (["version"], ["version", "quit"]):
+        print(get_version(__package__ or "not available"))
+        return
+
+    initialize_default_paths()
     settings = Settings()
 
     if not settings.log_path.is_dir():

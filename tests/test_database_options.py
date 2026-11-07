@@ -1,13 +1,46 @@
 """Tests for database connection options and secure connection string handling."""
 
 import logging
+import os
+import subprocess
+import sys
 
 from pydantic import SecretStr
 
 import test_db
-from test_db._cli_settings import Settings
+from test_db._cli_settings import Settings, initialize_default_paths
 from test_db._database_controller import DatabaseController
 from test_db.tdb_console import Console
+
+
+def test_importing_cli_settings_does_not_write_to_home(tmp_path):
+    """Importing CLI settings must not create default user files."""
+    env = os.environ | {"HOME": str(tmp_path)}
+    subprocess.run(
+        [sys.executable, "-c", "import test_db._cli_settings"],
+        check=True,
+        env=env,
+    )
+
+    assert not (tmp_path / ".test_db").exists()
+
+
+def test_initialize_default_paths_creates_default_files(tmp_path, monkeypatch):
+    """CLI startup creates the paths required by the default settings."""
+    import test_db._cli_settings as cli_settings
+
+    config_path = tmp_path / ".test_db"
+    monkeypatch.setattr(cli_settings, "DEFAULT_CONFIG_PATH", config_path)
+    monkeypatch.setattr(cli_settings, "DEFAULT_DB_PATH", config_path / "test_db.sqlite")
+    monkeypatch.setattr(cli_settings, "DEFAULT_LOG_PATH", config_path / "log")
+    monkeypatch.setattr(cli_settings, "DEFAULT_BACKUP_PATH", config_path / "backup")
+
+    initialize_default_paths()
+
+    assert (config_path / "test_db.sqlite").is_file()
+    assert (config_path / "log").is_dir()
+    assert (config_path / "backup").is_dir()
+    assert (config_path / "test_db.toml").is_file()
 
 
 def test_settings_db_connection_uri_secret_str():

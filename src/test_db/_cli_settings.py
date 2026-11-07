@@ -1,5 +1,4 @@
 import logging
-import os
 import pathlib
 from typing import Literal
 
@@ -12,27 +11,24 @@ from pydantic_settings import (
     TomlConfigSettingsSource,
 )
 
-# OK to make dirs as default directory is "owned" by project
+# Default paths are initialized by the CLI entry points, not on import.
 DEFAULT_CONFIG_PATH = pathlib.Path(pathlib.Path.home(), ".test_db")
-if not os.path.exists(DEFAULT_CONFIG_PATH):
-    os.makedirs(DEFAULT_CONFIG_PATH)
-
 DEFAULT_DB_NAME = "test_db.sqlite"
 DEFAULT_DB_PATH = pathlib.Path(DEFAULT_CONFIG_PATH, DEFAULT_DB_NAME)
-DEFAULT_DB_PATH.touch()
-
 DEFAULT_LOG_PATH = pathlib.Path(DEFAULT_CONFIG_PATH, "log")
-if not os.path.exists(DEFAULT_LOG_PATH):
-    os.makedirs(DEFAULT_LOG_PATH)
-
 DEFAULT_BACKUP_PATH = pathlib.Path(DEFAULT_CONFIG_PATH, "backup")
-if not os.path.exists(DEFAULT_BACKUP_PATH):
-    os.makedirs(DEFAULT_BACKUP_PATH)
-
 CONFIG_FILE_NAME = "test_db.toml"
-pathlib.Path(DEFAULT_CONFIG_PATH, CONFIG_FILE_NAME).touch()
 
 logger = logging.getLogger(__name__)
+
+
+def initialize_default_paths() -> None:
+    """Create the default CLI directories and files."""
+    DEFAULT_CONFIG_PATH.mkdir(parents=True, exist_ok=True)
+    DEFAULT_DB_PATH.touch(exist_ok=True)
+    DEFAULT_LOG_PATH.mkdir(exist_ok=True)
+    DEFAULT_BACKUP_PATH.mkdir(exist_ok=True)
+    pathlib.Path(DEFAULT_CONFIG_PATH, CONFIG_FILE_NAME).touch(exist_ok=True)
 
 
 def locateFile(file_name: str) -> pathlib.Path | None:
