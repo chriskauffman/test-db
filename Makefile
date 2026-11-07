@@ -43,7 +43,7 @@ src/test_db/_schemas/v1.sql: tests/data/test_schema_v1.sqlite
 
 tests/data/test_schema_v1.sqlite: src/test_db/*.py
 	rm -f tests/data/test_schema_v1.sqlite
-	uv run tdb --db-connection-uri "sqlite:tests/data/test_schema_v1.sqlite" version
+	uv run tdb --db-connection-uri "sqlite:tests/data/test_schema_v1.sqlite" person list >/dev/null
 
 .PHONY: init
 init: backup log tmp

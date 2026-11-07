@@ -12,7 +12,7 @@ from pydantic import SecretStr
 
 import test_db
 from test_db import cli
-from test_db._cli_settings import Settings
+from test_db._cli_settings import Settings, initialize_default_paths
 
 root_logger = logging.getLogger()
 logger = logging.getLogger(__name__)
@@ -60,6 +60,10 @@ def tdb_app_callback(
 ) -> None:
     """main callback for test_db typer applications"""
     cli.interactive = interactive
+    if ctx.invoked_subcommand == "version":
+        return
+
+    initialize_default_paths()
     settings = Settings()
 
     selected_db_connection_uri = (
