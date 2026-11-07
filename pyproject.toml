@@ -1,6 +1,6 @@
 [project]
 name = "test-db"
-version = "0.8.2"
+version = "0.8.3"
 description = "Test database tool with auto-generated test data for SQLite, PostgreSQL, and MySQL"
 readme = "README.md"
 authors = [
