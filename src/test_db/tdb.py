@@ -9,6 +9,7 @@ from typing import Annotated
 
 import typer
 from pydantic import SecretStr
+from sqlobject.dberrors import DatabaseError
 
 import test_db
 from test_db import cli
@@ -108,9 +109,25 @@ def tdb_app_callback(
 
     logger.debug("settings=%s", settings)
 
-    db = test_db.DatabaseController(
-        selected_db_connection_uri, defaultConnection=True, upgrade=upgrade
-    )
+    try:
+        try:
+            db = test_db.DatabaseController(
+                selected_db_connection_uri, defaultConnection=True, upgrade=False
+            )
+        except ValueError as exc:
+            if not upgrade or str(exc) != "test_db file needs upgrade":
+                raise
+            if not typer.confirm(
+                "Upgrade the database? This removes encrypted test data."
+            ):
+                raise typer.Abort()
+            db = test_db.DatabaseController(
+                selected_db_connection_uri, defaultConnection=True, upgrade=True
+            )
+    except typer.Abort:
+        raise
+    except (ValueError, DatabaseError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
     ctx.call_on_close(db.close)
 
 

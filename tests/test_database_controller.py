@@ -101,6 +101,63 @@ def test_file_version_1(tmp_path_factory):
     assert db_schema_is_valid(db)
 
 
+def test_upgrade_from_schema_v1(tmp_path):
+    db_file = tmp_path / "test_schema_v1.sqlite"
+    database = DatabaseController(f"sqlite:{db_file}")
+    cursor = database._rawCursor
+    cursor.execute("PRAGMA foreign_keys=OFF")
+    cursor.execute(
+        """
+        CREATE TABLE job_old (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            g_id VARCHAR(90) NOT NULL UNIQUE,
+            description TEXT,
+            employee_id TEXT,
+            location TEXT,
+            pay_group TEXT,
+            position TEXT,
+            organization_id INT REFERENCES organization(id),
+            person_id INT REFERENCES person(id),
+            created_at TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+        """
+    )
+    cursor.execute("INSERT INTO job_old SELECT * FROM job")
+    cursor.execute("DROP TABLE job")
+    cursor.execute("ALTER TABLE job_old RENAME TO job")
+    cursor.execute(
+        "CREATE UNIQUE INDEX job_employeeIDOrganizationIndex "
+        "ON job (employee_id, organization_id)"
+    )
+    cursor.execute(
+        """
+        CREATE TABLE person_secure_key_value (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            person_id INT NOT NULL REFERENCES person(id) ON DELETE CASCADE,
+            key_name TEXT NOT NULL,
+            value TEXT,
+            created_at TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+        """
+    )
+    cursor.execute(
+        "CREATE UNIQUE INDEX person_secure_key_value_personKeyIndex "
+        "ON person_secure_key_value (person_id, key_name)"
+    )
+    database.applicationSchemaVersion = 1
+    database.close()
+
+    upgraded = DatabaseController(f"sqlite:{db_file}", upgrade=True)
+    try:
+        assert upgraded.applicationSchemaVersion == 2
+        assert upgraded.validSchema
+        assert not upgraded.connection.tableExists("person_secure_key_value")
+    finally:
+        upgraded.close()
+
+
 def test_open_empty(tmp_path_factory):
     db_file = tmp_path_factory.mktemp("data") / "test_open_empty.sqlite"
     if os.path.isfile(db_file):
