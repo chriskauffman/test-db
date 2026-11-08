@@ -45,10 +45,6 @@ from test_db._views._person import PersonView as PersonView
 
 # Global database options
 autoCreateDependents: bool = True
-databaseEncryptionKey: str | None = None
-# Django recommendation from 2025
-# https://cryptography.io/en/latest/fernet/#using-passwords-with-fernet
-fernetIterations: int = 1_200_000
 
 RESTRICTED_KEYS = (
     "TestDB_ApplicationID",

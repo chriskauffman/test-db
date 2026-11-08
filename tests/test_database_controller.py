@@ -92,24 +92,7 @@ def test_multiple_file_connections(tmp_path_factory):
     assert db_2.connection == Person(connection=db_2.connection)._connection
 
 
-# def test_schema_X_upgrade(tmp_path_factory, db_encryption_key):
-#     test_db.databaseEncryptionKey = db_encryption_key
-#     db_file = tmp_path_factory.mktemp("data") / "upgrade_0.sqlite"
-#     shutil.copy2("tests/data/test.0.sqlite", db_file)
-
-#     raw_connection = sqlite3.connect(db_file)
-#     raw_cursor = raw_connection.cursor()
-
-#     assert raw_cursor.execute("PRAGMA application_id").fetchone()[0] == 0
-#     assert raw_cursor.execute("PRAGMA user_version").fetchone()[0] == 0
-
-#     test_db = DatabaseController(db_file, defaultConnection=True)
-
-#     assert db_schema_is_valid(test_db)
-
-
-def test_file_version_1(tmp_path_factory, db_encryption_key):
-    test_db.databaseEncryptionKey = db_encryption_key
+def test_file_version_1(tmp_path_factory):
     db_file = tmp_path_factory.mktemp("data") / "test_file_version_1.sqlite"
     # shutil.copy2("tests/data/test.9.sqlite", db_file)
 
@@ -134,7 +117,6 @@ def test_open_empty(tmp_path_factory):
 @pytest.fixture(params=["file", "memory"])
 def sqlite_db(request, tmp_path, monkeypatch):
     monkeypatch.setattr(test_db, "autoCreateDependents", False)
-    monkeypatch.setattr(test_db, "databaseEncryptionKey", None)
     uri = (
         "sqlite:/:memory:?cache=False"
         if request.param == "memory"
@@ -208,7 +190,6 @@ def test_sqlite_valid_nullable_and_cascading_relationships(sqlite_db):
 
 
 def test_sqlite_configures_preexisting_cached_connection(tmp_path, monkeypatch):
-    monkeypatch.setattr(test_db, "databaseEncryptionKey", None)
     uri = f"sqlite:{tmp_path / 'cached.sqlite'}"
     connection = sqlobject.connectionForURI(uri)
     assert connection.queryOne("PRAGMA foreign_keys") == (0,)

@@ -108,9 +108,6 @@ def tdb_app_callback(
 
     logger.debug("settings=%s", settings)
 
-    test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
-    test_db.fernetIterations = settings.database_fernet_iterations
-
     db = test_db.DatabaseController(
         selected_db_connection_uri, defaultConnection=True, upgrade=upgrade
     )

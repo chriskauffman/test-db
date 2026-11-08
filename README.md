@@ -71,7 +71,6 @@ The tool manages the following primary entities:
 
 - **Test Data Generation**: Uses Faker to generate realistic test data
 - **Dual Interfaces**: CLI for scripting, interactive console for exploration
-- **Encryption Support**: Encrypted columns for sensitive data
 - **Type-Safe IDs**: TypeID support for distributed system compatibility
 - **Multi-Database Support**: SQLite, PostgreSQL, MySQL
 - **Comprehensive Testing**: 181+ tests with 90%+ coverage
@@ -122,28 +121,11 @@ To adhere to security best practices and keep credentials out of connection stri
   export DB_CONNECTION_URI="mysql://myuser@localhost:3306/testdb"
   ```
 
-### Encryption Settings
+### Data protection
 
-Set `DATABASE_ENCRYPTION_KEY` (or `database_encryption_key` in `test_db.toml`)
-to enable encrypted storage. `DATABASE_FERNET_ITERATIONS`
-(`database_fernet_iterations` in TOML) defaults to 1,200,000 and must be a
-positive integer when initializing encryption metadata. Library users can set
-`test_db.fernetIterations`.
-
-The database stores the iteration count alongside its encryption salt. Once
-stored, that count takes precedence over the configured value: changing the
-configuration does not re-encrypt existing data or change the database's key.
-The salt and iteration metadata cannot be edited or deleted through the
-key-value CLI or console commands.
-
-Older databases containing only a salt need the **original password and iteration
-count** on their first encrypted open after upgrading. Before recording the
-count, test-db authenticates one existing non-null encrypted value without
-unpickling it. If authentication fails, the encryption metadata is left unchanged:
-restore the original password/count and retry. A legacy database with no non-null
-encrypted values can adopt the configured count immediately. This migration
-does not repair already-corrupted or mixed-key data; back up databases before
-upgrading. Opening without an encryption key leaves encryption metadata untouched.
+test-db stores test data without encryption. Applications that need encrypted
+storage should encrypt data before giving it to test-db or use an application-
+owned encrypted storage layer.
 
 ### Execution directly without install
 

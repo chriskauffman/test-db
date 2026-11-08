@@ -14,8 +14,6 @@ def test_callback_closes_database_controller(monkeypatch, tmp_path):
         log_path=tmp_path,
         log_level_file="DEBUG",
         log_level_screen="ERROR",
-        database_encryption_key=SecretStr(""),
-        database_fernet_iterations=1_200_000,
     )
     monkeypatch.setattr(tdb, "Settings", Mock(return_value=settings))
     monkeypatch.setattr(tdb.test_db, "DatabaseController", Mock(return_value=database))

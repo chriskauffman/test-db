@@ -19,9 +19,6 @@ from test_db._person_bank_account import PersonBankAccount
 from test_db._person_debit_card import PersonDebitCard
 from test_db._person_key_value import PersonKeyValue
 
-ENCODING = "utf-8"
-ENCRYPTION_CHECK_KEY = "TestDB_EncryptedPickleColCheck"
-ENCRYPTION_CHECK_VALUE = b"test_db"
 IN_MEMORY_DB_FILE = "sqlite:/:memory:"
 
 # Note: order of TABLES matters for creation due to foreign key dependencies
@@ -63,10 +60,8 @@ class DatabaseController:
         connectionURI (str | SecretStr): SQLObject connection URI
         defaultConnection (bool, optional): sets DB as default sqlobject connection
         upgrade (bool, optional): upgrade the database if it is out of date
-        databaseEncryptionKey (str | None):
-
-    Initialization failures raise ValueError when the database is foreign,
-    outdated, or cannot be opened with the supplied encryption settings.
+    Initialization failures raise ValueError when the database is foreign or
+    outdated.
 
     Instance Attributes:
         applicationID (int): database application ID unique to test_db
@@ -81,7 +76,6 @@ class DatabaseController:
         connectionURI: str | SecretStr,
         defaultConnection: bool = False,
         upgrade: bool = False,
-        databaseEncryptionKey: str | None = None,
     ) -> None:
         if isinstance(connectionURI, SecretStr):
             self.connectionURI = connectionURI
@@ -96,20 +90,17 @@ class DatabaseController:
         self._initialize(
             defaultConnection=defaultConnection,
             upgrade=upgrade,
-            databaseEncryptionKey=databaseEncryptionKey,
         )
 
     def _initialize(
         self,
         defaultConnection: bool,
         upgrade: bool,
-        databaseEncryptionKey: str | None,
     ) -> None:
         try:
             self._initialize_without_cleanup(
                 defaultConnection=defaultConnection,
                 upgrade=upgrade,
-                databaseEncryptionKey=databaseEncryptionKey,
             )
         except Exception:
             self._cleanup_failed_initialization()
@@ -132,7 +123,6 @@ class DatabaseController:
         self,
         defaultConnection: bool,
         upgrade: bool,
-        databaseEncryptionKey: str | None,
     ) -> None:
         self.connection.tdbGlobalDatabaseOptions = _GlobalDatabaseOptions()
         if self.connection.dbName == "sqlite":
