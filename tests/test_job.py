@@ -128,7 +128,6 @@ def test_person_delete_cascades_to_jobs_and_dependents(temporary_db, monkeypatch
         test_db.PersonBankAccount,
         test_db.PersonDebitCard,
         test_db.PersonKeyValue,
-        test_db.PersonSecureKeyValue,
     )
     before = {cls: _count(cls, conn) for cls in classes}
 
@@ -141,7 +140,6 @@ def test_person_delete_cascades_to_jobs_and_dependents(temporary_db, monkeypatch
     test_db.PersonBankAccount(person=person, connection=conn)
     test_db.PersonDebitCard(person=person, connection=conn)
     test_db.PersonKeyValue(person=person, key="k", value="v", connection=conn)
-    test_db.PersonSecureKeyValue(person=person, key="k", value="v", connection=conn)
     other_job = test_db.Job(
         person=other_person, organization=organization, connection=conn
     )

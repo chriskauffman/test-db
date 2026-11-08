@@ -40,8 +40,5 @@ from ._person_bank_account import (
 )
 from ._person_debit_card import PersonDebitCardCommandSet as PersonDebitCardCommandSet
 from ._person_key_value import PersonKeyValueCommandSet as PersonKeyValueCommandSet
-from ._person_secure_key_value import (
-    PersonSecureKeyValueCommandSet as PersonSecureKeyValueCommandSet,
-)
 
 logger = logging.getLogger(__name__)

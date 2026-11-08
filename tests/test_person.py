@@ -8,7 +8,6 @@ from test_db._person_address import PersonAddress
 from test_db._person_bank_account import PersonBankAccount
 from test_db._person_debit_card import PersonDebitCard
 from test_db._person_key_value import PersonKeyValue
-from test_db._person_secure_key_value import PersonSecureKeyValue
 
 fake = faker.Faker()
 
@@ -93,23 +92,6 @@ def test_getKeyValueByKey(temporary_db):
     )
 
     assert test_key_value.value == "testAccessToken"
-
-
-def test_getSecureKeyValueByKey(temporary_db, db_encryption_key):
-    test_db.databaseEncryptionKey = db_encryption_key
-    test_person = Person(connection=temporary_db.connection)
-    test_secure_key_value = test_person.getSecureKeyValueByKey(
-        "test_getSecureKeyValueByKey"
-    )
-
-    assert isinstance(test_secure_key_value, PersonSecureKeyValue)
-    assert test_secure_key_value.key == "test_getSecureKeyValueByKey"
-
-    test_secure_key_value = test_person.getSecureKeyValueByKey(
-        "test_getSecureKeyValueByKey_2", value={"secret_data": "testSecretData"}
-    )
-
-    assert test_secure_key_value.value == {"secret_data": "testSecretData"}
 
 
 def test_cascade_delete(temporary_db):

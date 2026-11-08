@@ -1,4 +1,3 @@
-from cryptography.fernet import InvalidToken
 from formencode.validators import Invalid
 from sqlobject import SQLObjectNotFound
 
@@ -13,10 +12,6 @@ def lookup(fn, *args):
         return fn(*args)
     except (Invalid, SQLObjectNotFound) as exc:
         raise NotFoundError(str(exc)) from exc
-    except InvalidToken as exc:
-        raise NotFoundError(
-            "Unable to decrypt - check database encryption key"
-        ) from exc
 
 
 def get_key_value(key_values, key: str):

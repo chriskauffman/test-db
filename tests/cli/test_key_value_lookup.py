@@ -21,12 +21,6 @@ from test_db.tdb_console import main as console
             test_db.OrganizationKeyValue,
             "organization",
         ),
-        (
-            "person-secure-key-value",
-            test_db.Person,
-            test_db.PersonSecureKeyValue,
-            "person",
-        ),
     ],
 )
 def test_missing_key_is_lookup_only(

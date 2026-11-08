@@ -30,7 +30,6 @@ app.add_typer(cli.person_address_app, name="person-address")
 app.add_typer(cli.person_bank_account_app, name="person-bank-account")
 app.add_typer(cli.person_debit_card_app, name="person-debit-card")
 app.add_typer(cli.person_key_value_app, name="person-key-value")
-app.add_typer(cli.person_secure_key_value_app, name="person-secure-key-value")
 
 
 @app.command()

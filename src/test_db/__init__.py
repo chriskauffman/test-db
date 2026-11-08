@@ -35,9 +35,6 @@ from test_db._person_address import PersonAddress as PersonAddress
 from test_db._person_bank_account import PersonBankAccount as PersonBankAccount
 from test_db._person_debit_card import PersonDebitCard as PersonDebitCard
 from test_db._person_key_value import PersonKeyValue as PersonKeyValue
-from test_db._person_secure_key_value import (
-    PersonSecureKeyValue as PersonSecureKeyValue,
-)
 from test_db._views._address import AddressView as AddressView
 from test_db._views._bank_account import BankAccountView as BankAccountView
 from test_db._views._debit_card import DebitCardView as DebitCardView
@@ -56,9 +53,6 @@ fernetIterations: int = 1_200_000
 RESTRICTED_KEYS = (
     "TestDB_ApplicationID",
     "TestDB_ApplicationSchemaVersion",
-    "TestDB_EncryptedPickleColSalt",
-    "TestDB_EncryptedPickleColIterations",
-    "TestDB_EncryptedPickleColCheck",
 )
 
 logger = logging.getLogger(__name__)

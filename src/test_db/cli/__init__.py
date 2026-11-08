@@ -33,9 +33,6 @@ from ._person_bank_account import (
 )
 from ._person_debit_card import person_debit_card_app as person_debit_card_app
 from ._person_key_value import person_key_value_app as person_key_value_app
-from ._person_secure_key_value import (
-    person_secure_key_value_app as person_secure_key_value_app,
-)
 
 logger = logging.getLogger(__name__)
 

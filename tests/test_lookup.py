@@ -1,5 +1,4 @@
 import pytest
-from cryptography.fernet import InvalidToken
 from formencode.validators import Invalid
 from sqlobject import SQLObjectNotFound
 
@@ -14,7 +13,7 @@ def _raise(exc):
 
 
 @pytest.mark.parametrize(
-    "exc", [Invalid("bad", None, None), SQLObjectNotFound("missing"), InvalidToken()]
+    "exc", [Invalid("bad", None, None), SQLObjectNotFound("missing")]
 )
 def test_lookup_converts_to_not_found(exc):
     with pytest.raises(NotFoundError):

@@ -144,7 +144,6 @@ def main() -> None:
             console.PersonBankAccountCommandSet(),
             console.PersonDebitCardCommandSet(),
             console.PersonKeyValueCommandSet(),
-            console.PersonSecureKeyValueCommandSet(),
         ],
     )
     sys.exit(con.cmdloop())

@@ -107,15 +107,6 @@ CREATE TABLE person_key_value (
     updated_at TIMESTAMP
 );
 CREATE UNIQUE INDEX person_key_value_personKeyIndex ON person_key_value (person_id, key_name);
-CREATE TABLE person_secure_key_value (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    person_id INT NOT NULL CONSTRAINT person_id_exists REFERENCES person(id) ON DELETE CASCADE,
-    key_name TEXT NOT NULL,
-    value TEXT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
-CREATE UNIQUE INDEX person_secure_key_value_personKeyIndex ON person_secure_key_value (person_id, key_name);
 CREATE TABLE job (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     g_id VARCHAR(90) NOT NULL UNIQUE,
