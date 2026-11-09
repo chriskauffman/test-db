@@ -94,7 +94,8 @@ it will be used to execute tests when `uv run pytest` or `make` is executed. If 
 Note: You must install database drivers to support the connection specified, such as `uv add "psycopg[binary]"` or `uv add mysqlclient`.
 
 Migration tests are destructive and use a separate connection variable. Point
-`PYTEST_MIGRATION_DATABASE_CONNECTION_URI` at a disposable database, then run
+`PYTEST_MIGRATION_DATABASE_CONNECTION_URI` at a disposable database and set
+`PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS=1`, then run
 `uv run pytest -m migration tests/migrations`.
 
 ### Protecting Credentials & Standard Config Files

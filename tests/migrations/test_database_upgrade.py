@@ -124,6 +124,10 @@ def migration_database():
     uri = os.getenv("PYTEST_MIGRATION_DATABASE_CONNECTION_URI")
     if not uri:
         pytest.skip("set PYTEST_MIGRATION_DATABASE_CONNECTION_URI to run")
+    if os.getenv("PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS") != "1":
+        pytest.fail(
+            "set PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS=1 to run destructive tests"
+        )
 
     database = DatabaseController(uri)
     try:
@@ -145,3 +149,10 @@ def test_v1_to_v2_upgrade(migration_database):
     assert database.applicationSchemaVersion == 2
     assert database.validSchema
     assert not database.connection.tableExists("person_secure_key_value")
+    assert (
+        database._rawCursor.execute(
+            "SELECT count(*) FROM key_value "
+            "WHERE key_name LIKE 'TestDB_EncryptedPickleCol%'"
+        ).fetchone()[0]
+        == 0
+    )
