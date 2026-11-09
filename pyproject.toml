@@ -42,6 +42,9 @@ dev = [
 addopts = "--ignore=tmp"
 log_file = "log/pytest.log"
 log_file_level = "DEBUG"
+markers = [
+    "migration: run destructive v1-to-v2 migration tests against a disposable database",
+]
 
 [tool.ty.analysis]
 # Replace all sqlobject imports with Any
