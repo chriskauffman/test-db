@@ -20,7 +20,6 @@ from test_db._person_address import PersonAddress
 from test_db._person_bank_account import PersonBankAccount
 from test_db._person_debit_card import PersonDebitCard
 from test_db._person_key_value import PersonKeyValue
-from test_db._person_secure_key_value import PersonSecureKeyValue
 from test_db._type_id_col import TypeIDCol
 
 fake = faker.Faker()
@@ -49,8 +48,6 @@ class Person(SQLObject):
         jobsSelect (SQLMultipleJoin):
         keyValues (MultipleJoin):
         keyValuesSelect (SQLMultipleJoin):
-        secureKeyValues (MultipleJoin):
-        secureKeyValuesSelect (SQLMultipleJoin):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
         ownerID (str): owner ID for the object
@@ -84,9 +81,6 @@ class Person(SQLObject):
 
     keyValues: MultipleJoin = MultipleJoin("PersonKeyValue")
     keyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonKeyValue")
-
-    secureKeyValues: MultipleJoin = MultipleJoin("PersonSecureKeyValue")
-    secureKeyValuesSelect: SQLMultipleJoin = SQLMultipleJoin("PersonSecureKeyValue")
 
     createdAt: DateTimeCol = DateTimeCol()
     updatedAt: DateTimeCol = DateTimeCol()
@@ -136,25 +130,6 @@ class Person(SQLObject):
             return self.keyValuesSelect.filter(PersonKeyValue.q.key == key).getOne()
         except SQLObjectNotFound:
             return PersonKeyValue(
-                connection=self._connection, person=self.id, key=key, **kwargs
-            )
-
-    def getSecureKeyValueByKey(self, key: str, **kwargs) -> PersonSecureKeyValue:
-        """Find and create an PersonSecureKeyValue
-
-        Args:
-            key (str): name of the PersonSecureKeyValue
-            **kwargs:
-
-        Returns:
-            PersonSecureKeyValue:
-        """
-        try:
-            return self.secureKeyValuesSelect.filter(
-                PersonSecureKeyValue.q.key == key
-            ).getOne()
-        except SQLObjectNotFound:
-            return PersonSecureKeyValue(
                 connection=self._connection, person=self.id, key=key, **kwargs
             )
 

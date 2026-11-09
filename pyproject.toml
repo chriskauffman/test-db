@@ -9,7 +9,6 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "cmd2>=2.7.0",
-    "cryptography>=45.0.7",
     "faker>=37.6.0",
     "nanoid>=2.0.0",
     "pydantic>=2.11.7",
@@ -43,7 +42,10 @@ dev = [
 addopts = "--ignore=tmp"
 log_file = "log/pytest.log"
 log_file_level = "DEBUG"
+markers = [
+    "migration: run destructive v1-to-v2 migration tests against a disposable database",
+]
 
 [tool.ty.analysis]
 # Replace all sqlobject imports with Any
-replace-imports-with-any = ["sqlobject.**", "**._encrypted_pickle_col", "**._type_id_col"]
+replace-imports-with-any = ["sqlobject.**", "**._type_id_col"]

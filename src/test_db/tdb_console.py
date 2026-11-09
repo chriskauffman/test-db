@@ -126,9 +126,6 @@ def main() -> None:
 
     logger.debug("settings=%s", settings)
 
-    test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
-    test_db.fernetIterations = settings.database_fernet_iterations
-
     con = Console(
         settings,
         command_sets=[
@@ -144,7 +141,6 @@ def main() -> None:
             console.PersonBankAccountCommandSet(),
             console.PersonDebitCardCommandSet(),
             console.PersonKeyValueCommandSet(),
-            console.PersonSecureKeyValueCommandSet(),
         ],
     )
     sys.exit(con.cmdloop())

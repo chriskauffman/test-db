@@ -92,30 +92,70 @@ def test_multiple_file_connections(tmp_path_factory):
     assert db_2.connection == Person(connection=db_2.connection)._connection
 
 
-# def test_schema_X_upgrade(tmp_path_factory, db_encryption_key):
-#     test_db.databaseEncryptionKey = db_encryption_key
-#     db_file = tmp_path_factory.mktemp("data") / "upgrade_0.sqlite"
-#     shutil.copy2("tests/data/test.0.sqlite", db_file)
-
-#     raw_connection = sqlite3.connect(db_file)
-#     raw_cursor = raw_connection.cursor()
-
-#     assert raw_cursor.execute("PRAGMA application_id").fetchone()[0] == 0
-#     assert raw_cursor.execute("PRAGMA user_version").fetchone()[0] == 0
-
-#     test_db = DatabaseController(db_file, defaultConnection=True)
-
-#     assert db_schema_is_valid(test_db)
-
-
-def test_file_version_1(tmp_path_factory, db_encryption_key):
-    test_db.databaseEncryptionKey = db_encryption_key
+def test_file_version_1(tmp_path_factory):
     db_file = tmp_path_factory.mktemp("data") / "test_file_version_1.sqlite"
     # shutil.copy2("tests/data/test.9.sqlite", db_file)
 
     db = DatabaseController(f"sqlite://{db_file}")
 
     assert db_schema_is_valid(db)
+
+
+def test_upgrade_from_schema_v1(tmp_path):
+    db_file = tmp_path / "test_schema_v1.sqlite"
+    database = DatabaseController(f"sqlite:{db_file}")
+    cursor = database._rawCursor
+    cursor.execute("PRAGMA foreign_keys=OFF")
+    cursor.execute(
+        """
+        CREATE TABLE job_old (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            g_id VARCHAR(90) NOT NULL UNIQUE,
+            description TEXT,
+            employee_id TEXT,
+            location TEXT,
+            pay_group TEXT,
+            position TEXT,
+            organization_id INT REFERENCES organization(id),
+            person_id INT REFERENCES person(id),
+            created_at TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+        """
+    )
+    cursor.execute("INSERT INTO job_old SELECT * FROM job")
+    cursor.execute("DROP TABLE job")
+    cursor.execute("ALTER TABLE job_old RENAME TO job")
+    cursor.execute(
+        "CREATE UNIQUE INDEX job_employeeIDOrganizationIndex "
+        "ON job (employee_id, organization_id)"
+    )
+    cursor.execute(
+        """
+        CREATE TABLE person_secure_key_value (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            person_id INT NOT NULL REFERENCES person(id) ON DELETE CASCADE,
+            key_name TEXT NOT NULL,
+            value TEXT,
+            created_at TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+        """
+    )
+    cursor.execute(
+        "CREATE UNIQUE INDEX person_secure_key_value_personKeyIndex "
+        "ON person_secure_key_value (person_id, key_name)"
+    )
+    database.applicationSchemaVersion = 1
+    database.close()
+
+    upgraded = DatabaseController(f"sqlite:{db_file}", upgrade=True)
+    try:
+        assert upgraded.applicationSchemaVersion == 2
+        assert upgraded.validSchema
+        assert not upgraded.connection.tableExists("person_secure_key_value")
+    finally:
+        upgraded.close()
 
 
 def test_open_empty(tmp_path_factory):
@@ -134,7 +174,6 @@ def test_open_empty(tmp_path_factory):
 @pytest.fixture(params=["file", "memory"])
 def sqlite_db(request, tmp_path, monkeypatch):
     monkeypatch.setattr(test_db, "autoCreateDependents", False)
-    monkeypatch.setattr(test_db, "databaseEncryptionKey", None)
     uri = (
         "sqlite:/:memory:?cache=False"
         if request.param == "memory"
@@ -208,7 +247,6 @@ def test_sqlite_valid_nullable_and_cascading_relationships(sqlite_db):
 
 
 def test_sqlite_configures_preexisting_cached_connection(tmp_path, monkeypatch):
-    monkeypatch.setattr(test_db, "databaseEncryptionKey", None)
     uri = f"sqlite:{tmp_path / 'cached.sqlite'}"
     connection = sqlobject.connectionForURI(uri)
     assert connection.queryOne("PRAGMA foreign_keys") == (0,)

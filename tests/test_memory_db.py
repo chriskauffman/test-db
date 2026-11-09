@@ -1,9 +1,8 @@
 import test_db
 
 
-def test_memory_db(db_encryption_key):
+def test_memory_db():
     test_db.autoCreateDependents = True
-    test_db.databaseEncryptionKey = db_encryption_key
     db = test_db.DatabaseController("sqlite:/:memory:")
 
     assert db.validSchema

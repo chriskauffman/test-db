@@ -9,6 +9,7 @@ from typing import Annotated
 
 import typer
 from pydantic import SecretStr
+from sqlobject.dberrors import DatabaseError
 
 import test_db
 from test_db import cli
@@ -30,7 +31,6 @@ app.add_typer(cli.person_address_app, name="person-address")
 app.add_typer(cli.person_bank_account_app, name="person-bank-account")
 app.add_typer(cli.person_debit_card_app, name="person-debit-card")
 app.add_typer(cli.person_key_value_app, name="person-key-value")
-app.add_typer(cli.person_secure_key_value_app, name="person-secure-key-value")
 
 
 @app.command()
@@ -109,12 +109,25 @@ def tdb_app_callback(
 
     logger.debug("settings=%s", settings)
 
-    test_db.databaseEncryptionKey = settings.database_encryption_key.get_secret_value()
-    test_db.fernetIterations = settings.database_fernet_iterations
-
-    db = test_db.DatabaseController(
-        selected_db_connection_uri, defaultConnection=True, upgrade=upgrade
-    )
+    try:
+        try:
+            db = test_db.DatabaseController(
+                selected_db_connection_uri, defaultConnection=True, upgrade=False
+            )
+        except ValueError as exc:
+            if not upgrade or str(exc) != "test_db file needs upgrade":
+                raise
+            if not typer.confirm(
+                "Upgrade the database? This removes encrypted test data."
+            ):
+                raise typer.Abort()
+            db = test_db.DatabaseController(
+                selected_db_connection_uri, defaultConnection=True, upgrade=True
+            )
+    except typer.Abort:
+        raise
+    except (ValueError, DatabaseError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
     ctx.call_on_close(db.close)
 
 

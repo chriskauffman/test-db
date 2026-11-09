@@ -160,11 +160,13 @@ def test_key_value_add_duplicate(capsys, monkeypatch, temporary_db):
 
 def test_key_value_list(capsys, monkeypatch, temporary_db):
     """Test listing all key-value pairs."""
+    key_1 = str(uuid.uuid4())
     test_db.KeyValue(
-        connection=temporary_db.connection, key="test_key_1", value="test_value_1"
+        connection=temporary_db.connection, key=key_1, value="test_value_1"
     )
+    key_2 = str(uuid.uuid4())
     test_db.KeyValue(
-        connection=temporary_db.connection, key="test_key_2", value="test_value_2"
+        connection=temporary_db.connection, key=key_2, value="test_value_2"
     )
 
     monkeypatch.setattr(
@@ -182,5 +184,5 @@ def test_key_value_list(capsys, monkeypatch, temporary_db):
         assert e.code == 0
 
     captured = capsys.readouterr()
-    assert "test_key_1" in captured.out
-    assert "test_key_2" in captured.out
+    assert key_1 in captured.out
+    assert key_2 in captured.out

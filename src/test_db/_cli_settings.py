@@ -5,7 +5,6 @@ from typing import Literal
 from pydantic import Field, SecretStr
 from pydantic_settings import (
     BaseSettings,
-    CliSuppress,
     PydanticBaseSettingsSource,
     SettingsConfigDict,
     TomlConfigSettingsSource,
@@ -50,14 +49,6 @@ class Settings(BaseSettings):
 
     backup_path: pathlib.Path = Field(
         default=DEFAULT_BACKUP_PATH, description="directory for file backups"
-    )
-    database_encryption_key: CliSuppress[SecretStr] = Field(
-        default=SecretStr(""),
-        description="key to be used for encrypting sensitive database contents",
-    )
-    database_fernet_iterations: int = Field(
-        default=1_200_000,
-        description="PBKDF2 iterations when initializing encryption metadata",
     )
     db_connection_uri: SecretStr | None = Field(
         default=SecretStr(f"sqlite:{DEFAULT_DB_PATH}"),

@@ -1,13 +1,11 @@
 import logging
 
-from cryptography.fernet import InvalidToken
 from sqlobject.sresults import SelectResults
 
 from test_db import (
     JobKeyValue,
     OrganizationKeyValue,
     PersonKeyValue,
-    PersonSecureKeyValue,
 )
 from test_db._views._base_view import BaseView
 
@@ -18,7 +16,7 @@ class KeyValueView(BaseView):
     """Key value views
 
     Args:
-        key_value (JobKeyValue | OrganizationKeyValue | PersonKeyValue | PersonSecureKeyValue): The key value to view
+        key_value (JobKeyValue | OrganizationKeyValue | PersonKeyValue): The key value to view
         **kwargs:
             - user_inputs_required (bool):
     """
@@ -29,23 +27,16 @@ class KeyValueView(BaseView):
         key_values: list[JobKeyValue]
         | list[OrganizationKeyValue]
         | list[PersonKeyValue]
-        | list[PersonSecureKeyValue]
         | SelectResults,
         **kwargs,
     ):
         """List all key values"""
-        try:
-            for key_value in key_values:
-                KeyValueView(key_value).view()
-        except (ValueError, InvalidToken):
-            print("Unable to decrypt - check database encryption key")
+        for key_value in key_values:
+            KeyValueView(key_value).view()
 
     def __init__(
         self,
-        key_value: JobKeyValue
-        | OrganizationKeyValue
-        | PersonKeyValue
-        | PersonSecureKeyValue,
+        key_value: JobKeyValue | OrganizationKeyValue | PersonKeyValue,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -53,28 +44,19 @@ class KeyValueView(BaseView):
 
     def edit(self):
         """Edit a key value"""
-        try:
-            if self._key_value.value is None or isinstance(self._key_value.value, str):
-                self._key_value.value = self._getStrInput(
-                    f"{self._key_value.key}", self._key_value.value, acceptNull=True
-                )
-            else:
-                raise NotImplementedError("Only string values are currently supported")
-        except (ValueError, InvalidToken):
-            print("Unable to decrypt - check database encryption key")
+        if self._key_value.value is None or isinstance(self._key_value.value, str):
+            self._key_value.value = self._getStrInput(
+                f"{self._key_value.key}", self._key_value.value, acceptNull=True
+            )
+        else:
+            raise NotImplementedError("Only string values are currently supported")
 
     def view(self):
         """Display brief details of the key value"""
-        try:
-            print(self._key_value.visualID, str(self._key_value.value)[:20])
-        except (ValueError, InvalidToken):
-            print("Unable to decrypt - check database encryption key")
+        print(self._key_value.visualID, str(self._key_value.value)[:20])
 
     def viewDetails(self):
         """Display detailed information of the key value"""
         print(f"Owner ID: {self._key_value.ownerID}")
-        try:
-            print(f"Key: {self._key_value.key}")
-            print(f"Value: {self._key_value.value}")
-        except (ValueError, InvalidToken):
-            print("Unable to decrypt - check database encryption key")
+        print(f"Key: {self._key_value.key}")
+        print(f"Value: {self._key_value.value}")

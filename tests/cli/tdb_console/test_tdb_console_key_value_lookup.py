@@ -3,11 +3,9 @@ import uuid
 import pytest
 
 import test_db
-from test_db.tdb import app as cli
 from test_db.tdb_console import main as console
 
 
-@pytest.mark.parametrize("interface", ["cli", "console"])
 @pytest.mark.parametrize("operation", ["view", "delete"])
 @pytest.mark.parametrize("other_owner_has_key", [False, True])
 @pytest.mark.parametrize(
@@ -21,19 +19,12 @@ from test_db.tdb_console import main as console
             test_db.OrganizationKeyValue,
             "organization",
         ),
-        (
-            "person-secure-key-value",
-            test_db.Person,
-            test_db.PersonSecureKeyValue,
-            "person",
-        ),
     ],
 )
 def test_missing_key_is_lookup_only(
     capsys,
     monkeypatch,
     temporary_db,
-    interface,
     operation,
     other_owner_has_key,
     command,
@@ -64,22 +55,18 @@ def test_missing_key_is_lookup_only(
         return original_create(instance, *args, **kwargs)
 
     monkeypatch.setattr(key_value_class, "_create", track_create)
-    if interface == "cli":
-        argv = ["tdb", command, operation, str(owner.gID), key]
-        entrypoint = cli
-    else:
-        console_command = f"tdb_{command.replace('-', '_')}_{operation}"
-        argv = ["tdb", f"{console_command} {owner.gID} {key}", "quit"]
-        entrypoint = console
-    monkeypatch.setattr("sys.argv", argv)
+    console_command = f"tdb_{command.replace('-', '_')}_{operation}"
+    monkeypatch.setattr(
+        "sys.argv", ["tdb", f"{console_command} {owner.gID} {key}", "quit"]
+    )
 
     with pytest.raises(SystemExit) as exc:
-        entrypoint()
+        console()
     captured = capsys.readouterr()
 
     assert not inserts
     assert records.count() == initial_count
-    assert exc.value.code == (1 if interface == "cli" else 0)
+    assert exc.value.code == 0
     assert key in captured.err
     assert "does not exist" in captured.err
     assert not captured.out

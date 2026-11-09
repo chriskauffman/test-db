@@ -17,12 +17,6 @@ from test_db.tdb import app as cli
             test_db.OrganizationKeyValue,
             "organization",
         ),
-        (
-            "person-secure-key-value",
-            test_db.Person,
-            test_db.PersonSecureKeyValue,
-            "person",
-        ),
     ],
 )
 def test_duplicate_key_add_fails(

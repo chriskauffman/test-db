@@ -1,7 +1,7 @@
 # test-db Makefile
 
 .PHONY: build
-build: lint type-check test security-audit src/test_db/_schemas/v1.sql
+build: lint type-check test security-audit src/test_db/_schemas/v2.sql
 	uv build
 
 .PHONY:
@@ -38,12 +38,14 @@ command-test:
 	uv run tdb version
 	uv run tdb-console version quit
 
-src/test_db/_schemas/v1.sql: tests/data/test_schema_v1.sqlite
-	sqlite3 --readonly tests/data/test_schema_v1.sqlite .schema > $@
+src/test_db/_schemas/v2.sql: src/test_db/*.py | tmp
+	rm -f tmp/test_schema_v2.sqlite
+	uv run tdb --db-connection-uri "sqlite:tmp/test_schema_v2.sqlite" person list >/dev/null
+	sqlite3 --readonly tmp/test_schema_v2.sqlite .schema > $@
 
-tests/data/test_schema_v1.sqlite: src/test_db/*.py
-	rm -f tests/data/test_schema_v1.sqlite
-	uv run tdb --db-connection-uri "sqlite:tests/data/test_schema_v1.sqlite" person list >/dev/null
+tests/data/test_schema_v2.sqlite: src/test_db/_schemas/v2.sql
+	rm -f tests/data/test_schema_v2.sqlite
+	uv run tdb --db-connection-uri "sqlite:tests/data/test_schema_v2.sqlite" person list >/dev/null
 
 .PHONY: init
 init: backup log tmp

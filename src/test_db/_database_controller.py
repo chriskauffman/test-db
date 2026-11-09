@@ -1,17 +1,10 @@
-import base64
 import logging
-import secrets
 import sqlite3
 from datetime import UTC, datetime
-from types import SimpleNamespace
+from importlib.resources import files
 
 import sqlobject
-from cryptography.fernet import Fernet, InvalidToken
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from pydantic import SecretStr
-from sqlobject import sqlbuilder
-from sqlobject.col import BinaryValidator
 
 from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._job import Job
@@ -26,11 +19,7 @@ from test_db._person_address import PersonAddress
 from test_db._person_bank_account import PersonBankAccount
 from test_db._person_debit_card import PersonDebitCard
 from test_db._person_key_value import PersonKeyValue
-from test_db._person_secure_key_value import PersonSecureKeyValue
 
-ENCODING = "utf-8"
-ENCRYPTION_CHECK_KEY = "TestDB_EncryptedPickleColCheck"
-ENCRYPTION_CHECK_VALUE = b"test_db"
 IN_MEMORY_DB_FILE = "sqlite:/:memory:"
 
 # Note: order of TABLES matters for creation due to foreign key dependencies
@@ -45,13 +34,17 @@ TABLES = (
     PersonBankAccount,
     PersonDebitCard,
     PersonKeyValue,
-    PersonSecureKeyValue,
     Job,
     JobKeyValue,
 )
 
 APPLICATION_ID = 990001
-CURRENT_APPLICATION_SCHEMA_VERSION = 1
+CURRENT_APPLICATION_SCHEMA_VERSION = 2
+MIGRATIONS = {
+    "sqlite": ("upgrade_sqlite_remove_encryption.sql",),
+    "postgres": ("upgrade_postgres_remove_encryption.sql",),
+    "mysql": ("upgrade_mysql_remove_encryption.sql",),
+}
 
 logger = logging.getLogger(__name__)
 
@@ -73,10 +66,8 @@ class DatabaseController:
         connectionURI (str | SecretStr): SQLObject connection URI
         defaultConnection (bool, optional): sets DB as default sqlobject connection
         upgrade (bool, optional): upgrade the database if it is out of date
-        databaseEncryptionKey (str | None):
-
-    Initialization failures raise ValueError when the database is foreign,
-    outdated, or cannot be opened with the supplied encryption settings.
+    Initialization failures raise ValueError when the database is foreign or
+    outdated.
 
     Instance Attributes:
         applicationID (int): database application ID unique to test_db
@@ -91,7 +82,6 @@ class DatabaseController:
         connectionURI: str | SecretStr,
         defaultConnection: bool = False,
         upgrade: bool = False,
-        databaseEncryptionKey: str | None = None,
     ) -> None:
         if isinstance(connectionURI, SecretStr):
             self.connectionURI = connectionURI
@@ -106,20 +96,17 @@ class DatabaseController:
         self._initialize(
             defaultConnection=defaultConnection,
             upgrade=upgrade,
-            databaseEncryptionKey=databaseEncryptionKey,
         )
 
     def _initialize(
         self,
         defaultConnection: bool,
         upgrade: bool,
-        databaseEncryptionKey: str | None,
     ) -> None:
         try:
             self._initialize_without_cleanup(
                 defaultConnection=defaultConnection,
                 upgrade=upgrade,
-                databaseEncryptionKey=databaseEncryptionKey,
             )
         except Exception:
             self._cleanup_failed_initialization()
@@ -142,7 +129,6 @@ class DatabaseController:
         self,
         defaultConnection: bool,
         upgrade: bool,
-        databaseEncryptionKey: str | None,
     ) -> None:
         self.connection.tdbGlobalDatabaseOptions = _GlobalDatabaseOptions()
         if self.connection.dbName == "sqlite":
@@ -170,110 +156,6 @@ class DatabaseController:
                 self._new()
             else:
                 raise ValueError("not a test_db file")
-
-        databaseEncryptionKey = (
-            databaseEncryptionKey
-            or self.connection.tdbGlobalDatabaseOptions.databaseEncryptionKey
-        )
-        if databaseEncryptionKey:
-            try:
-                fernet_salt = KeyValue.byKey(
-                    "TestDB_EncryptedPickleColSalt", connection=self.connection
-                ).value
-            except sqlobject.SQLObjectNotFound:
-                fernet_salt = None
-            try:
-                iterations_record = KeyValue.byKey(
-                    "TestDB_EncryptedPickleColIterations",
-                    connection=self.connection,
-                )
-            except sqlobject.SQLObjectNotFound:
-                iterations_record = None
-                fernet_iterations = (
-                    self.connection.tdbGlobalDatabaseOptions.fernetIterations
-                )
-            else:
-                if not fernet_salt:
-                    raise ValueError("Encryption metadata is missing its salt")
-                try:
-                    fernet_iterations = int(iterations_record.value)
-                except (TypeError, ValueError) as exc:
-                    raise ValueError(
-                        "Encryption iterations must be a positive integer"
-                    ) from exc
-            try:
-                check_record = KeyValue.byKey(
-                    ENCRYPTION_CHECK_KEY, connection=self.connection
-                )
-            except sqlobject.SQLObjectNotFound:
-                check_record = None
-            if type(fernet_iterations) is not int or fernet_iterations <= 0:
-                raise ValueError("Encryption iterations must be a positive integer")
-            new_salt = fernet_salt is None
-            if new_salt:
-                fernet_salt = secrets.token_hex(16)
-            fernet_kdf = PBKDF2HMAC(
-                algorithm=hashes.SHA256(),
-                length=32,
-                salt=fernet_salt.encode(ENCODING),
-                iterations=fernet_iterations,
-            )
-            fernet_key_material = databaseEncryptionKey.encode(ENCODING)
-            key = base64.urlsafe_b64encode(fernet_kdf.derive(fernet_key_material))
-            fernet = Fernet(key)
-            if check_record is not None:
-                try:
-                    verified = (
-                        fernet.decrypt(check_record.value.encode(ENCODING))
-                        == ENCRYPTION_CHECK_VALUE
-                    )
-                except InvalidToken:
-                    verified = False
-                if not verified:
-                    raise ValueError("wrong database encryption key")
-            elif not new_salt:
-                # Authenticate legacy ciphertext before pinning an unverified key.
-                query = sqlbuilder.Select(
-                    PersonSecureKeyValue.q.value,
-                    where=sqlbuilder.ISNOTNULL(PersonSecureKeyValue.q.value),
-                    limit=1,
-                )
-                row = self.connection.queryOne(self.connection.sqlrepr(query))
-                if row is not None:
-                    token = BinaryValidator(name="value").to_python(
-                        row[0], SimpleNamespace(connection=self.connection)
-                    )
-                    try:
-                        fernet.decrypt(token)
-                    except InvalidToken as exc:
-                        raise ValueError(
-                            "Unable to authenticate legacy encrypted data; "
-                            "check the original password and iteration count"
-                        ) from exc
-            if new_salt:
-                KeyValue(
-                    key="TestDB_EncryptedPickleColSalt",
-                    value=fernet_salt,
-                    connection=self.connection,
-                )
-            if iterations_record is None:
-                KeyValue(
-                    key="TestDB_EncryptedPickleColIterations",
-                    value=str(fernet_iterations),
-                    connection=self.connection,
-                )
-            if check_record is None:
-                KeyValue(
-                    key=ENCRYPTION_CHECK_KEY,
-                    value=fernet.encrypt(ENCRYPTION_CHECK_VALUE).decode(ENCODING),
-                    connection=self.connection,
-                )
-            self.connection.dbFernet = fernet
-        else:
-            logger.warning(
-                "databaseEncryptionKey not set, encrypted storage not available"
-            )
-            self.connection.dbFernet = None
 
         if defaultConnection:
             sqlobject.sqlhub.processConnection = self.connection
@@ -361,7 +243,66 @@ class DatabaseController:
                 self.applicationSchemaVersion,
             )
             return False
-        return True
+        return self._schemaInvariants
+
+    @property
+    def _schemaInvariants(self) -> bool:
+        """Validate the schema details that version metadata cannot prove."""
+        if any(
+            not self.connection.tableExists(table.sqlmeta.table) for table in TABLES
+        ):
+            return False
+        if self.connection.tableExists("person_secure_key_value"):
+            return False
+
+        if self.connection.dbName == "sqlite":
+            rows = self._rawCursor.execute("PRAGMA foreign_key_list(job)").fetchall()
+            cascades = {(row[2], row[6].upper()) for row in rows}
+            required_cascades = {("organization", "CASCADE"), ("person", "CASCADE")}
+        elif self.connection.dbName == "postgres":
+            self._rawCursor.execute(
+                """
+                SELECT tc.constraint_name, rc.delete_rule
+                FROM information_schema.table_constraints AS tc
+                JOIN information_schema.referential_constraints AS rc
+                  ON rc.constraint_schema = tc.constraint_schema
+                 AND rc.constraint_name = tc.constraint_name
+                WHERE tc.constraint_schema = current_schema()
+                  AND tc.table_name = 'job'
+                  AND tc.constraint_name IN (
+                      'organization_id_exists', 'person_id_exists'
+                  )
+                """
+            )
+            cascades = {(row[0], row[1].upper()) for row in self._rawCursor.fetchall()}
+            required_cascades = {
+                ("organization_id_exists", "CASCADE"),
+                ("person_id_exists", "CASCADE"),
+            }
+        elif self.connection.dbName == "mysql":
+            self._rawCursor.execute(
+                """
+                SELECT tc.constraint_name, rc.delete_rule
+                FROM information_schema.table_constraints AS tc
+                JOIN information_schema.referential_constraints AS rc
+                  ON rc.constraint_schema = tc.constraint_schema
+                 AND rc.constraint_name = tc.constraint_name
+                WHERE tc.constraint_schema = DATABASE()
+                  AND tc.table_name = 'job'
+                  AND tc.constraint_name IN (
+                      'job_organization_id_exists', 'job_person_id_exists'
+                  )
+                """
+            )
+            cascades = {(row[0], row[1].upper()) for row in self._rawCursor.fetchall()}
+            required_cascades = {
+                ("job_organization_id_exists", "CASCADE"),
+                ("job_person_id_exists", "CASCADE"),
+            }
+        else:
+            return False
+
+        return required_cascades <= cascades
 
     def _new(self):
         """Setup new database"""
@@ -390,31 +331,36 @@ class DatabaseController:
         """
         logger.debug("DatabaseController: Upgrading if possible")
 
-        # self._upgrade_to_schema_vX()
+        if self.applicationSchemaVersion != 1:
+            raise ValueError(
+                f"unsupported test_db schema version: {self.applicationSchemaVersion}"
+            )
+
+        try:
+            for migration in MIGRATIONS[self.connection.dbName]:
+                script = (
+                    files("test_db._schemas")
+                    .joinpath(migration)
+                    .read_text(encoding="utf-8")
+                )
+                if self.connection.dbName == "sqlite":
+                    self._raw.executescript(script)
+                else:
+                    for statement in script.split(";"):
+                        if statement.strip():
+                            self._rawCursor.execute(statement)
+                    self._raw.commit()
+        except KeyError as exc:
+            raise ValueError(
+                f"unsupported database engine: {self.connection.dbName}"
+            ) from exc
+        except Exception as exc:
+            raise ValueError("unable to upgrade test_db schema") from exc
 
         if not self.validSchema:
-            # upgrade has failed for some reason
-            logger.error("unable to upgrade")
             raise ValueError("unable to upgrade")
 
         logger.debug("DatabaseController: Upgrade successful")
-
-    # def _upgrade_to_schema_vX(self):
-    #     # Upgrade to application schema X
-    #     if (
-    #         self.applicationID == APPLICATION_ID
-    #         and self.applicationSchemaVersion == 1
-    #     ):
-    #         logger.info("Upgrading DB schema to vX")
-
-    #         # (sqlite doesn't allow alter on table with unique column)
-    #         self._rawCursor.execute("PRAGMA foreign_keys = OFF")
-
-    #         # Update tables here
-
-    #         self._rawCursor.execute("PRAGMA foreign_keys = ON")
-    #         self.applicationID = APPLICATION_ID
-    #         self.applicationSchemaVersion = CURRENT_APPLICATION_SCHEMA_VERSION
 
     def close(self):
         """Close the database"""
