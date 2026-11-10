@@ -184,11 +184,11 @@ for job in person.jobs:
 For MariaDB:
 
 ```bash
-mariadb -u root -h localhost -p < reset_mysql.sql
+mariadb -u root -h localhost -p < src/test_db/_schemas/reset_mysql.sql
 ```
 
 For PostgreSQL:
 
 ```bash
-psql -h localhost -U postgres -f reset_postgresql.sql
+psql -h localhost -U postgres -f src/test_db/_schemas/reset_postgresql.sql
 ```
