@@ -49,17 +49,6 @@ def test_duplicate_employee_id(temporary_db):
         )
 
 
-def test_byOrganizationAndPerson(temporary_db):
-    test_job = Job(connection=temporary_db.connection)
-
-    assert (
-        Job.byOrganizationAndPerson(
-            test_job.organization, test_job.person, connection=temporary_db.connection
-        )
-        is test_job
-    )
-
-
 def test_cascade_delete(temporary_db):
     test_job = Job(connection=temporary_db.connection)
 

@@ -23,7 +23,7 @@ class OrganizationKeyValue(SQLObject):
         value (StringCol):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
-        organizationKeyIndex (DatabaseIndex): unique index on (key, person)
+        organizationKeyIndex (DatabaseIndex): unique index on (key, organization)
     """
 
     organization: ForeignKey = ForeignKey("Organization", cascade=True, notNone=True)

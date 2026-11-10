@@ -23,7 +23,7 @@ class JobKeyValue(SQLObject):
         value (StringCol):
         createdAt (DateTimeCol): creation date
         updatedAt (DateTimeCol): last updated date
-        jobKeyIndex (DatabaseIndex): unique index on (key, person)
+        jobKeyIndex (DatabaseIndex): unique index on (key, job)
     """
 
     job: ForeignKey = ForeignKey("Job", cascade=True, notNone=True)

@@ -1,5 +1,4 @@
 import logging
-from typing import Self
 
 import faker
 import nanoid
@@ -12,7 +11,6 @@ from sqlobject import (
     SQLMultipleJoin,
     SQLObject,
     StringCol,
-    connectionForURI,
     events,
 )
 from typeid import TypeID
@@ -107,29 +105,6 @@ class Job(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
-
-    @classmethod
-    def byOrganizationAndPerson(
-        cls,
-        organization: Organization | int,
-        person: Person | int,
-        connection: connectionForURI = None,
-    ) -> Self:
-        """Locate jobs using unique index properties
-
-        Simulates SQLObject's automatic by{alternateID} functions
-
-        Args:
-            organization (Organization | int):
-            person (Person | int):
-            connection (connectionForURI):
-
-        Returns:
-            Self: Job
-        """
-        return cls.selectBy(
-            organization=organization, person=person, connection=connection
-        ).getOne()
 
 
 def handleJobRowCreatedSignal(instance, kwargs, post_funcs):

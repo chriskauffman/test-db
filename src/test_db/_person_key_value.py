@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class PersonKeyValue(SQLObject):
-    """Job Key/Value SQLObject
+    """Person Key/Value SQLObject
 
     Attributes:
         person (ForeignKey): entity who owns the key/value pair
