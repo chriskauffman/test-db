@@ -111,7 +111,12 @@ def test_person_key_value_list(capsys, monkeypatch, person, temporary_db):
 
 def test_person_key_value_view(capsys, monkeypatch, person, temporary_db):
     test_key = str(uuid.uuid4())
-    person.getKeyValueByKey(test_key, value="test value")
+    test_db.PersonKeyValue(
+        connection=temporary_db.connection,
+        key=test_key,
+        value="test value",
+        person=person,
+    )
     monkeypatch.setattr(
         "sys.argv",
         [

@@ -60,20 +60,6 @@ def test_byOrganizationAndPerson(temporary_db):
     )
 
 
-def test_getKeyValueByKey(temporary_db):
-    test_job = Job(connection=temporary_db.connection)
-    test_key_value = test_job.getKeyValueByKey("test_getKeyValueByKey")
-
-    assert isinstance(test_key_value, JobKeyValue)
-    assert test_key_value.key == "test_getKeyValueByKey"
-
-    test_key_value = test_job.getKeyValueByKey(
-        "test_getKeyValueByKey_2", value="test_getKeyValueByKey_value"
-    )
-
-    assert test_key_value.value == "test_getKeyValueByKey_value"
-
-
 def test_cascade_delete(temporary_db):
     test_job = Job(connection=temporary_db.connection)
 

@@ -89,7 +89,12 @@ def test_organization_key_value_list(capsys, monkeypatch, organization, temporar
 
 def test_organization_key_value_view(capsys, monkeypatch, organization, temporary_db):
     test_key = str(uuid.uuid4())
-    organization.getKeyValueByKey(test_key, value="test value")
+    test_db.OrganizationKeyValue(
+        connection=temporary_db.connection,
+        key=test_key,
+        value="test value",
+        organization=organization,
+    )
     monkeypatch.setattr(
         "sys.argv",
         [

@@ -16,7 +16,6 @@ from test_db._gid import validGID
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._organization_address import OrganizationAddress
 from test_db._organization_bank_account import OrganizationBankAccount
-from test_db._organization_key_value import OrganizationKeyValue
 from test_db._type_id_col import TypeIDCol
 
 fake = faker.Faker()
@@ -81,25 +80,6 @@ class Organization(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
-
-    def getKeyValueByKey(self, key: str, **kwargs) -> OrganizationKeyValue:
-        """Find and create an OrganizationKeyValue
-
-        Args:
-            key (str): name of the OrganizationKeyValue
-            **kwargs:
-
-        Returns:
-            OrganizationKeyValue:
-        """
-        try:
-            return self.keyValuesSelect.filter(
-                OrganizationKeyValue.q.key == key
-            ).getOne()
-        except SQLObjectNotFound:
-            return OrganizationKeyValue(
-                connection=self._connection, organization=self.id, key=key, **kwargs
-            )
 
 
 def handleOrganizationRowCreateSignal(instance, kwargs, post_funcs):

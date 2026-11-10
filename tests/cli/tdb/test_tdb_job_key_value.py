@@ -94,7 +94,12 @@ def test_job_key_value_list(capsys, monkeypatch, job, temporary_db):
 
 def test_job_key_value_view(capsys, monkeypatch, job, temporary_db):
     test_key = str(uuid.uuid4())
-    job.getKeyValueByKey(test_key, value="test value")
+    test_db.JobKeyValue(
+        connection=temporary_db.connection,
+        key=test_key,
+        value="test value",
+        job=job,
+    )
     monkeypatch.setattr(
         "sys.argv",
         [

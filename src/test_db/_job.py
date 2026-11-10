@@ -11,7 +11,6 @@ from sqlobject import (
     MultipleJoin,
     SQLMultipleJoin,
     SQLObject,
-    SQLObjectNotFound,
     StringCol,
     connectionForURI,
     events,
@@ -19,7 +18,6 @@ from sqlobject import (
 from typeid import TypeID
 
 from test_db._gid import validGID
-from test_db._job_key_value import JobKeyValue
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._organization import Organization
 from test_db._person import Person
@@ -132,23 +130,6 @@ class Job(SQLObject):
         return cls.selectBy(
             organization=organization, person=person, connection=connection
         ).getOne()
-
-    def getKeyValueByKey(self, key: str, **kwargs) -> JobKeyValue:
-        """Find and create an JobKeyValue
-
-        Args:
-            key (str): name of the JobKeyValue
-            **kwargs:
-
-        Returns:
-            JobKeyValue:
-        """
-        try:
-            return self.keyValuesSelect.filter(JobKeyValue.q.key == key).getOne()
-        except SQLObjectNotFound:
-            return JobKeyValue(
-                connection=self._connection, job=self.id, key=key, **kwargs
-            )
 
 
 def handleJobRowCreatedSignal(instance, kwargs, post_funcs):
