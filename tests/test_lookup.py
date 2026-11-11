@@ -1,33 +1,18 @@
 import pytest
-from formencode.validators import Invalid
 from sqlobject import SQLObjectNotFound
 
-from test_db._lookup import NotFoundError, lookup
+from test_db._lookup import get_key_value
 
 
-def _raise(exc):
-    def fn():
-        raise exc
+def test_get_key_value_reports_missing_key():
+    class MissingKeyValues:
+        sourceClass = type("Source", (), {"q": type("Query", (), {"key": "key"})})
 
-    return fn
+        def filter(self, condition):
+            return self
 
+        def getOne(self):
+            raise SQLObjectNotFound
 
-@pytest.mark.parametrize(
-    "exc", [Invalid("bad", None, None), SQLObjectNotFound("missing")]
-)
-def test_lookup_converts_to_not_found(exc):
-    with pytest.raises(NotFoundError):
-        lookup(_raise(exc))
-
-
-def test_lookup_does_not_hide_bugs():
-    with pytest.raises(KeyError):
-        lookup(_raise(KeyError("bug")))
-
-
-def test_lookup_returns_value():
-    assert lookup(lambda x: x, 1) == 1
-
-
-def test_lookup_passes_kwargs():
-    assert lookup(lambda *, value: value, value=1) == 1
+    with pytest.raises(SQLObjectNotFound, match="key 'missing' does not exist"):
+        get_key_value(MissingKeyValues(), "missing")

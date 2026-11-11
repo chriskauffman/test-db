@@ -187,28 +187,16 @@ removed `byOrganizationAndPerson` and `getKeyValueByKey` helpers. Call
 
 ```python
 from test_db import Job, PersonKeyValue
-from test_db._lookup import lookup
 
 # Replaces byOrganizationAndPerson
-job = lookup(
-    lambda: Job.selectBy(
-        organization=org,
-        person=person,
-    ).getOne()
-)
+job = Job.selectBy(organization=org, person=person).getOne()
 
 # Replaces getKeyValueByKey for a person
-key_value = lookup(
-    lambda: PersonKeyValue.selectBy(
-        person=person,
-        key="department",
-    ).getOne()
-)
+key_value = PersonKeyValue.selectBy(person=person, key="department").getOne()
 ```
 
-`lookup` converts SQLObject's not-found and validation exceptions into the
-package's `NotFoundError`. If multiple rows are valid, omit `getOne()` and
-iterate the `SelectResults` instead:
+If multiple rows are valid, omit `getOne()` and iterate the `SelectResults`
+instead:
 
 ```python
 jobs = Job.selectBy(organization=org, person=person)

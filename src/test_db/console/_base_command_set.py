@@ -1,9 +1,11 @@
 import logging
 
 from cmd2 import CommandSet
+from formencode.validators import Invalid
+from sqlobject import SQLObjectNotFound
 
 import test_db
-from test_db._lookup import NotFoundError, get_key_value, lookup
+from test_db._lookup import get_key_value
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +15,8 @@ class BaseCommandSet(CommandSet):
 
     def validate(self, fn, *args):
         try:
-            return lookup(fn, *args)
-        except NotFoundError as exc:
+            return fn(*args)
+        except (Invalid, SQLObjectNotFound) as exc:
             self._cmd.perror(f"error: {exc!s}")
             raise
 
