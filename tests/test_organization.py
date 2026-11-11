@@ -25,21 +25,6 @@ def test_autoCreateDependents_children(temporary_db):
     assert isinstance(test_organization.bankAccounts[0], OrganizationBankAccount)
 
 
-def test_getKeyValueByKey(temporary_db):
-    test_organization = Organization(connection=temporary_db.connection)
-
-    test_key_value = test_organization.getKeyValueByKey("test_getKeyValueByKey")
-
-    assert isinstance(test_key_value, OrganizationKeyValue)
-    assert test_key_value.key == "test_getKeyValueByKey"
-
-    test_key_value = test_organization.getKeyValueByKey(
-        "test_getKeyValueByKey_2", value="testAccessToken"
-    )
-
-    assert test_key_value.value == "testAccessToken"
-
-
 def test_cascade_delete(temporary_db):
     test_db.autoCreateDependents = False
     test_organization = Organization(connection=temporary_db.connection)

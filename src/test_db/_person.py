@@ -19,7 +19,6 @@ from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._person_address import PersonAddress
 from test_db._person_bank_account import PersonBankAccount
 from test_db._person_debit_card import PersonDebitCard
-from test_db._person_key_value import PersonKeyValue
 from test_db._type_id_col import TypeIDCol
 
 fake = faker.Faker()
@@ -115,23 +114,6 @@ class Person(SQLObject):
                 raise ValueError(f"Invalid gID value: {value}")
         else:
             self._SO_set_gID(TypeID(self._gIDPrefix))
-
-    def getKeyValueByKey(self, key: str, **kwargs) -> PersonKeyValue:
-        """Find and create an PersonKeyValue
-
-        Args:
-            key (str): name of the PersonKeyValue
-            **kwargs:
-
-        Returns:
-            PersonKeyValue:
-        """
-        try:
-            return self.keyValuesSelect.filter(PersonKeyValue.q.key == key).getOne()
-        except SQLObjectNotFound:
-            return PersonKeyValue(
-                connection=self._connection, person=self.id, key=key, **kwargs
-            )
 
 
 def handlePersonRowCreateSignal(instance, kwargs, post_funcs):

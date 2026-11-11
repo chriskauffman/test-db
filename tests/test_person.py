@@ -80,20 +80,6 @@ def test_autoCreateDependents_children(temporary_db):
     assert isinstance(test_person.debitCards[0], PersonDebitCard)
 
 
-def test_getKeyValueByKey(temporary_db):
-    test_person = Person(connection=temporary_db.connection)
-    test_key_value = test_person.getKeyValueByKey("test_getKeyValueByKey")
-
-    assert isinstance(test_key_value, PersonKeyValue)
-    assert test_key_value.key == "test_getKeyValueByKey"
-
-    test_key_value = test_person.getKeyValueByKey(
-        "test_getKeyValueByKey_2", value="testAccessToken"
-    )
-
-    assert test_key_value.value == "testAccessToken"
-
-
 def test_cascade_delete(temporary_db):
     test_db.autoCreateDependents = False
     test_person = Person(connection=temporary_db.connection)

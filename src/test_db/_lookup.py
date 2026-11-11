@@ -6,10 +6,10 @@ class NotFoundError(Exception):
     """Raised by lookup() when a row cannot be found or read."""
 
 
-def lookup(fn, *args):
+def lookup(fn, *args, **kwargs):
     """Call a row getter, raising NotFoundError for any not-found/invalid/undecryptable result."""
     try:
-        return fn(*args)
+        return fn(*args, **kwargs)
     except (Invalid, SQLObjectNotFound) as exc:
         raise NotFoundError(str(exc)) from exc
 

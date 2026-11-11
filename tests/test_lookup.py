@@ -27,3 +27,7 @@ def test_lookup_does_not_hide_bugs():
 
 def test_lookup_returns_value():
     assert lookup(lambda x: x, 1) == 1
+
+
+def test_lookup_passes_kwargs():
+    assert lookup(lambda *, value: value, value=1) == 1

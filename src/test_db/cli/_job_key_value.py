@@ -37,7 +37,7 @@ def job_key_value_delete(job_gid: str, key: str):
 @job_key_value_app.command("edit")
 def key_value_edit(job_gid: str, key: str):
     job = validate_job(job_gid)
-    key_value = job.getKeyValueByKey(key)
+    key_value = validate_key_value(job.keyValuesSelect, key)
     test_db.KeyValueView(key_value).edit()
 
 

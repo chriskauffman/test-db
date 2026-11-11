@@ -179,16 +179,57 @@ for job in person.jobs:
     print(f"Works at {job.organization.name}")
 ```
 
+### Replacing removed lookup helpers
+
+Use SQLObject's native `selectBy` and relationship attributes instead of the
+removed `byOrganizationAndPerson` and `getKeyValueByKey` helpers. Call
+`getOne()` when the query is expected to return exactly one row:
+
+```python
+from test_db import Job, PersonKeyValue
+from test_db._lookup import lookup
+
+# Replaces byOrganizationAndPerson
+job = lookup(
+    lambda: Job.selectBy(
+        organization=org,
+        person=person,
+    ).getOne()
+)
+
+# Replaces getKeyValueByKey for a person
+key_value = lookup(
+    lambda: PersonKeyValue.selectBy(
+        person=person,
+        key="department",
+    ).getOne()
+)
+```
+
+`lookup` converts SQLObject's not-found and validation exceptions into the
+package's `NotFoundError`. If multiple rows are valid, omit `getOne()` and
+iterate the `SelectResults` instead:
+
+```python
+jobs = Job.selectBy(organization=org, person=person)
+for job in jobs:
+    print(job.position)
+```
+
+Use `organization.keyValues` with `OrganizationKeyValue.selectBy(...)` or
+`job.keyValues` with `JobKeyValue.selectBy(...)` for the corresponding
+organization and job key/value records.
+
 ## Resetting Databases
 
 For MariaDB:
 
 ```bash
-mariadb -u root -h localhost -p < reset_mysql.sql
+mariadb -u root -h localhost -p < src/test_db/_schemas/reset_mysql.sql
 ```
 
 For PostgreSQL:
 
 ```bash
-psql -h localhost -U postgres -f reset_postgresql.sql
+psql -h localhost -U postgres -f src/test_db/_schemas/reset_postgresql.sql
 ```
