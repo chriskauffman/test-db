@@ -1,13 +1,16 @@
 import sys
 
+from formencode.validators import Invalid
+from sqlobject import SQLObjectNotFound
+
 import test_db
-from test_db._lookup import NotFoundError, get_key_value, lookup
+from test_db._lookup import get_key_value
 
 
 def validate(fn, *args):
     try:
-        return lookup(fn, *args)
-    except NotFoundError as exc:
+        return fn(*args)
+    except (Invalid, SQLObjectNotFound) as exc:
         sys.stderr.write(f"error: {exc!s}\n")
         sys.exit(1)
 
