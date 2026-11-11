@@ -149,10 +149,8 @@ def test_v1_to_v2_upgrade(migration_database):
     assert database.applicationSchemaVersion == 2
     assert database.validSchema
     assert not database.connection.tableExists("person_secure_key_value")
-    assert (
-        database._rawCursor.execute(
-            "SELECT count(*) FROM key_value "
-            "WHERE key_name LIKE 'TestDB_EncryptedPickleCol%'"
-        ).fetchone()[0]
-        == 0
+    database._rawCursor.execute(
+        "SELECT count(*) FROM key_value "
+        "WHERE key_name LIKE 'TestDB_EncryptedPickleCol%'"
     )
+    assert database._rawCursor.fetchone()[0] == 0
