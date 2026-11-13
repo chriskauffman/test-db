@@ -11,7 +11,7 @@ def test_address_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            "tdb_organization_address_add",
+            "organization_address_add",
             "quit",
         ],
     )
@@ -37,7 +37,7 @@ def test_address_delete(capsys, monkeypatch, temporary_db, organization):
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_address_delete {address.gID}",
+            f"organization_address_delete {address.gID}",
             "quit",
         ],
     )
@@ -62,7 +62,7 @@ def test_address_list(capsys, monkeypatch, temporary_db, organization):
         "sys.argv",
         [
             "tdb",
-            "tdb_organization_address_list",
+            "organization_address_list",
             "quit",
         ],
     )
@@ -84,7 +84,7 @@ def test_address_view(capsys, monkeypatch, temporary_db, organization):
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_address_view {address.gID}",
+            f"organization_address_view {address.gID}",
             "quit",
         ],
     )

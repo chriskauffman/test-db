@@ -1,10 +1,26 @@
 import sys
+from types import SimpleNamespace
+from typing import cast
 from unittest.mock import Mock
 
 import pytest
 from pydantic import SecretStr
 
 from test_db import tdb_console
+
+
+def test_tdb_alias_enables_legacy_command_names():
+    console = SimpleNamespace(
+        aliases={},
+        get_all_commands=lambda: ["job_list", "version"],
+        find_commandset_for_command=lambda command: command == "job_list",
+        poutput=Mock(),
+    )
+
+    tdb_console.Console.do_tdb_alias(cast(tdb_console.Console, console), None)
+
+    assert console.aliases == {"tdb_job_list": "job_list"}
+    console.poutput.assert_called_once_with("Legacy tdb_* aliases enabled")
 
 
 def test_version_command_does_not_initialize_default_paths(capsys, monkeypatch):

@@ -22,7 +22,7 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_organization_bank_account_add(self, args):
+    def do_organization_bank_account_add(self, args):
         if args.organization_gid:
             new_bank_account = test_db.OrganizationBankAccount(
                 organization=self.validate_organization(args.organization_gid)
@@ -50,17 +50,17 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_bank_account_delete(self, args):
+    def do_organization_bank_account_delete(self, args):
         bank_account = self.validate_bank_account(args.gid)
         bank_account.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_bank_account_edit(self, args):
+    def do_organization_bank_account_edit(self, args):
         bank_account = self.validate_bank_account(args.gid)
         test_db.BankAccountView(bank_account).edit()
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_organization_bank_account_list(self, args):
+    def do_organization_bank_account_list(self, args):
         if args.organization_gid:
             organization = self.validate_organization(args.organization_gid)
             test_db.BankAccountView.list(organization.bankAccounts)
@@ -68,6 +68,6 @@ class OrganizationBankAccountCommandSet(BaseCommandSet):
             test_db.BankAccountView.list(test_db.OrganizationBankAccount.select())
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_bank_account_view(self, args):
+    def do_organization_bank_account_view(self, args):
         bank_account = self.validate_bank_account(args.gid)
         test_db.BankAccountView(bank_account).viewDetails()

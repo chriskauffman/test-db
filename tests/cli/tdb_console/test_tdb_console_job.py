@@ -11,7 +11,7 @@ def test_job_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            "tdb_job_add",
+            "job_add",
             "quit",
         ],
     )
@@ -33,7 +33,7 @@ def test_job_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_job_delete {job.gID}",
+            f"job_delete {job.gID}",
             "quit",
         ],
     )
@@ -56,7 +56,7 @@ def test_job_list(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "tdb_job_list",
+            "job_list",
             "quit",
         ],
     )
@@ -76,7 +76,7 @@ def test_job_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_job_view {job.gID}",
+            f"job_view {job.gID}",
             "quit",
         ],
     )

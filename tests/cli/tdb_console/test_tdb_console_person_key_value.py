@@ -12,7 +12,7 @@ def test_person_key_value_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            f"tdb_person_key_value_add {person.gID} test_person_key_value_add test_person_key_value_add_value",
+            f"person_key_value_add {person.gID} test_person_key_value_add test_person_key_value_add_value",
             "quit",
         ],
     )
@@ -43,7 +43,7 @@ def test_person_key_value_delete(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_key_value_delete {person.gID} {person_key_value.key}",
+            f"person_key_value_delete {person.gID} {person_key_value.key}",
             "quit",
         ],
     )
@@ -74,7 +74,7 @@ def test_person_key_value_list(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_key_value_list {person.gID}",
+            f"person_key_value_list {person.gID}",
             "quit",
         ],
     )
@@ -100,7 +100,7 @@ def test_person_key_value_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_key_value_view {person.gID} {personal_key_value.key}",
+            f"person_key_value_view {person.gID} {personal_key_value.key}",
             "quit",
         ],
     )

@@ -13,7 +13,7 @@ def test_validate_job_not_found(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_job_view {invalid_gid}",
+            f"job_view {invalid_gid}",
             "quit",
         ],
     )
@@ -35,7 +35,7 @@ def test_validate_person_not_found(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_view {invalid_gid}",
+            f"person_view {invalid_gid}",
             "quit",
         ],
     )
@@ -56,7 +56,7 @@ def test_validate_organization_not_found(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_view {invalid_gid}",
+            f"organization_view {invalid_gid}",
             "quit",
         ],
     )
@@ -77,7 +77,7 @@ def test_key_value_validate_not_found(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_key_value_view {invalid_key}",
+            f"key_value_view {invalid_key}",
             "quit",
         ],
     )
@@ -98,7 +98,7 @@ def test_key_value_delete_restricted_key(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_key_value_delete {restricted_key}",
+            f"key_value_delete {restricted_key}",
             "quit",
         ],
     )
@@ -120,7 +120,7 @@ def test_key_value_edit_restricted_key(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            f"tdb_key_value_edit {restricted_key}",
+            f"key_value_edit {restricted_key}",
             "quit",
         ],
     )
@@ -144,7 +144,7 @@ def test_key_value_add_duplicate(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            f"tdb_key_value_add {key} duplicate_value",
+            f"key_value_add {key} duplicate_value",
             "quit",
         ],
     )
@@ -173,7 +173,7 @@ def test_key_value_list(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "tdb_key_value_list",
+            "key_value_list",
             "quit",
         ],
     )

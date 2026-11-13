@@ -13,7 +13,7 @@ def test_key_value_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            f"tdb_key_value_add {uuid.uuid4()} test_key_value_add_value",
+            f"key_value_add {uuid.uuid4()} test_key_value_add_value",
             "quit",
         ],
     )
@@ -40,7 +40,7 @@ def test_job_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_key_value_delete {key_value.key}",
+            f"key_value_delete {key_value.key}",
             "quit",
         ],
     )
@@ -65,7 +65,7 @@ def test_key_value_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_key_value_view {key_value.key}",
+            f"key_value_view {key_value.key}",
             "quit",
         ],
     )

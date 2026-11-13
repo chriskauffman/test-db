@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class OrgnizationCommandSet(BaseCommandSet):
     DEFAULT_CATEGORY = "Database"
 
-    def do_tdb_organization_add(self, args):
+    def do_organization_add(self, args):
         new_organization = test_db.Organization()
         if self._cmd.command_interaction:
             test_db.OrganizationView(new_organization).edit()
@@ -25,19 +25,19 @@ class OrgnizationCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_delete(self, args):
+    def do_organization_delete(self, args):
         organization = self.validate_organization(args.gid)
         organization.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_edit(self, args):
+    def do_organization_edit(self, args):
         organization = self.validate_organization(args.gid)
         test_db.OrganizationView(organization).edit()
 
-    def do_tdb_organization_list(self, args):
+    def do_organization_list(self, args):
         test_db.OrganizationView.list()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_organization_view(self, args):
+    def do_organization_view(self, args):
         organization = self.validate_organization(args.gid)
         test_db.OrganizationView(organization).viewDetails()

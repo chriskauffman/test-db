@@ -16,18 +16,18 @@ class KeyValueCommandSet(BaseCommandSet):
     def validate_key(self, key: str):
         return self.validate(test_db.KeyValue.byKey, key)
 
-    tdb_add_key_value_parser = cmd2.Cmd2ArgumentParser()
-    tdb_add_key_value_parser.add_argument(
+    add_key_value_parser = cmd2.Cmd2ArgumentParser()
+    add_key_value_parser.add_argument(
         "key",
         help="key",
     )
-    tdb_add_key_value_parser.add_argument(
+    add_key_value_parser.add_argument(
         "value",
         help="value",
     )
 
-    @cmd2.with_argparser(tdb_add_key_value_parser)
-    def do_tdb_key_value_add(self, args):
+    @cmd2.with_argparser(add_key_value_parser)
+    def do_key_value_add(self, args):
         try:
             key_value = test_db.KeyValue(key=args.key, value=args.value)
             if self._cmd.command_interaction:
@@ -42,7 +42,7 @@ class KeyValueCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(key_parser)
-    def do_tdb_key_value_delete(self, args):
+    def do_key_value_delete(self, args):
         if args.key in test_db.RESTRICTED_KEYS:
             self._cmd.perror(
                 f"error: key '{args.key}' is restricted and cannot be deleted"
@@ -52,7 +52,7 @@ class KeyValueCommandSet(BaseCommandSet):
         key_value.destroySelf()
 
     @cmd2.with_argparser(key_parser)
-    def do_tdb_key_value_edit(self, args):
+    def do_key_value_edit(self, args):
         if args.key in test_db.RESTRICTED_KEYS:
             self._cmd.perror(
                 f"error: key '{args.key}' is restricted and cannot be edited"
@@ -61,10 +61,10 @@ class KeyValueCommandSet(BaseCommandSet):
         key_value = self.validate_key(args.key)
         test_db.KeyValueView(key_value).edit()
 
-    def do_tdb_key_value_list(self, args):
+    def do_key_value_list(self, args):
         test_db.KeyValueView.list(test_db.KeyValue.select())
 
     @cmd2.with_argparser(key_parser)
-    def do_tdb_key_value_view(self, args):
+    def do_key_value_view(self, args):
         key_value = self.validate_key(args.key)
         test_db.KeyValueView(key_value).viewDetails()

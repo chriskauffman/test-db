@@ -13,22 +13,22 @@ logger = logging.getLogger(__name__)
 class PersonKeyValueCommandSet(BaseCommandSet):
     DEFAULT_CATEGORY = "Database"
 
-    tdb_person_key_value_add_parser = cmd2.Cmd2ArgumentParser()
-    tdb_person_key_value_add_parser.add_argument(
+    person_key_value_add_parser = cmd2.Cmd2ArgumentParser()
+    person_key_value_add_parser.add_argument(
         "person_gid",
         help="person or organization's gID",
     )
-    tdb_person_key_value_add_parser.add_argument(
+    person_key_value_add_parser.add_argument(
         "key",
         help="key",
     )
-    tdb_person_key_value_add_parser.add_argument(
+    person_key_value_add_parser.add_argument(
         "value",
         help="value",
     )
 
-    @cmd2.with_argparser(tdb_person_key_value_add_parser)
-    def do_tdb_person_key_value_add(self, args):
+    @cmd2.with_argparser(person_key_value_add_parser)
+    def do_person_key_value_add(self, args):
         person = self.validate_person(args.person_gid)
         try:
             key_value = test_db.PersonKeyValue(
@@ -41,45 +41,45 @@ class PersonKeyValueCommandSet(BaseCommandSet):
         except DuplicateEntryError as exc:
             self._cmd.perror(f"error: {exc!s}")
 
-    tdb_person_key_value_delete_parser = cmd2.Cmd2ArgumentParser()
-    tdb_person_key_value_delete_parser.add_argument(
+    person_key_value_delete_parser = cmd2.Cmd2ArgumentParser()
+    person_key_value_delete_parser.add_argument(
         "person_gid",
         help="person's gID",
     )
-    tdb_person_key_value_delete_parser.add_argument(
+    person_key_value_delete_parser.add_argument(
         "key",
         help="key",
     )
 
-    @cmd2.with_argparser(tdb_person_key_value_delete_parser)
-    def do_tdb_person_key_value_delete(self, args):
+    @cmd2.with_argparser(person_key_value_delete_parser)
+    def do_person_key_value_delete(self, args):
         person = self.validate_person(args.person_gid)
         key_value = self.validate_key_value(person.keyValuesSelect, args.key)
         key_value.destroySelf()
 
-    tdb_person_key_value_list_parser = cmd2.Cmd2ArgumentParser()
-    tdb_person_key_value_list_parser.add_argument(
+    person_key_value_list_parser = cmd2.Cmd2ArgumentParser()
+    person_key_value_list_parser.add_argument(
         "person_gid",
         help="person's gID",
     )
 
-    @cmd2.with_argparser(tdb_person_key_value_list_parser)
-    def do_tdb_person_key_value_list(self, args):
+    @cmd2.with_argparser(person_key_value_list_parser)
+    def do_person_key_value_list(self, args):
         person = self.validate_person(args.person_gid)
         test_db.KeyValueView.list(person.keyValues)
 
-    tdb_person_key_value_view_parser = cmd2.Cmd2ArgumentParser()
-    tdb_person_key_value_view_parser.add_argument(
+    person_key_value_view_parser = cmd2.Cmd2ArgumentParser()
+    person_key_value_view_parser.add_argument(
         "person_gid",
         help="person's gID",
     )
-    tdb_person_key_value_view_parser.add_argument(
+    person_key_value_view_parser.add_argument(
         "key",
         help="key",
     )
 
-    @cmd2.with_argparser(tdb_person_key_value_view_parser)
-    def do_tdb_person_key_value_view(self, args):
+    @cmd2.with_argparser(person_key_value_view_parser)
+    def do_person_key_value_view(self, args):
         person = self.validate_person(args.person_gid)
         key_value = self.validate_key_value(person.keyValuesSelect, args.key)
         test_db.KeyValueView(key_value).viewDetails()

@@ -11,7 +11,7 @@ def test_address_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            "tdb_person_address_add",
+            "person_address_add",
             "quit",
         ],
     )
@@ -35,7 +35,7 @@ def test_address_delete(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_address_delete {address.gID}",
+            f"person_address_delete {address.gID}",
             "quit",
         ],
     )
@@ -58,7 +58,7 @@ def test_address_list(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            "tdb_person_address_list",
+            "person_address_list",
             "quit",
         ],
     )
@@ -78,7 +78,7 @@ def test_address_view(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_address_view {address.gID}",
+            f"person_address_view {address.gID}",
             "quit",
         ],
     )
