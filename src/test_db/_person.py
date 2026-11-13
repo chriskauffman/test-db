@@ -12,9 +12,8 @@ from sqlobject import (
     StringCol,
     events,
 )
-from typeid import TypeID
 
-from test_db._gid import validGID
+from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._person_address import PersonAddress
 from test_db._person_bank_account import PersonBankAccount
@@ -25,7 +24,7 @@ fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
-class Person(SQLObject):
+class Person(GIDMixin, SQLObject):
     """Person SQLObject
 
     Attributes:
@@ -53,6 +52,7 @@ class Person(SQLObject):
     """
 
     _gIDPrefix: str = "p"
+    _set_gID = GIDMixin._set_gID
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
 
@@ -105,15 +105,6 @@ class Person(SQLObject):
             self._SO_set_email(
                 f"{self.firstName.lower()}.{self.lastName.lower()}@example.com"
             )
-
-    def _set_gID(self, value):
-        if value:
-            if validGID(value, self._gIDPrefix):
-                self._SO_set_gID(value)
-            else:
-                raise ValueError(f"Invalid gID value: {value}")
-        else:
-            self._SO_set_gID(TypeID(self._gIDPrefix))
 
 
 def handlePersonRowCreateSignal(instance, kwargs, post_funcs):

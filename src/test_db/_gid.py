@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from typeid import TypeID
 from typeid.errors import (
@@ -8,6 +9,19 @@ from typeid.errors import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class GIDMixin:
+    """Shared gID setter for SQLObject models."""
+
+    def _set_gID(self: Any, value):
+        if value:
+            if validGID(value, self._gIDPrefix):
+                self._SO_set_gID(value)
+            else:
+                raise ValueError(f"Invalid gID value: {value}")
+        else:
+            self._SO_set_gID(TypeID(self._gIDPrefix))
 
 
 def validGID(gID: str | TypeID, gIDPrefix: str | None = None) -> bool:

@@ -13,9 +13,8 @@ from sqlobject import (
     StringCol,
     events,
 )
-from typeid import TypeID
 
-from test_db._gid import validGID
+from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._type_id_col import TypeIDCol
 
@@ -35,7 +34,7 @@ def fake_credit_card_expire_to_date() -> date:
     return expire_date.replace(day=num_days)
 
 
-class PersonDebitCard(SQLObject):
+class PersonDebitCard(GIDMixin, SQLObject):
     """DebitCard SQLObject
 
     Attributes:
@@ -51,6 +50,7 @@ class PersonDebitCard(SQLObject):
     """
 
     _gIDPrefix: str = "dc"
+    _set_gID = GIDMixin._set_gID
 
     person: ForeignKey = ForeignKey("Person", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
@@ -79,15 +79,6 @@ class PersonDebitCard(SQLObject):
             self.expirationDate.strftime("%m/%y") if self.expirationDate else "N/A"
         )
         return f"{self.gID}, ...{card_number}, {expiration_date}, {self.ownerID}"
-
-    def _set_gID(self, value):
-        if value:
-            if validGID(value, self._gIDPrefix):
-                self._SO_set_gID(value)
-            else:
-                raise ValueError(f"Invalid gID value: {value}")
-        else:
-            self._SO_set_gID(TypeID(self._gIDPrefix))
 
 
 def handlePersonDebitCardRowCreateSignal(instance, kwargs, post_funcs):
