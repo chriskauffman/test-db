@@ -74,7 +74,11 @@ class PersonDebitCard(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.gID}, ...{self.cardNumber[-4:]}, {self.expirationDate.strftime('%m/%y')}, {self.ownerID}"
+        card_number = self.cardNumber[-4:] if self.cardNumber else "N/A"
+        expiration_date = (
+            self.expirationDate.strftime("%m/%y") if self.expirationDate else "N/A"
+        )
+        return f"{self.gID}, ...{card_number}, {expiration_date}, {self.ownerID}"
 
     def _set_gID(self, value):
         if value:

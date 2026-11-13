@@ -17,6 +17,35 @@ def test_callback_closes_database_controller(monkeypatch, tmp_path):
         log_level_screen="ERROR",
     )
     monkeypatch.setattr(tdb, "Settings", Mock(return_value=settings))
+    initialize_default_paths = Mock()
+    monkeypatch.setattr(tdb, "initialize_default_paths", initialize_default_paths)
+    monkeypatch.setattr(tdb.test_db, "DatabaseController", Mock(return_value=database))
+    ctx = Mock(invoked_subcommand="person")
+    ctx.call_on_close.side_effect = lambda callback: callback()
+
+    tdb.tdb_app_callback(ctx)
+
+    database.close.assert_called_once_with()
+    initialize_default_paths.assert_not_called()
+
+
+def test_callback_uses_screen_logging_when_log_file_is_unwritable(
+    monkeypatch, tmp_path
+):
+    database = Mock()
+    settings = SimpleNamespace(
+        db_connection_uri=SecretStr("sqlite:test.sqlite"),
+        log_path=tmp_path,
+        log_level_file="DEBUG",
+        log_level_screen="ERROR",
+    )
+    monkeypatch.setattr(tdb, "Settings", Mock(return_value=settings))
+    monkeypatch.setattr(tdb, "initialize_default_paths", Mock())
+    monkeypatch.setattr(
+        tdb.logging.handlers,
+        "RotatingFileHandler",
+        Mock(side_effect=PermissionError("read-only log directory")),
+    )
     monkeypatch.setattr(tdb.test_db, "DatabaseController", Mock(return_value=database))
     ctx = Mock(invoked_subcommand="person")
     ctx.call_on_close.side_effect = lambda callback: callback()

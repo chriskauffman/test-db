@@ -76,7 +76,8 @@ class PersonBankAccount(SQLObject):
 
     @property
     def visualID(self):
-        return f"{self.gID}, {self.routingNumber}, ...{self.accountNumber[-4:]}, {self.ownerID}"
+        account_number = self.accountNumber[-4:] if self.accountNumber else "N/A"
+        return f"{self.gID}, {self.routingNumber}, ...{account_number}, {self.ownerID}"
 
     def _set_gID(self, value):
         if value:
