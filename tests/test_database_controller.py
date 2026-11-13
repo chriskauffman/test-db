@@ -9,7 +9,7 @@ import sqlobject
 from sqlobject.dberrors import IntegrityError
 
 import test_db
-from test_db._database_controller import DatabaseController
+from test_db._database_controller import DatabaseController, _migration_statements
 from test_db._person import Person
 from test_db._person_address import PersonAddress
 
@@ -205,6 +205,12 @@ def test_mysql_migration_skips_completed_foreign_key_steps():
         "AND constraint_name = %s",
         ("job_organization_id_exists",),
     )
+
+
+def test_migration_statements_strip_sql_comments():
+    assert list(_migration_statements("-- comment\nALTER TABLE job DROP FOREIGN KEY fk;")) == [
+        "ALTER TABLE job DROP FOREIGN KEY fk"
+    ]
 
 
 def test_failed_upgrade_restores_sqlite_foreign_keys(tmp_path, monkeypatch):

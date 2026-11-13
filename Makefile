@@ -1,7 +1,7 @@
 # test-db Makefile
 
 .PHONY: build
-build: lint type-check test security-audit src/test_db/_schemas/v2.sql
+build: lint type-check test test-migration-sqlite security-audit src/test_db/_schemas/v2.sql
 	uv build
 
 .PHONY:
@@ -28,6 +28,27 @@ type-check:
 .PHONY: test
 test:
 	uv run pytest
+
+.PHONY: test-mysql
+test-mysql:
+	PYTEST_DATABASE_CONNECTION_URI="mysql://test_db@nas02/test_db" uv run pytest
+
+.PHONY: test-postgresql
+test-postgresql:
+	PYTEST_DATABASE_CONNECTION_URI="postgresql://test_db@nas02/test_db" uv run pytest
+
+.PHONY: test-migration-mysql
+test-migration-mysql:
+	PYTEST_MIGRATION_DATABASE_CONNECTION_URI="mysql://test_db@nas02/test_db" PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS=1 uv run pytest -m migration tests/migrations
+
+.PHONY: test-migration-postgresql
+test-migration-postgresql:
+	PYTEST_MIGRATION_DATABASE_CONNECTION_URI="postgresql://test_db@nas02/test_db" PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS=1 uv run pytest -m migration tests/migrations
+
+.PHONY: test-migration-sqlite
+test-migration-sqlite:
+	cp tests/data/test_schema_v2.sqlite tmp/v1_migration_test.sqlite
+	PYTEST_MIGRATION_DATABASE_CONNECTION_URI="sqlite:tmp/v1_migration_test.sqlite" PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS=1 uv run pytest -m migration tests/migrations
 
 .PHONY: coverage
 coverage:
