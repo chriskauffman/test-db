@@ -39,7 +39,9 @@ def connectionForURI(uri: str):
     )
     if uses_config:
         if adapted_uri in TheURIOpener.cachedURIs:
-            return TheURIOpener.cachedURIs[adapted_uri]
+            connection = TheURIOpener.cachedURIs[adapted_uri]
+            TheURIOpener.cachedURIs[uri] = connection
+            return connection
         connection = _MySQLConfigConnection.connectionFromURI(adapted_uri)
         TheURIOpener.cachedURIs[adapted_uri] = connection
         TheURIOpener.cachedURIs[uri] = connection

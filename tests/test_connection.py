@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from unittest.mock import Mock
 from urllib.parse import parse_qsl, urlsplit
 
 from sqlobject.dbconnection import TheURIOpener
@@ -8,6 +9,7 @@ from test_db._connection import (
     _with_mysql_defaults,
     connectionForURI,
 )
+from test_db._database_controller import DatabaseController
 
 
 def test_mysql_uri_loads_local_client_config(monkeypatch, tmp_path):
@@ -62,3 +64,23 @@ def test_with_mysql_defaults_leaves_other_uris_unchanged(monkeypatch, tmp_path):
     assert _with_mysql_defaults("mysql://test_db:secret@nas02/test_db") == (
         "mysql://test_db:secret@nas02/test_db"
     )
+
+
+def test_failed_initialization_removes_mysql_cache_aliases():
+    connection = Mock()
+    uri = "mysql://test_db@nas02/test_db"
+    adapted_uri = f"{uri}?read_default_file=%2Ftmp%2Fmy.cnf"
+    opener = TheURIOpener
+    opener.cachedURIs[uri] = connection
+    opener.cachedURIs[adapted_uri] = connection
+
+    database = object.__new__(DatabaseController)
+    database._connection_was_cached = False
+    database._connection_uri = uri
+    database.connection = connection
+
+    database._cleanup_failed_initialization()
+
+    assert uri not in opener.cachedURIs
+    assert adapted_uri not in opener.cachedURIs
+    connection.close.assert_called_once_with()

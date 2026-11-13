@@ -128,8 +128,9 @@ class DatabaseController:
             del self._raw
         if not self._connection_was_cached:
             opener = sqlobject.connectionForURI.__self__
-            if opener.cachedURIs.get(self._connection_uri) is self.connection:
-                opener.cachedURIs.pop(self._connection_uri)
+            for uri, connection in list(opener.cachedURIs.items()):
+                if connection is self.connection:
+                    opener.cachedURIs.pop(uri)
             self.connection.close()
 
     def _initialize_without_cleanup(
