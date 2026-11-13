@@ -1,5 +1,52 @@
 # Changelog
 
+## [1.0.0](https://github.com/chriskauffman/test-db/compare/v0.8.3...v1.0.0) (2026-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **tdb_console:** commands are no longer prefixed with 'tdb_'
+* remove NotFoundError
+* remove byOrganizationAndPerson
+* removed getKeyValueByKey
+* add schema v2 migrations and upgrade handling
+* remove obsolete encryption configuration
+* Removing PersonSecureKeyValue and EncryptedPickleCol
+
+### Features
+
+* add schema v2 migrations and upgrade handling ([6f845b5](https://github.com/chriskauffman/test-db/commit/6f845b5dab6857d8311b4f6d5d0a1ab8cea831cd))
+* improved lookup to habdle keyword args ([4043fba](https://github.com/chriskauffman/test-db/commit/4043fba2655d24f0ee614ae25f8d32ff7cad34ac))
+* remove byOrganizationAndPerson ([3ce053b](https://github.com/chriskauffman/test-db/commit/3ce053b00cefd9893862db8d809638933e9144f1))
+* remove NotFoundError ([58189d9](https://github.com/chriskauffman/test-db/commit/58189d91fe03c9469051311506a8fd72af9bd386)), closes [#158](https://github.com/chriskauffman/test-db/issues/158)
+* remove obsolete encryption configuration ([9ff9216](https://github.com/chriskauffman/test-db/commit/9ff9216525976a98d608823fc3daf8cdd379934c))
+* removed getKeyValueByKey ([a5fa680](https://github.com/chriskauffman/test-db/commit/a5fa680d3797e95bdd7bb3e09b5d3578e0224ddb))
+* Removing PersonSecureKeyValue and EncryptedPickleCol ([5b189c4](https://github.com/chriskauffman/test-db/commit/5b189c43ab06e08d62fc067f01bdeaeda37d8886)), closes [#153](https://github.com/chriskauffman/test-db/issues/153)
+* replaced script file with alias command ([25fb98c](https://github.com/chriskauffman/test-db/commit/25fb98c15239b3672ebd07591fb29c8f76fcd622)), closes [#157](https://github.com/chriskauffman/test-db/issues/157)
+* **tdb_console:** commands are no longer prefixed with 'tdb_' ([74302a0](https://github.com/chriskauffman/test-db/commit/74302a0fd7467b90355a00c97608e8a16df1f114)), closes [#157](https://github.com/chriskauffman/test-db/issues/157)
+
+
+### Bug Fixes
+
+* **database:** harden schema upgrades ([3e01bbb](https://github.com/chriskauffman/test-db/commit/3e01bbbf6947c9de57d8e2f5ac7d284d82bd1b8f))
+* harden CLI startup and nullable displays ([8e5628a](https://github.com/chriskauffman/test-db/commit/8e5628a847413a4d22dbd32ad120ab5821800df8))
+* missed reference to getKeyValueByKey ([d779f51](https://github.com/chriskauffman/test-db/commit/d779f511d750dc3fbd2fc2dea301d2fd30922f71))
+* **mysql:** clear failed connection aliases ([330bbd8](https://github.com/chriskauffman/test-db/commit/330bbd84fad2085b636ea6626b7f02952b70dde3))
+* **mysql:** support MariaDB migration tests ([108489c](https://github.com/chriskauffman/test-db/commit/108489c078749dc58ef66d0478f02e15c1710448))
+* **mysql:** support MariaDB migration tests ([cfb859c](https://github.com/chriskauffman/test-db/commit/cfb859c976d7c21ceaaffe3759ca775354144544))
+
+
+### Documentation
+
+* add instructions on how to use lookup in place of byOrganizationAndPerson and getKeyValueByKey ([c03d230](https://github.com/chriskauffman/test-db/commit/c03d230809dcba2e395d68f5e8ca9c63e4a8ad89))
+* capturing last planning files ([3a91eba](https://github.com/chriskauffman/test-db/commit/3a91ebaee1ba5aea114b956787699fcc7ac0c956))
+* clarify migration test targets ([aa2e3b1](https://github.com/chriskauffman/test-db/commit/aa2e3b14a906d71787f7d6bcc3350ffdc7e685c2))
+* improved example code ([c9f6178](https://github.com/chriskauffman/test-db/commit/c9f617871bc5c1627b6052f64ea4182e295750c4))
+* notes on tdb-console changes ([7a7ba4b](https://github.com/chriskauffman/test-db/commit/7a7ba4bf7c34e721ccc427c712dd023cae9dd293)), closes [#157](https://github.com/chriskauffman/test-db/issues/157)
+* record issue 158 planning ([77de852](https://github.com/chriskauffman/test-db/commit/77de852d9fbdf346fd3ec1735118491019c5eb00)), closes [#158](https://github.com/chriskauffman/test-db/issues/158)
+* saving issue review notes ([7b409b2](https://github.com/chriskauffman/test-db/commit/7b409b2c23bd64c89f3c48d80528391fdd22f6fa))
+* saving planning docs ([86d3b04](https://github.com/chriskauffman/test-db/commit/86d3b0447eb746adcefb4b35bba9b325e5fe80e0)), closes [#153](https://github.com/chriskauffman/test-db/issues/153)
+
 ## [0.8.3](https://github.com/chriskauffman/test-db/compare/v0.8.2...v0.8.3) (2026-11-07)
 
 
