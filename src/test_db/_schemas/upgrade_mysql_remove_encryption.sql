@@ -2,7 +2,7 @@
 --
 -- person_secure_key_value stores encrypted values that the current release
 -- cannot read. Dropping it is intentionally destructive to those values.
--- MySQL commits DDL implicitly, so this script is not wrapped in a transaction.
+-- MySQL commits DDL implicitly; the runner makes the foreign-key steps resumable.
 
 ALTER TABLE job DROP FOREIGN KEY job_organization_id_exists;
 ALTER TABLE job DROP FOREIGN KEY job_person_id_exists;

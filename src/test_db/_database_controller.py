@@ -1,4 +1,5 @@
 import logging
+import re
 import sqlite3
 from datetime import UTC, datetime
 from importlib.resources import files
@@ -248,13 +249,17 @@ class DatabaseController:
     @property
     def _schemaInvariants(self) -> bool:
         """Validate the schema details that version metadata cannot prove."""
-        if any(
-            not self.connection.tableExists(table.sqlmeta.table) for table in TABLES
-        ):
+        return self._schema_invariants(set(self.connection.listTables()))
+
+    def _schema_invariants(self, tables: set[str]) -> bool:
+        if any(table.sqlmeta.table not in tables for table in TABLES):
             return False
-        if self.connection.tableExists("person_secure_key_value"):
+        if "person_secure_key_value" in tables:
             return False
 
+        return self._required_cascades_present()
+
+    def _required_cascades_present(self) -> bool:
         if self.connection.dbName == "sqlite":
             rows = self._rawCursor.execute("PRAGMA foreign_key_list(job)").fetchall()
             cascades = {(row[2], row[6].upper()) for row in rows}
@@ -337,30 +342,104 @@ class DatabaseController:
             )
 
         try:
+            if self.connection.dbName == "sqlite":
+                self._rawCursor.execute("PRAGMA foreign_keys=off")
+            if self.connection.dbName != "mysql":
+                self._rawCursor.execute("BEGIN")
+
             for migration in MIGRATIONS[self.connection.dbName]:
                 script = (
                     files("test_db._schemas")
                     .joinpath(migration)
                     .read_text(encoding="utf-8")
                 )
-                if self.connection.dbName == "sqlite":
-                    self._raw.executescript(script)
-                else:
-                    for statement in script.split(";"):
-                        if statement.strip():
-                            self._rawCursor.execute(statement)
-                    self._raw.commit()
+                for statement in script.split(";"):
+                    if statement.strip():
+                        self._execute_migration_statement(statement)
+
+            if not self._raw_schema_is_valid():
+                raise ValueError("unable to upgrade")
+            self._raw.commit()
         except KeyError as exc:
             raise ValueError(
                 f"unsupported database engine: {self.connection.dbName}"
             ) from exc
         except Exception as exc:
+            self._raw.rollback()
+            if self.connection.dbName == "sqlite":
+                self._rawCursor.execute("PRAGMA foreign_keys=on")
             raise ValueError("unable to upgrade test_db schema") from exc
+        if self.connection.dbName == "sqlite":
+            self._rawCursor.execute("PRAGMA foreign_keys=on")
 
         if not self.validSchema:
             raise ValueError("unable to upgrade")
 
         logger.debug("DatabaseController: Upgrade successful")
+
+    def _raw_schema_is_valid(self) -> bool:
+        """Validate the migrated schema using the migration connection."""
+        if self.connection.dbName == "sqlite":
+            self._rawCursor.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            )
+        elif self.connection.dbName == "postgres":
+            self._rawCursor.execute(
+                "SELECT table_name FROM information_schema.tables "
+                "WHERE table_schema = current_schema()"
+            )
+        elif self.connection.dbName == "mysql":
+            self._rawCursor.execute(
+                "SELECT table_name FROM information_schema.tables "
+                "WHERE table_schema = DATABASE()"
+            )
+        else:
+            return False
+
+        tables = {row[0] for row in self._rawCursor.fetchall()}
+
+        self._rawCursor.execute(
+            "SELECT key_name, value FROM key_value "
+            "WHERE key_name IN "
+            "('TestDB_ApplicationID', 'TestDB_ApplicationSchemaVersion')"
+        )
+        metadata = dict(self._rawCursor.fetchall())
+        if metadata.get("TestDB_ApplicationID") != str(APPLICATION_ID):
+            return False
+        if metadata.get("TestDB_ApplicationSchemaVersion") != str(
+            CURRENT_APPLICATION_SCHEMA_VERSION
+        ):
+            return False
+
+        return self._schema_invariants(tables)
+
+    def _execute_migration_statement(self, statement: str) -> None:
+        """Execute one migration statement, tolerating resumed MariaDB DDL."""
+        if self.connection.dbName == "mysql":
+            drop = re.search(
+                r"ALTER TABLE job DROP FOREIGN KEY (\w+)", statement, re.IGNORECASE
+            )
+            add = re.search(
+                r"ALTER TABLE job ADD CONSTRAINT (\w+)", statement, re.IGNORECASE
+            )
+            constraint = drop or add
+            if constraint:
+                constraint_name = constraint.group(1)
+                self._rawCursor.execute(
+                    "SELECT delete_rule "
+                    "FROM information_schema.referential_constraints "
+                    "WHERE constraint_schema = DATABASE() "
+                    "AND constraint_name = %s",
+                    (constraint_name,),
+                )
+                row = self._rawCursor.fetchone()
+                delete_rule = row[0].upper() if row else None
+                if drop and delete_rule is None:
+                    return
+                if add and delete_rule == "CASCADE":
+                    return
+
+        self._rawCursor.execute(statement)
 
     def close(self):
         """Close the database"""

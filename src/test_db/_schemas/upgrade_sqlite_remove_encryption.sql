@@ -2,10 +2,7 @@
 --
 -- person_secure_key_value stores encrypted values that the current release
 -- cannot read. Dropping it is intentionally destructive to those values.
-
-PRAGMA foreign_keys=off;
-
-BEGIN TRANSACTION;
+-- DatabaseController supplies the transaction and foreign-key mode.
 
 CREATE TABLE job_new (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,7 +43,3 @@ WHERE key_name IN (
 UPDATE key_value
 SET value = '2'
 WHERE key_name = 'TestDB_ApplicationSchemaVersion';
-
-COMMIT;
-
-PRAGMA foreign_keys=on;
