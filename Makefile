@@ -46,7 +46,7 @@ test-migration-postgresql:
 	PYTEST_MIGRATION_DATABASE_CONNECTION_URI="postgresql://test_db@nas02/test_db" PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS=1 uv run pytest -m migration tests/migrations
 
 .PHONY: test-migration-sqlite
-test-migration-sqlite:
+test-migration-sqlite: | tmp
 	cp tests/data/test_schema_v2.sqlite tmp/v1_migration_test.sqlite
 	PYTEST_MIGRATION_DATABASE_CONNECTION_URI="sqlite:tmp/v1_migration_test.sqlite" PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS=1 uv run pytest -m migration tests/migrations
 
