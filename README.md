@@ -116,6 +116,11 @@ Migration tests are destructive and use a separate connection variable. Point
 `PYTEST_ALLOW_DESTRUCTIVE_MIGRATION_TESTS=1`, then run
 `uv run pytest -m migration tests/migrations`.
 
+The Make targets are `test-migration-sqlite`, `test-migration-postgresql`, and
+`test-migration-mysql`. The PostgreSQL and MySQL targets require disposable
+databases; reset a database after a failed destructive migration before
+rerunning the target.
+
 ### Protecting Credentials & Standard Config Files
 
 `test-db` protects sensitive database credentials by handling connection strings as `SecretStr` objects, masking credentials in debug logs, error dumps, and console outputs.
