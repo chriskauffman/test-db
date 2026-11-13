@@ -53,6 +53,7 @@ def _migration_statements(script: str):
     script = re.sub(r"(?m)^[ \t]*--[^\r\n]*(?:\r?\n|$)", "", script)
     return (statement.strip() for statement in script.split(";") if statement.strip())
 
+
 logger = logging.getLogger(__name__)
 
 

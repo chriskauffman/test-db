@@ -208,9 +208,9 @@ def test_mysql_migration_skips_completed_foreign_key_steps():
 
 
 def test_migration_statements_strip_sql_comments():
-    assert list(_migration_statements("-- comment\nALTER TABLE job DROP FOREIGN KEY fk;")) == [
-        "ALTER TABLE job DROP FOREIGN KEY fk"
-    ]
+    assert list(
+        _migration_statements("-- comment\nALTER TABLE job DROP FOREIGN KEY fk;")
+    ) == ["ALTER TABLE job DROP FOREIGN KEY fk"]
 
 
 def test_failed_upgrade_restores_sqlite_foreign_keys(tmp_path, monkeypatch):
