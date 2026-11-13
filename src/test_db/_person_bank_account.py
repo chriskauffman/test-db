@@ -113,17 +113,11 @@ def handlePersonBankAccountRowCreateSignal(instance, kwargs, post_funcs):
         while True:
             kwargs["accountNumber"] = fake.bank_account_number()
             try:
-                if kwargs.get("connection"):
-                    PersonBankAccount.selectBy(
-                        routingNumber=kwargs["routingNumber"],
-                        accountNumber=kwargs["accountNumber"],
-                        connection=kwargs["connection"],
-                    ).getOne()
-                else:
-                    PersonBankAccount.selectBy(
-                        routingNumber=kwargs["routingNumber"],
-                        accountNumber=kwargs["accountNumber"],
-                    ).getOne()
+                PersonBankAccount.selectBy(
+                    routingNumber=kwargs["routingNumber"],
+                    accountNumber=kwargs["accountNumber"],
+                    connection=kwargs.get("connection"),
+                ).getOne()
             except SQLObjectNotFound:
                 break
 

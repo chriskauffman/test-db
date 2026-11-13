@@ -77,21 +77,13 @@ def handleOrganizationAddressRowCreateSignal(instance, kwargs, post_funcs):
             kwargs["region"] = fake.state_abbr()
             kwargs["postalCode"] = fake.postcode()
             try:
-                if kwargs.get("connection"):
-                    OrganizationAddress.selectBy(
-                        street=kwargs["street"],
-                        locality=kwargs["locality"],
-                        region=kwargs["region"],
-                        postalCode=kwargs["postalCode"],
-                        connection=kwargs["connection"],
-                    ).getOne()
-                else:
-                    OrganizationAddress.selectBy(
-                        street=kwargs["street"],
-                        locality=kwargs["locality"],
-                        region=kwargs["region"],
-                        postalCode=kwargs["postalCode"],
-                    ).getOne()
+                OrganizationAddress.selectBy(
+                    street=kwargs["street"],
+                    locality=kwargs["locality"],
+                    region=kwargs["region"],
+                    postalCode=kwargs["postalCode"],
+                    connection=kwargs.get("connection"),
+                ).getOne()
             except SQLObjectNotFound:
                 break
 
