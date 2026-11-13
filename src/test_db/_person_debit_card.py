@@ -87,12 +87,10 @@ def handlePersonDebitCardRowCreateSignal(instance, kwargs, post_funcs):
         while True:
             kwargs["cardNumber"] = fake.credit_card_number()
             try:
-                if kwargs.get("connection"):
-                    PersonDebitCard.selectBy(
-                        cardNumber=kwargs["cardNumber"], connection=kwargs["connection"]
-                    ).getOne()
-                else:
-                    PersonDebitCard.selectBy(cardNumber=kwargs["cardNumber"]).getOne()
+                PersonDebitCard.selectBy(
+                    cardNumber=kwargs["cardNumber"],
+                    connection=kwargs.get("connection"),
+                ).getOne()
             except SQLObjectNotFound:
                 break
 

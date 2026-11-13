@@ -65,6 +65,32 @@ def test_init():
     assert db_schema_is_valid(db)
 
 
+def test_default_connection_create_signals(tmp_path):
+    db = DatabaseController(
+        f"sqlite:{tmp_path / 'default-connection.sqlite'}",
+        defaultConnection=True,
+    )
+    previous_connection = sqlobject.sqlhub.processConnection
+    previous_auto_create_dependents = test_db.autoCreateDependents
+    test_db.autoCreateDependents = True
+    try:
+        person = test_db.Person()
+        organization = test_db.Organization()
+
+        assert person._connection is db.connection
+        assert organization._connection is db.connection
+        assert sqlobject.sqlhub.processConnection is db.connection
+        assert test_db.PersonAddress.select().count() == 1
+        assert test_db.PersonBankAccount.select().count() == 1
+        assert test_db.PersonDebitCard.select().count() == 1
+        assert test_db.OrganizationAddress.select().count() == 1
+        assert test_db.OrganizationBankAccount.select().count() == 1
+    finally:
+        test_db.autoCreateDependents = previous_auto_create_dependents
+        db.close()
+        sqlobject.sqlhub.processConnection = previous_connection
+
+
 def test_multiple_memory_connections(tmp_path_factory):
     db_1 = DatabaseController(test_db.IN_MEMORY_DB_FILE)
     db_2 = DatabaseController(test_db.IN_MEMORY_DB_FILE)

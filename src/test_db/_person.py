@@ -114,17 +114,11 @@ def handlePersonRowCreateSignal(instance, kwargs, post_funcs):
             kwargs["firstName"] = fake.first_name()
             kwargs["lastName"] = fake.last_name()
             try:
-                if kwargs.get("connection"):
-                    Person.selectBy(
-                        firstName=kwargs["firstName"],
-                        lastName=kwargs["lastName"],
-                        connection=kwargs["connection"],
-                    ).getOne()
-                else:
-                    Person.selectBy(
-                        firstName=kwargs["firstName"],
-                        lastName=kwargs["lastName"],
-                    ).getOne()
+                Person.selectBy(
+                    firstName=kwargs["firstName"],
+                    lastName=kwargs["lastName"],
+                    connection=kwargs.get("connection"),
+                ).getOne()
             except SQLObjectNotFound:
                 break
     if kwargs.get("firstName") is None:
@@ -139,10 +133,7 @@ def handlePersonRowCreateSignal(instance, kwargs, post_funcs):
             f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}.{nanoid.generate(size=5)}@example.com",
         ):
             try:
-                if kwargs.get("connection"):
-                    Person.byEmail(email, connection=kwargs["connection"])
-                else:
-                    Person.byEmail(email)
+                Person.byEmail(email, connection=kwargs.get("connection"))
             except SQLObjectNotFound:
                 kwargs["email"] = email
                 break
@@ -150,25 +141,20 @@ def handlePersonRowCreateSignal(instance, kwargs, post_funcs):
         while True:
             kwargs["phoneNumber"] = fake.basic_phone_number()
             try:
-                if kwargs.get("connection"):
-                    Person.selectBy(
-                        phoneNumber=kwargs["phoneNumber"],
-                        connection=kwargs["connection"],
-                    ).getOne()
-                else:
-                    Person.selectBy(phoneNumber=kwargs["phoneNumber"]).getOne()
+                Person.selectBy(
+                    phoneNumber=kwargs["phoneNumber"],
+                    connection=kwargs.get("connection"),
+                ).getOne()
             except SQLObjectNotFound:
                 break
     if kwargs.get("socialSecurityNumber") is None:
         while True:
             kwargs["socialSecurityNumber"] = fake.ssn()
             try:
-                if kwargs.get("connection"):
-                    Person.bySocialSecurityNumber(
-                        kwargs["socialSecurityNumber"], connection=kwargs["connection"]
-                    )
-                else:
-                    Person.bySocialSecurityNumber(kwargs["socialSecurityNumber"])
+                Person.bySocialSecurityNumber(
+                    kwargs["socialSecurityNumber"],
+                    connection=kwargs.get("connection"),
+                )
             except SQLObjectNotFound:
                 break
 

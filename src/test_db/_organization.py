@@ -79,25 +79,17 @@ def handleOrganizationRowCreateSignal(instance, kwargs, post_funcs):
         while True:
             kwargs["name"] = fake.company()
             try:
-                if kwargs.get("connection"):
-                    Organization.byName(kwargs["name"], connection=kwargs["connection"])
-                else:
-                    Organization.byName(kwargs["name"])
+                Organization.byName(kwargs["name"], connection=kwargs.get("connection"))
             except SQLObjectNotFound:
                 break
     if kwargs.get("employerIdentificationNumber") is None:
         while True:
             kwargs["employerIdentificationNumber"] = fake.ein()
             try:
-                if kwargs.get("connection"):
-                    Organization.byEmployerIdentificationNumber(
-                        kwargs["employerIdentificationNumber"],
-                        connection=kwargs["connection"],
-                    )
-                else:
-                    Organization.byEmployerIdentificationNumber(
-                        kwargs["employerIdentificationNumber"]
-                    )
+                Organization.byEmployerIdentificationNumber(
+                    kwargs["employerIdentificationNumber"],
+                    connection=kwargs.get("connection"),
+                )
             except SQLObjectNotFound:
                 break
 
