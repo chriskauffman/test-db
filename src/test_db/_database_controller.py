@@ -7,6 +7,7 @@ from importlib.resources import files
 import sqlobject
 from pydantic import SecretStr
 
+from test_db._connection import connectionForURI
 from test_db._global_database_options import _GlobalDatabaseOptions
 from test_db._job import Job
 from test_db._job_key_value import JobKeyValue
@@ -46,6 +47,11 @@ MIGRATIONS = {
     "postgres": ("upgrade_postgres_remove_encryption.sql",),
     "mysql": ("upgrade_mysql_remove_encryption.sql",),
 }
+
+
+def _migration_statements(script: str):
+    script = re.sub(r"(?m)^[ \t]*--[^\r\n]*(?:\r?\n|$)", "", script)
+    return (statement.strip() for statement in script.split(";") if statement.strip())
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +98,7 @@ class DatabaseController:
         uri = self.connectionURI.get_secret_value()
         opener = sqlobject.connectionForURI.__self__
         self._connection_was_cached = uri in opener.cachedURIs
-        self.connection = sqlobject.connectionForURI(uri)
+        self.connection = connectionForURI(uri)
         self._connection_uri = uri
         self._initialize(
             defaultConnection=defaultConnection,
@@ -122,8 +128,9 @@ class DatabaseController:
             del self._raw
         if not self._connection_was_cached:
             opener = sqlobject.connectionForURI.__self__
-            if opener.cachedURIs.get(self._connection_uri) is self.connection:
-                opener.cachedURIs.pop(self._connection_uri)
+            for uri, connection in list(opener.cachedURIs.items()):
+                if connection is self.connection:
+                    opener.cachedURIs.pop(uri)
             self.connection.close()
 
     def _initialize_without_cleanup(
@@ -353,9 +360,8 @@ class DatabaseController:
                     .joinpath(migration)
                     .read_text(encoding="utf-8")
                 )
-                for statement in script.split(";"):
-                    if statement.strip():
-                        self._execute_migration_statement(statement)
+                for statement in _migration_statements(script):
+                    self._execute_migration_statement(statement)
 
             if not self._raw_schema_is_valid():
                 raise ValueError("unable to upgrade")
