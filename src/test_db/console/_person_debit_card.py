@@ -22,7 +22,7 @@ class PersonDebitCardCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_person_debit_card_add(self, args):
+    def do_person_debit_card_add(self, args):
         if args.person_gid:
             new_debit_card = test_db.PersonDebitCard(
                 person=self.validate_person(args.person_gid)
@@ -50,17 +50,17 @@ class PersonDebitCardCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_debit_card_delete(self, args):
+    def do_person_debit_card_delete(self, args):
         debit_card = self.validate_debit_card(args.gid)
         debit_card.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_debit_card_edit(self, args):
+    def do_person_debit_card_edit(self, args):
         debit_card = self.validate_debit_card(args.gid)
         test_db.DebitCardView(debit_card).edit()
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_person_debit_card_list(self, args):
+    def do_person_debit_card_list(self, args):
         if args.person_gid:
             person = self.validate_person(args.person_gid)
             test_db.DebitCardView.list(person.debitCards)
@@ -68,6 +68,6 @@ class PersonDebitCardCommandSet(BaseCommandSet):
             test_db.DebitCardView.list(test_db.PersonDebitCard.select())
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_debit_card_view(self, args):
+    def do_person_debit_card_view(self, args):
         debit_card = self.validate_debit_card(args.gid)
         test_db.DebitCardView(debit_card).viewDetails()

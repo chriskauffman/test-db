@@ -12,18 +12,18 @@ logger = logging.getLogger(__name__)
 class JobCommandSet(BaseCommandSet):
     DEFAULT_CATEGORY = "Database"
 
-    tdb_job_add_parser = cmd2.Cmd2ArgumentParser()
-    tdb_job_add_parser.add_argument(
+    job_add_parser = cmd2.Cmd2ArgumentParser()
+    job_add_parser.add_argument(
         "--organization_gid",
         help="related organization's gID",
     )
-    tdb_job_add_parser.add_argument(
+    job_add_parser.add_argument(
         "--person_gid",
         help="related person's gID",
     )
 
-    @cmd2.with_argparser(tdb_job_add_parser)
-    def do_tdb_job_add(self, args):
+    @cmd2.with_argparser(job_add_parser)
+    def do_job_add(self, args):
         organization = None
         person = None
         if args.organization_gid:
@@ -42,19 +42,19 @@ class JobCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_job_delete(self, args):
+    def do_job_delete(self, args):
         job = self.validate_job(args.gid)
         job.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_job_edit(self, args):
+    def do_job_edit(self, args):
         job = self.validate_job(args.gid)
         test_db.JobView(job).edit()
 
-    def do_tdb_job_list(self, args):
+    def do_job_list(self, args):
         test_db.JobView.list()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_job_view(self, args):
+    def do_job_view(self, args):
         job = self.validate_job(args.gid)
         test_db.JobView(job).viewDetails()

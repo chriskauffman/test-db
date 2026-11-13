@@ -11,7 +11,7 @@ def test_bank_account_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            "tdb_person_bank_account_add",
+            "person_bank_account_add",
             "quit",
         ],
     )
@@ -39,7 +39,7 @@ def test_bank_account_delete(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_bank_account_delete {bank_account.gID}",
+            f"person_bank_account_delete {bank_account.gID}",
             "quit",
         ],
     )
@@ -66,7 +66,7 @@ def test_bank_account_list(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            "tdb_person_bank_account_list",
+            "person_bank_account_list",
             "quit",
         ],
     )
@@ -88,7 +88,7 @@ def test_bank_account_view(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_bank_account_view {bank_account.gID}",
+            f"person_bank_account_view {bank_account.gID}",
             "quit",
         ],
     )

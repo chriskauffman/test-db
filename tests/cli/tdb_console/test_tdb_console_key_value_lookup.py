@@ -55,7 +55,7 @@ def test_missing_key_is_lookup_only(
         return original_create(instance, *args, **kwargs)
 
     monkeypatch.setattr(key_value_class, "_create", track_create)
-    console_command = f"tdb_{command.replace('-', '_')}_{operation}"
+    console_command = f"{command.replace('-', '_')}_{operation}"
     monkeypatch.setattr(
         "sys.argv", ["tdb", f"{console_command} {owner.gID} {key}", "quit"]
     )

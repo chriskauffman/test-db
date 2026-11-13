@@ -12,7 +12,7 @@ def test_organization_key_value_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            f"tdb_organization_key_value_add {organization.gID} test_key_value_add test_key_value_add_value",
+            f"organization_key_value_add {organization.gID} test_key_value_add test_key_value_add_value",
             "quit",
         ],
     )
@@ -43,7 +43,7 @@ def test_organization_key_value_delete(capsys, monkeypatch, temporary_db, organi
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_key_value_delete {organization.gID} {organization_key_value.key}",
+            f"organization_key_value_delete {organization.gID} {organization_key_value.key}",
             "quit",
         ],
     )
@@ -74,7 +74,7 @@ def test_organization_key_value_list(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_key_value_list {organization.gID}",
+            f"organization_key_value_list {organization.gID}",
             "quit",
         ],
     )
@@ -100,7 +100,7 @@ def test_organization_key_value_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_key_value_view {organization.gID} {organization_key_value.key}",
+            f"organization_key_value_view {organization.gID} {organization_key_value.key}",
             "quit",
         ],
     )

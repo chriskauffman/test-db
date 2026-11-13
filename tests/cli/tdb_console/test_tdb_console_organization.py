@@ -11,7 +11,7 @@ def test_organization_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            "tdb_organization_add",
+            "organization_add",
             "quit",
         ],
     )
@@ -36,7 +36,7 @@ def test_organization_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_delete {organization.gID}",
+            f"organization_delete {organization.gID}",
             "quit",
         ],
     )
@@ -59,7 +59,7 @@ def test_organization_list(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "tdb_organization_list",
+            "organization_list",
             "quit",
         ],
     )
@@ -79,7 +79,7 @@ def test_organization_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_organization_view {organization.gID}",
+            f"organization_view {organization.gID}",
             "quit",
         ],
     )

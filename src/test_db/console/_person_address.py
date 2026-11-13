@@ -22,7 +22,7 @@ class PersonAddressCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_person_address_add(self, args):
+    def do_person_address_add(self, args):
         if args.person_gid:
             new_address = test_db.PersonAddress(
                 person=self.validate_person(args.person_gid)
@@ -50,17 +50,17 @@ class PersonAddressCommandSet(BaseCommandSet):
     )
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_address_delete(self, args):
+    def do_person_address_delete(self, args):
         address = self.validate_address(args.gid)
         address.destroySelf()
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_address_edit(self, args):
+    def do_person_address_edit(self, args):
         address = self.validate_address(args.gid)
         test_db.AddressView(address).edit()
 
     @cmd2.with_argparser(optional_related_entity_parser)
-    def do_tdb_person_address_list(self, args):
+    def do_person_address_list(self, args):
         if args.person_gid:
             person = self.validate_person(args.person_gid)
             test_db.AddressView.list(person.addresses)
@@ -68,6 +68,6 @@ class PersonAddressCommandSet(BaseCommandSet):
             test_db.AddressView.list(test_db.PersonAddress.select())
 
     @cmd2.with_argparser(gid_parser)
-    def do_tdb_person_address_view(self, args):
+    def do_person_address_view(self, args):
         address = self.validate_address(args.gid)
         test_db.AddressView(address).viewDetails()

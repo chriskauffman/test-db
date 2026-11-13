@@ -11,22 +11,22 @@ logger = logging.getLogger(__name__)
 
 
 class JobKeyValueCommandSet(BaseCommandSet):
-    tdb_job_key_value_add_parser = cmd2.Cmd2ArgumentParser()
-    tdb_job_key_value_add_parser.add_argument(
+    job_key_value_add_parser = cmd2.Cmd2ArgumentParser()
+    job_key_value_add_parser.add_argument(
         "job_gid",
         help="person or organization's gID",
     )
-    tdb_job_key_value_add_parser.add_argument(
+    job_key_value_add_parser.add_argument(
         "key",
         help="key",
     )
-    tdb_job_key_value_add_parser.add_argument(
+    job_key_value_add_parser.add_argument(
         "value",
         help="value",
     )
 
-    @cmd2.with_argparser(tdb_job_key_value_add_parser)
-    def do_tdb_job_key_value_add(self, args):
+    @cmd2.with_argparser(job_key_value_add_parser)
+    def do_job_key_value_add(self, args):
         job = self.validate_job(args.job_gid)
         try:
             key_value = test_db.JobKeyValue(
@@ -39,45 +39,45 @@ class JobKeyValueCommandSet(BaseCommandSet):
         except DuplicateEntryError as exc:
             self._cmd.perror(f"error: {exc!s}")
 
-    tdb_job_key_value_delete_parser = cmd2.Cmd2ArgumentParser()
-    tdb_job_key_value_delete_parser.add_argument(
+    job_key_value_delete_parser = cmd2.Cmd2ArgumentParser()
+    job_key_value_delete_parser.add_argument(
         "job_gid",
         help="person's gID",
     )
-    tdb_job_key_value_delete_parser.add_argument(
+    job_key_value_delete_parser.add_argument(
         "key",
         help="key",
     )
 
-    @cmd2.with_argparser(tdb_job_key_value_delete_parser)
-    def do_tdb_job_key_value_delete(self, args):
+    @cmd2.with_argparser(job_key_value_delete_parser)
+    def do_job_key_value_delete(self, args):
         job = self.validate_job(args.job_gid)
         key_value = self.validate_key_value(job.keyValuesSelect, args.key)
         key_value.destroySelf()
 
-    tdb_job_key_value_list_parser = cmd2.Cmd2ArgumentParser()
-    tdb_job_key_value_list_parser.add_argument(
+    job_key_value_list_parser = cmd2.Cmd2ArgumentParser()
+    job_key_value_list_parser.add_argument(
         "job_gid",
         help="job's gID",
     )
 
-    @cmd2.with_argparser(tdb_job_key_value_list_parser)
-    def do_tdb_job_key_value_list(self, args):
+    @cmd2.with_argparser(job_key_value_list_parser)
+    def do_job_key_value_list(self, args):
         job = self.validate_job(args.job_gid)
         test_db.KeyValueView.list(job.keyValues)
 
-    tdb_job_key_value_view_parser = cmd2.Cmd2ArgumentParser()
-    tdb_job_key_value_view_parser.add_argument(
+    job_key_value_view_parser = cmd2.Cmd2ArgumentParser()
+    job_key_value_view_parser.add_argument(
         "job_gid",
         help="job's gID",
     )
-    tdb_job_key_value_view_parser.add_argument(
+    job_key_value_view_parser.add_argument(
         "key",
         help="key",
     )
 
-    @cmd2.with_argparser(tdb_job_key_value_view_parser)
-    def do_tdb_job_key_value_view(self, args):
+    @cmd2.with_argparser(job_key_value_view_parser)
+    def do_job_key_value_view(self, args):
         job = self.validate_job(args.job_gid)
         key_value = self.validate_key_value(job.keyValuesSelect, args.key)
         test_db.KeyValueView(key_value).viewDetails()

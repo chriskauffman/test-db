@@ -11,7 +11,7 @@ def test_debit_card_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            "tdb_person_debit_card_add",
+            "person_debit_card_add",
             "quit",
         ],
     )
@@ -37,7 +37,7 @@ def test_debit_card_delete(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_debit_card_delete {debit_card.gID}",
+            f"person_debit_card_delete {debit_card.gID}",
             "quit",
         ],
     )
@@ -62,7 +62,7 @@ def test_debit_card_list(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            "tdb_person_debit_card_list",
+            "person_debit_card_list",
             "quit",
         ],
     )
@@ -84,7 +84,7 @@ def test_debit_card_view(capsys, monkeypatch, temporary_db, person):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_debit_card_view {debit_card.gID}",
+            f"person_debit_card_view {debit_card.gID}",
             "quit",
         ],
     )

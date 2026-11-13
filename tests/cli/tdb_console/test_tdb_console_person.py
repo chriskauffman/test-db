@@ -11,7 +11,7 @@ def test_person_add(capsys, monkeypatch, temporary_db):
         [
             "tdb",
             "set command_interaction false",
-            "tdb_person_add",
+            "person_add",
             "quit",
         ],
     )
@@ -33,7 +33,7 @@ def test_person_delete(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_delete {person.gID}",
+            f"person_delete {person.gID}",
             "quit",
         ],
     )
@@ -56,7 +56,7 @@ def test_person_list(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            "tdb_person_list",
+            "person_list",
             "quit",
         ],
     )
@@ -76,7 +76,7 @@ def test_person_view(capsys, monkeypatch, temporary_db):
         "sys.argv",
         [
             "tdb",
-            f"tdb_person_view {person.gID}",
+            f"person_view {person.gID}",
             "quit",
         ],
     )
