@@ -13,9 +13,8 @@ from sqlobject import (
     StringCol,
     events,
 )
-from typeid import TypeID
 
-from test_db._gid import validGID
+from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._organization import Organization
 from test_db._person import Person
@@ -36,7 +35,7 @@ fake = faker.Faker()
 fake.add_provider(FakeEmployment)
 
 
-class Job(SQLObject):
+class Job(GIDMixin, SQLObject):
     """Job SQLObject
 
     Attributes:
@@ -56,6 +55,7 @@ class Job(SQLObject):
     """
 
     _gIDPrefix: str = "j"
+    _set_gID = GIDMixin._set_gID
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     description: StringCol = StringCol(default=None)
@@ -96,15 +96,6 @@ class Job(SQLObject):
             viewItems.append(str(self.person.gID))
             viewItems.append(self.person.lastName[:10])
         return ", ".join(viewItems)
-
-    def _set_gID(self, value):
-        if value:
-            if validGID(value, self._gIDPrefix):
-                self._SO_set_gID(value)
-            else:
-                raise ValueError(f"Invalid gID value: {value}")
-        else:
-            self._SO_set_gID(TypeID(self._gIDPrefix))
 
 
 def handleJobRowCreatedSignal(instance, kwargs, post_funcs):

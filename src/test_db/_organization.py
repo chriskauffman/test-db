@@ -10,9 +10,8 @@ from sqlobject import (
     StringCol,
     events,
 )
-from typeid import TypeID
 
-from test_db._gid import validGID
+from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._organization_address import OrganizationAddress
 from test_db._organization_bank_account import OrganizationBankAccount
@@ -22,7 +21,7 @@ fake = faker.Faker()
 logger = logging.getLogger(__name__)
 
 
-class Organization(SQLObject):
+class Organization(GIDMixin, SQLObject):
     """Organization SQLObject
 
     Attributes:
@@ -45,6 +44,7 @@ class Organization(SQLObject):
     """
 
     _gIDPrefix: str = "o"
+    _set_gID = GIDMixin._set_gID
 
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
     name: StringCol = StringCol(alternateID=True, default=fake.company)
@@ -71,15 +71,6 @@ class Organization(SQLObject):
     @property
     def visualID(self):
         return f"{self.gID} {self.name}"
-
-    def _set_gID(self, value):
-        if value:
-            if validGID(value, self._gIDPrefix):
-                self._SO_set_gID(value)
-            else:
-                raise ValueError(f"Invalid gID value: {value}")
-        else:
-            self._SO_set_gID(TypeID(self._gIDPrefix))
 
 
 def handleOrganizationRowCreateSignal(instance, kwargs, post_funcs):

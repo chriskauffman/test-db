@@ -14,9 +14,8 @@ from sqlobject import (
     connectionForURI,
     events,
 )
-from typeid import TypeID
 
-from test_db._gid import validGID
+from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._type_id_col import TypeIDCol
 
@@ -39,7 +38,7 @@ fake = faker.Faker()
 fake.add_provider(TestDBBankAccount)
 
 
-class OrganizationBankAccount(SQLObject):
+class OrganizationBankAccount(GIDMixin, SQLObject):
     """BankAccount SQLObject
 
     Attributes:
@@ -54,6 +53,7 @@ class OrganizationBankAccount(SQLObject):
     """
 
     _gIDPrefix: str = "ba"
+    _set_gID = GIDMixin._set_gID
 
     organization: ForeignKey = ForeignKey("Organization", cascade=True, default=None)
     gID: TypeIDCol = TypeIDCol(alternateID=True, default=None)
@@ -78,15 +78,6 @@ class OrganizationBankAccount(SQLObject):
     def visualID(self):
         account_number = self.accountNumber[-4:] if self.accountNumber else "N/A"
         return f"{self.gID}, {self.routingNumber}, ...{account_number}, {self.ownerID}"
-
-    def _set_gID(self, value):
-        if value:
-            if validGID(value, self._gIDPrefix):
-                self._SO_set_gID(value)
-            else:
-                raise ValueError(f"Invalid gID value: {value}")
-        else:
-            self._SO_set_gID(TypeID(self._gIDPrefix))
 
     @classmethod
     def byRoutingAndAccountNumber(
