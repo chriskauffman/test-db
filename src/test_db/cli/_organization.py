@@ -5,8 +5,8 @@ import typer
 from rich.progress import track
 
 import test_db
+from test_db import cli
 
-from ._typer_options import _TyperOptions
 from ._validate import validate_organization
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ organization_app = typer.Typer()
 @organization_app.command("add")
 def organization_add():
     organization = test_db.Organization()
-    if _TyperOptions().interactive:
+    if cli.interactive:
         test_db.OrganizationView(organization).edit()
     print(organization.gID)
 

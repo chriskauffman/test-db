@@ -5,8 +5,8 @@ import typer
 from rich.progress import track
 
 import test_db
+from test_db import cli
 
-from ._typer_options import _TyperOptions
 from ._validate import validate, validate_organization
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def organization_address_add(organization_gid: str | None = None):
         )
     else:
         new_address = test_db.OrganizationAddress()
-    if _TyperOptions().interactive:
+    if cli.interactive:
         test_db.AddressView(new_address).edit()
     print(new_address.gID)
 

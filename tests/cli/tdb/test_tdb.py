@@ -5,7 +5,8 @@ import pytest
 from pydantic import SecretStr
 from typer.testing import CliRunner
 
-from test_db import tdb
+from test_db import cli, tdb
+from test_db.cli import _person
 
 
 def test_callback_closes_database_controller(monkeypatch, tmp_path):
@@ -189,3 +190,19 @@ def test_version_does_not_initialize_default_paths(monkeypatch):
 
     assert result.exit_code == 0
     initialize.assert_not_called()
+
+
+def test_person_add_reads_interactive_option(monkeypatch):
+    person = Mock(gID="person-gid")
+    view = Mock()
+    person_factory = Mock(return_value=person)
+    view_factory = Mock(return_value=view)
+    monkeypatch.setattr(_person.test_db, "Person", person_factory)
+    monkeypatch.setattr(_person.test_db, "PersonView", view_factory)
+    monkeypatch.setattr(cli, "interactive", True)
+
+    _person.person_add()
+
+    person_factory.assert_called_once_with()
+    view_factory.assert_called_once_with(person)
+    view.edit.assert_called_once_with()

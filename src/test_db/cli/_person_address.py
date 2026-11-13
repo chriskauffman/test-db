@@ -5,8 +5,8 @@ import typer
 from rich.progress import track
 
 import test_db
+from test_db import cli
 
-from ._typer_options import _TyperOptions
 from ._validate import validate, validate_person
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def person_address_add(person_gid: str | None = None):
         new_address = test_db.PersonAddress(person=validate_person(person_gid))
     else:
         new_address = test_db.PersonAddress()
-    if _TyperOptions().interactive:
+    if cli.interactive:
         test_db.AddressView(new_address).edit()
     print(new_address.gID)
 

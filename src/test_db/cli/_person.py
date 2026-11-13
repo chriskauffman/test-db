@@ -5,8 +5,8 @@ import typer
 from rich.progress import track
 
 import test_db
+from test_db import cli
 
-from ._typer_options import _TyperOptions
 from ._validate import validate_person
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ person_app = typer.Typer()
 @person_app.command("add")
 def person_add():
     person = test_db.Person()
-    if _TyperOptions().interactive:
+    if cli.interactive:
         test_db.PersonView(person).edit()
     print(person.gID)
 
