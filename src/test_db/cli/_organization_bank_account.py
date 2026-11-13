@@ -5,8 +5,8 @@ import typer
 from rich.progress import track
 
 import test_db
+from test_db import cli
 
-from ._typer_options import _TyperOptions
 from ._validate import validate, validate_organization
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def organization_bank_account_add(organization_gid: str | None = None):
         )
     else:
         new_bank_account = test_db.OrganizationBankAccount()
-    if _TyperOptions().interactive:
+    if cli.interactive:
         test_db.BankAccountView(new_bank_account).edit()
     print(new_bank_account.gID)
 

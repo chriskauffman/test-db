@@ -5,8 +5,8 @@ import typer
 from rich.progress import track
 
 import test_db
+from test_db import cli
 
-from ._typer_options import _TyperOptions
 from ._validate import validate_job, validate_organization, validate_person
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def job_add(organization_gid: str | None = None, person_gid: str | None = None):
         organization=organization,
         person=person,
     )
-    if _TyperOptions().interactive:
+    if cli.interactive:
         test_db.JobView(job).edit()
     print(job.gID)
 

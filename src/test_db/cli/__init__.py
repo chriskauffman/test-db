@@ -36,5 +36,5 @@ from ._person_key_value import person_key_value_app as person_key_value_app
 
 logger = logging.getLogger(__name__)
 
-# Options: Available through _TyperOptions
+# Options: Set by the root Typer callback.
 interactive: bool = False

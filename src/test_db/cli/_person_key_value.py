@@ -5,8 +5,8 @@ import typer
 from sqlobject.dberrors import DuplicateEntryError
 
 import test_db
+from test_db import cli
 
-from ._typer_options import _TyperOptions
 from ._validate import validate_key_value, validate_person
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ def person_key_value_add(person_gid: str, key: str, value: str):
     person = validate_person(person_gid)
     try:
         key_value = test_db.PersonKeyValue(person=person, key=key, value=value)
-        if _TyperOptions().interactive:
+        if cli.interactive:
             test_db.KeyValueView(key_value).edit()
     except DuplicateEntryError as exc:
         sys.stderr.write(f"error: {exc!s}")
