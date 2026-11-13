@@ -7,6 +7,7 @@ log/
 prof/
 tmp/
 test_db.toml
+.planning/.active_plan
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
