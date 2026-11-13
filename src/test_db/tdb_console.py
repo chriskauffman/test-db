@@ -88,6 +88,13 @@ class Console(cmd2.Cmd):
         """Set Prompt"""
         self.prompt = f"{self._prompt}: "
 
+    def do_tdb_alias(self, args):
+        """Enable aliases for the former tdb_* console command names."""
+        for command in self.get_all_commands():
+            if self.find_commandset_for_command(command):
+                self.aliases[f"tdb_{command}"] = command
+        self.poutput("Legacy tdb_* aliases enabled")
+
     def do_version(self, args):
         print(get_version(__package__ or "not available"))
 
