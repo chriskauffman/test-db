@@ -2,6 +2,7 @@
 
 Source Control: git
 Commit Message Convention: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+Git Branching Convention: [Conventional Branch](https://conventionalbranch.org)
 
 Language: Python
 Package Manager: [uv](https://docs.astral.sh/uv/)
