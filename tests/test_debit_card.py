@@ -20,6 +20,14 @@ def test_debit_card(temporary_db):
     debit_card_validation(test_debit_card)
 
 
+def test_debit_card_visual_id_allows_nullable_fields(temporary_db):
+    debit_card = PersonDebitCard(connection=temporary_db.connection)
+    debit_card.cardNumber = None
+    debit_card.expirationDate = None
+
+    assert "N/A" in debit_card.visualID
+
+
 def test_autoCreateDependents_person(temporary_db):
     new_person = Person(connection=temporary_db.connection)
     person_count = Person.select(connection=temporary_db.connection).count()

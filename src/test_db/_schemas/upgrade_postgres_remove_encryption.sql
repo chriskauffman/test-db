@@ -2,8 +2,7 @@
 --
 -- person_secure_key_value stores encrypted values that the current release
 -- cannot read. Dropping it is intentionally destructive to those values.
-
-BEGIN;
+-- DatabaseController supplies the transaction.
 
 ALTER TABLE job DROP CONSTRAINT IF EXISTS organization_id_exists;
 ALTER TABLE job DROP CONSTRAINT IF EXISTS person_id_exists;
@@ -25,5 +24,3 @@ WHERE key_name IN (
 UPDATE key_value
 SET value = '2'
 WHERE key_name = 'TestDB_ApplicationSchemaVersion';
-
-COMMIT;

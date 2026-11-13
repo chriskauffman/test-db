@@ -13,7 +13,11 @@ from sqlobject.dberrors import DatabaseError
 
 import test_db
 from test_db import cli
-from test_db._cli_settings import Settings, initialize_default_paths
+from test_db._cli_settings import (
+    Settings,
+    initialize_default_paths,
+    uses_default_database,
+)
 
 root_logger = logging.getLogger()
 logger = logging.getLogger(__name__)
@@ -63,8 +67,11 @@ def tdb_app_callback(
     if ctx.invoked_subcommand == "version":
         return
 
-    initialize_default_paths()
     settings = Settings()
+    using_default_database = not db_connection_uri and uses_default_database(settings)
+    if using_default_database:
+        initialize_default_paths()
+        settings = Settings()
 
     selected_db_connection_uri = (
         SecretStr(db_connection_uri)
@@ -79,33 +86,42 @@ def tdb_app_callback(
         sys.stderr.write("error: no database specified, use db_connection_uri")
         sys.exit(1)
 
-    if not settings.log_path.is_dir():
+    if using_default_database and not settings.log_path.is_dir():
         sys.stderr.write(
             f"error: incorrect log_path {settings.log_path}, must be existing directory"
         )
         sys.exit(1)
 
-    logging_file_handler = logging.handlers.RotatingFileHandler(
-        pathlib.Path(settings.log_path, "tdb.log"),
-        encoding="utf-8",
-        maxBytes=2 * 1024 * 1024,  # 2 MB
-        backupCount=10,
-    )
-    logging_file_handler.setLevel(settings.log_level_file)
-    logging_file_handler.setFormatter(
-        logging.Formatter(
-            "%(asctime)s - %(module)s - %(levelname)s - %(name)s - %(message)s"
-        )
-    )
-    root_logger.addHandler(logging_file_handler)
+    handlers = []
+    if settings.log_path.is_dir():
+        try:
+            logging_file_handler = logging.handlers.RotatingFileHandler(
+                pathlib.Path(settings.log_path, "tdb.log"),
+                encoding="utf-8",
+                maxBytes=2 * 1024 * 1024,  # 2 MB
+                backupCount=10,
+            )
+        except OSError:
+            if using_default_database:
+                raise
+        else:
+            logging_file_handler.setLevel(settings.log_level_file)
+            logging_file_handler.setFormatter(
+                logging.Formatter(
+                    "%(asctime)s - %(module)s - %(levelname)s - %(name)s - %(message)s"
+                )
+            )
+            handlers.append(logging_file_handler)
 
     logging_stream_handler = logging.StreamHandler(sys.stdout)
     logging_stream_handler.setLevel(settings.log_level_screen)
     logging_stream_handler.setFormatter(
         logging.Formatter("%(module)s - %(levelname)s - %(message)s")
     )
-    root_logger.addHandler(logging_stream_handler)
-    root_logger.setLevel(min(logging_file_handler.level, logging_stream_handler.level))
+    handlers.append(logging_stream_handler)
+    for handler in handlers:
+        root_logger.addHandler(handler)
+    root_logger.setLevel(min(handler.level for handler in handlers))
 
     logger.debug("settings=%s", settings)
 

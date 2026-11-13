@@ -64,7 +64,9 @@ class DebitCardView(BaseView):
         )
         self._debit_card.expirationDate = self._getDateInput(
             "Expiration Date",
-            self._debit_card.expirationDate.strftime("%m/%d/%Y"),
+            self._debit_card.expirationDate.strftime("%m/%d/%Y")
+            if self._debit_card.expirationDate
+            else None,
         )
 
     def view(self):

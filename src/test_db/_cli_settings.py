@@ -30,6 +30,14 @@ def initialize_default_paths() -> None:
     pathlib.Path(DEFAULT_CONFIG_PATH, CONFIG_FILE_NAME).touch(exist_ok=True)
 
 
+def uses_default_database(settings: "Settings") -> bool:
+    """Return whether settings still point at the generated default database."""
+    return bool(
+        settings.db_connection_uri
+        and settings.db_connection_uri.get_secret_value() == f"sqlite:{DEFAULT_DB_PATH}"
+    )
+
+
 def locateFile(file_name: str) -> pathlib.Path | None:
     for file_path in (
         pathlib.Path(file_name),

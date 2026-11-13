@@ -154,29 +154,41 @@ uv tool upgrade test-db
 You can also use test-db as a library in your own Python code:
 
 ```python
-import test_db
-from test_db import Person, Organization, Job
+from test_db import DatabaseController, Job, Organization, Person
 
 # Create a database connection
-test_db.connection_string = "sqlite:testdb.sqlite"
+db = DatabaseController("sqlite:testdb.sqlite")
 
-# Create a person
-person = Person(firstName="John", lastName="Doe", emailAddress="john@example.com")
+try:
+    # Create a person
+    person = Person(
+        connection=db.connection,
+        firstName="John",
+        lastName="Doe",
+        email="john@example.com",
+    )
 
-# Create an organization
-org = Organization(name="Acme Corp", taxId="12-3456789")
+    # Create an organization
+    org = Organization(
+        connection=db.connection,
+        name="Acme Corp",
+        employerIdentificationNumber="12-3456789",
+    )
 
-# Create a job entry
-job = Job(person=person, organization=org)
+    # Create a job entry
+    job = Job(connection=db.connection, person=person, organization=org)
 
-# Query data
-all_people = list(Person.select())
-for person in all_people:
-    print(f"{person.firstName} {person.lastName}")
+    # Query data
+    people = list(Person.select(connection=db.connection))
+    for person in people:
+        print(f"{person.firstName} {person.lastName}")
 
-# Access related data
-for job in person.jobs:
-    print(f"Works at {job.organization.name}")
+    # Access related data
+    for person in people:
+        for job in person.jobs:
+            print(f"Works at {job.organization.name}")
+finally:
+    db.close()
 ```
 
 ### Replacing removed lookup helpers

@@ -1,6 +1,8 @@
 import os
 import shutil
 import sqlite3
+from types import SimpleNamespace
+from unittest.mock import Mock
 
 import pytest
 import sqlobject
@@ -156,6 +158,58 @@ def test_upgrade_from_schema_v1(tmp_path):
         assert not upgraded.connection.tableExists("person_secure_key_value")
     finally:
         upgraded.close()
+
+
+def test_mysql_migration_skips_completed_foreign_key_steps():
+    database = object.__new__(DatabaseController)
+    database.connection = SimpleNamespace(dbName="mysql")
+    database._rawCursor = Mock()
+    database._rawCursor.fetchone.return_value = ("CASCADE",)
+
+    database._execute_migration_statement(
+        "ALTER TABLE job ADD CONSTRAINT job_organization_id_exists "
+        "FOREIGN KEY (organization_id) REFERENCES organization (id) "
+        "ON DELETE CASCADE"
+    )
+
+    database._rawCursor.execute.assert_called_once_with(
+        "SELECT delete_rule "
+        "FROM information_schema.referential_constraints "
+        "WHERE constraint_schema = DATABASE() "
+        "AND constraint_name = %s",
+        ("job_organization_id_exists",),
+    )
+
+
+def test_failed_upgrade_restores_sqlite_foreign_keys(tmp_path, monkeypatch):
+    database = DatabaseController(f"sqlite:{tmp_path / 'failed_upgrade.sqlite'}")
+    database.applicationSchemaVersion = 1
+    monkeypatch.setattr(
+        database,
+        "_execute_migration_statement",
+        Mock(side_effect=RuntimeError("migration failed")),
+    )
+
+    try:
+        with pytest.raises(ValueError, match="unable to upgrade test_db schema"):
+            database._upgrade()
+        assert database.applicationSchemaVersion == 1
+        assert database._rawCursor.execute("PRAGMA foreign_keys").fetchone() == (1,)
+    finally:
+        database.close()
+
+
+def test_failed_upgrade_validation_rolls_back(tmp_path, monkeypatch):
+    database = DatabaseController(f"sqlite:{tmp_path / 'invalid_upgrade.sqlite'}")
+    database.applicationSchemaVersion = 1
+    monkeypatch.setattr(database, "_raw_schema_is_valid", Mock(return_value=False))
+
+    try:
+        with pytest.raises(ValueError, match="unable to upgrade test_db schema"):
+            database._upgrade()
+        assert database.applicationSchemaVersion == 1
+    finally:
+        database.close()
 
 
 def test_open_empty(tmp_path_factory):

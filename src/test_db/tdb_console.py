@@ -15,6 +15,7 @@ from test_db._cli_settings import (
     DEFAULT_CONFIG_PATH,
     Settings,
     initialize_default_paths,
+    uses_default_database,
 )
 
 root_logger = logging.getLogger()
@@ -31,7 +32,10 @@ class Console(cmd2.Cmd):
     _prompt = "tdb"
 
     def __init__(self, settings: Settings, **kwargs) -> None:
-        super().__init__(persistent_history_file=str(self._cmd_history_file), **kwargs)
+        history_file = (
+            str(self._cmd_history_file) if uses_default_database(settings) else ""
+        )
+        super().__init__(persistent_history_file=history_file, **kwargs)
 
         self._settings = settings
 
@@ -93,36 +97,48 @@ def main() -> None:
         print(get_version(__package__ or "not available"))
         return
 
-    initialize_default_paths()
     settings = Settings()
+    using_default_database = uses_default_database(settings)
+    if using_default_database:
+        initialize_default_paths()
+        settings = Settings()
 
-    if not settings.log_path.is_dir():
+    if using_default_database and not settings.log_path.is_dir():
         sys.stderr.write(
             f"error: incorrect log_path {settings.log_path}, must be existing directory"
         )
         sys.exit(1)
 
-    logging_file_handler = logging.handlers.RotatingFileHandler(
-        pathlib.Path(settings.log_path, "tdb_console.log"),
-        encoding="utf-8",
-        maxBytes=2 * 1024 * 1024,  # 2 MB
-        backupCount=10,
-    )
-    logging_file_handler.setLevel(settings.log_level_file)
-    logging_file_handler.setFormatter(
-        logging.Formatter(
-            "%(asctime)s - %(module)s - %(levelname)s - %(name)s - %(message)s"
-        )
-    )
-    root_logger.addHandler(logging_file_handler)
+    handlers = []
+    if settings.log_path.is_dir():
+        try:
+            logging_file_handler = logging.handlers.RotatingFileHandler(
+                pathlib.Path(settings.log_path, "tdb_console.log"),
+                encoding="utf-8",
+                maxBytes=2 * 1024 * 1024,  # 2 MB
+                backupCount=10,
+            )
+        except OSError:
+            if using_default_database:
+                raise
+        else:
+            logging_file_handler.setLevel(settings.log_level_file)
+            logging_file_handler.setFormatter(
+                logging.Formatter(
+                    "%(asctime)s - %(module)s - %(levelname)s - %(name)s - %(message)s"
+                )
+            )
+            handlers.append(logging_file_handler)
 
     logging_stream_handler = logging.StreamHandler(sys.stdout)
     logging_stream_handler.setLevel(settings.log_level_screen)
     logging_stream_handler.setFormatter(
         logging.Formatter("%(module)s - %(levelname)s - %(message)s")
     )
-    root_logger.addHandler(logging_stream_handler)
-    root_logger.setLevel(min(logging_file_handler.level, logging_stream_handler.level))
+    handlers.append(logging_stream_handler)
+    for handler in handlers:
+        root_logger.addHandler(handler)
+    root_logger.setLevel(min(handler.level for handler in handlers))
 
     logger.debug("settings=%s", settings)
 

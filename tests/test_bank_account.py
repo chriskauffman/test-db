@@ -77,6 +77,13 @@ def test_person_bank_account(temporary_db):
     bank_account_validation(test_bank_account)
 
 
+def test_bank_account_visual_id_allows_nullable_account_number(temporary_db):
+    bank_account = PersonBankAccount(connection=temporary_db.connection)
+    bank_account.accountNumber = None
+
+    assert "N/A" in bank_account.visualID
+
+
 def test_autoCreateDependents_person(temporary_db):
     new_person = Person(connection=temporary_db.connection)
     person_count = Person.select(connection=temporary_db.connection).count()

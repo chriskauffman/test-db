@@ -10,9 +10,11 @@ requires-python = ">=3.11"
 dependencies = [
     "cmd2>=2.7.0",
     "faker>=37.6.0",
+    "formencode>=2.1.1",
     "nanoid>=2.0.0",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",
+    "rich>=13.0.0",
     "sqlobject>=3.13.0",
     "typeid-python>=0.3.2",
     "typer>=0.19.2",
