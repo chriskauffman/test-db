@@ -37,6 +37,24 @@ tdb person list
 tdb-console
 ```
 
+### Interactive Console Command Names
+
+Interactive console commands no longer include the `tdb_` prefix. For example,
+use `person_add` instead of `tdb_person_add`.
+
+To keep existing scripts working, load the compatibility aliases before running
+the script:
+
+```bash
+tdb-console 'run_script tdb_console_add_command_prefixes.txt' 'run_script your_script.txt' quit
+```
+
+cmd2 also supports loading both files with the `@` syntax:
+
+```bash
+tdb-console @tdb_console_add_command_prefixes.txt @your_script.txt quit
+```
+
 ## Architecture Overview
 
 ### Project Structure
