@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1](https://github.com/chriskauffman/test-db/compare/v1.0.0...v1.0.1) (2026-11-16)
+
+
+### Performance Improvements
+
+* optimize Faker uniqueness during bulk adds ([26593d8](https://github.com/chriskauffman/test-db/commit/26593d897f0a85001a0718293d3761408adbca7f))
+* optimize Faker uniqueness during bulk adds ([b84aa97](https://github.com/chriskauffman/test-db/commit/b84aa9736da83dc8583b8f70b856fae54f5a709e))
+* scan bulk uniqueness sources once ([1630401](https://github.com/chriskauffman/test-db/commit/163040197b4a5ea3aedb23eedf42aba61b86f753))
+
 ## [1.0.0](https://github.com/chriskauffman/test-db/compare/v0.8.3...v1.0.0) (2026-11-13)
 
 
