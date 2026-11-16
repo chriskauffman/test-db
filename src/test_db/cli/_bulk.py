@@ -9,6 +9,7 @@ def bulk_transaction(connection: Any) -> Generator[Any, None, None]:
     transaction = connection.transaction()
     options = connection.tdbGlobalDatabaseOptions
     options.bulkAdd = True
+    options.bulkUniqueModels.clear()
     options.bulkUniqueValues.clear()
     try:
         yield transaction
@@ -18,4 +19,5 @@ def bulk_transaction(connection: Any) -> Generator[Any, None, None]:
         raise
     finally:
         options.bulkAdd = False
+        options.bulkUniqueModels.clear()
         options.bulkUniqueValues.clear()
