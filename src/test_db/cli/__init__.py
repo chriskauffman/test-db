@@ -13,6 +13,7 @@ Example:
 
 import logging
 
+from ._bulk import bulk_transaction as bulk_transaction
 from ._job import job_app as job_app
 from ._job_key_value import job_key_value_app as job_key_value_app
 from ._key_value import key_value_app as key_value_app

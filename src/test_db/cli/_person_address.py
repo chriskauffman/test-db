@@ -40,16 +40,11 @@ def address_bulk_add(count: int = 100, person_gid: str | None = None):
         test_db.PersonAddress.select().count(),
     )
     conn = sqlobject.sqlhub.processConnection
-    trans = conn.transaction()
-    try:
+    with cli.bulk_transaction(conn) as trans:
         for i in track(
             range(count), description=f"Creating {count} personal addresses..."
         ):
             test_db.PersonAddress(person=person, connection=trans)
-        trans.commit(close=True)
-    except Exception:
-        trans.rollback()
-        raise
     logger.debug(
         "Current counts: persons=%d, addresses=%d",
         test_db.Person.select().count(),

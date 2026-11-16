@@ -10,6 +10,7 @@ from sqlobject import (
     events,
 )
 
+from test_db._bulk import bulk_unique
 from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._type_id_col import TypeIDCol
@@ -70,21 +71,40 @@ def handlePersonAddressRowCreateSignal(instance, kwargs, post_funcs):
         and kwargs.get("region") is None
         and kwargs.get("postalCode") is None
     ):
-        while True:
-            kwargs["street"] = fake.street_address()
-            kwargs["locality"] = fake.city()
-            kwargs["region"] = fake.state_abbr()
-            kwargs["postalCode"] = fake.postcode()
-            try:
-                PersonAddress.selectBy(
-                    street=kwargs["street"],
-                    locality=kwargs["locality"],
-                    region=kwargs["region"],
-                    postalCode=kwargs["postalCode"],
-                    connection=kwargs.get("connection"),
-                ).getOne()
-            except SQLObjectNotFound:
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"),
+            PersonAddress,
+            ("street", "locality", "region", "postalCode"),
+            lambda: (
+                fake.street_address(),
+                fake.city(),
+                fake.state_abbr(),
+                fake.postcode(),
+            ),
+        )
+        if generated is not None:
+            (
+                kwargs["street"],
+                kwargs["locality"],
+                kwargs["region"],
+                kwargs["postalCode"],
+            ) = generated
+        else:
+            while True:
+                kwargs["street"] = fake.street_address()
+                kwargs["locality"] = fake.city()
+                kwargs["region"] = fake.state_abbr()
+                kwargs["postalCode"] = fake.postcode()
+                try:
+                    PersonAddress.selectBy(
+                        street=kwargs["street"],
+                        locality=kwargs["locality"],
+                        region=kwargs["region"],
+                        postalCode=kwargs["postalCode"],
+                        connection=kwargs.get("connection"),
+                    ).getOne()
+                except SQLObjectNotFound:
+                    break
 
 
 events.listen(handlePersonAddressRowCreateSignal, PersonAddress, events.RowCreateSignal)

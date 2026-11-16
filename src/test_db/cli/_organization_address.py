@@ -42,16 +42,11 @@ def address_bulk_add(count: int = 100, organization_gid: str | None = None):
         test_db.OrganizationAddress.select().count(),
     )
     conn = sqlobject.sqlhub.processConnection
-    trans = conn.transaction()
-    try:
+    with cli.bulk_transaction(conn) as trans:
         for i in track(
             range(count), description=f"Creating {count} organization addresses..."
         ):
             test_db.OrganizationAddress(organization=organization, connection=trans)
-        trans.commit(close=True)
-    except Exception:
-        trans.rollback()
-        raise
     logger.debug(
         "Current counts: organizations=%d, addresses=%d",
         test_db.Organization.select().count(),

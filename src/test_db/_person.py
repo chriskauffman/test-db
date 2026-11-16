@@ -13,6 +13,7 @@ from sqlobject import (
     events,
 )
 
+from test_db._bulk import bulk_unique
 from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._person_address import PersonAddress
@@ -110,53 +111,88 @@ class Person(GIDMixin, SQLObject):
 def handlePersonRowCreateSignal(instance, kwargs, post_funcs):
     handleRowCreateSignal(instance, kwargs, post_funcs)
     if kwargs.get("firstName") is None and kwargs.get("lastName") is None:
-        while True:
-            kwargs["firstName"] = fake.first_name()
-            kwargs["lastName"] = fake.last_name()
-            try:
-                Person.selectBy(
-                    firstName=kwargs["firstName"],
-                    lastName=kwargs["lastName"],
-                    connection=kwargs.get("connection"),
-                ).getOne()
-            except SQLObjectNotFound:
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"),
+            Person,
+            ("firstName", "lastName"),
+            lambda: (fake.first_name(), fake.last_name()),
+        )
+        if generated is not None:
+            kwargs["firstName"], kwargs["lastName"] = generated
+        else:
+            while True:
+                kwargs["firstName"] = fake.first_name()
+                kwargs["lastName"] = fake.last_name()
+                try:
+                    Person.selectBy(
+                        firstName=kwargs["firstName"],
+                        lastName=kwargs["lastName"],
+                        connection=kwargs.get("connection"),
+                    ).getOne()
+                except SQLObjectNotFound:
+                    break
     if kwargs.get("firstName") is None:
         kwargs["firstName"] = fake.first_name()
     if kwargs.get("lastName") is None:
         kwargs["lastName"] = fake.last_name()
     if kwargs.get("email") is None:
-        for email in (
-            f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}@example.com",
-            f"{kwargs['firstName'][:1].lower()}{kwargs['lastName'].lower()}@example.com",
-            f"{kwargs['firstName'].lower()}{kwargs['lastName'][:1].lower()}@example.com",
-            f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}.{nanoid.generate(size=5)}@example.com",
-        ):
-            try:
-                Person.byEmail(email, connection=kwargs.get("connection"))
-            except SQLObjectNotFound:
-                kwargs["email"] = email
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"),
+            Person,
+            ("email",),
+            lambda: (
+                f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}.{nanoid.generate(size=5)}@example.com"
+            ),
+        )
+        if generated is not None:
+            kwargs["email"] = generated
+        else:
+            for email in (
+                f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}@example.com",
+                f"{kwargs['firstName'][:1].lower()}{kwargs['lastName'].lower()}@example.com",
+                f"{kwargs['firstName'].lower()}{kwargs['lastName'][:1].lower()}@example.com",
+                f"{kwargs['firstName'].lower()}.{kwargs['lastName'].lower()}.{nanoid.generate(size=5)}@example.com",
+            ):
+                try:
+                    Person.byEmail(email, connection=kwargs.get("connection"))
+                except SQLObjectNotFound:
+                    kwargs["email"] = email
+                    break
     if kwargs.get("phoneNumber") is None:
-        while True:
-            kwargs["phoneNumber"] = fake.basic_phone_number()
-            try:
-                Person.selectBy(
-                    phoneNumber=kwargs["phoneNumber"],
-                    connection=kwargs.get("connection"),
-                ).getOne()
-            except SQLObjectNotFound:
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"), Person, ("phoneNumber",), fake.basic_phone_number
+        )
+        if generated is not None:
+            kwargs["phoneNumber"] = generated
+        else:
+            while True:
+                kwargs["phoneNumber"] = fake.basic_phone_number()
+                try:
+                    Person.selectBy(
+                        phoneNumber=kwargs["phoneNumber"],
+                        connection=kwargs.get("connection"),
+                    ).getOne()
+                except SQLObjectNotFound:
+                    break
     if kwargs.get("socialSecurityNumber") is None:
-        while True:
-            kwargs["socialSecurityNumber"] = fake.ssn()
-            try:
-                Person.bySocialSecurityNumber(
-                    kwargs["socialSecurityNumber"],
-                    connection=kwargs.get("connection"),
-                )
-            except SQLObjectNotFound:
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"),
+            Person,
+            ("socialSecurityNumber",),
+            fake.ssn,
+        )
+        if generated is not None:
+            kwargs["socialSecurityNumber"] = generated
+        else:
+            while True:
+                kwargs["socialSecurityNumber"] = fake.ssn()
+                try:
+                    Person.bySocialSecurityNumber(
+                        kwargs["socialSecurityNumber"],
+                        connection=kwargs.get("connection"),
+                    )
+                except SQLObjectNotFound:
+                    break
 
 
 events.listen(handlePersonRowCreateSignal, Person, events.RowCreateSignal)

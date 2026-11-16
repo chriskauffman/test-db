@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 import faker
 import pytest
 from typeid import TypeID
@@ -16,6 +18,41 @@ def test_init(temporary_db):
     test_person = Person(connection=temporary_db.connection)
 
     assert test_person
+
+
+def test_bulk_generation_uses_cached_values(temporary_db, monkeypatch):
+    test_db.autoCreateDependents = False
+    Person(
+        firstName="First",
+        lastName="Last",
+        email="first.last@example.com",
+        phoneNumber="555-0100",
+        socialSecurityNumber="111-11-1111",
+        connection=temporary_db.connection,
+    )
+    options = temporary_db.connection.tdbGlobalDatabaseOptions
+    options.bulkAdd = True
+    options.bulkUniqueValues.clear()
+    first_names = iter(("First", "Fresh"))
+    last_names = iter(("Last", "Name"))
+    monkeypatch.setattr("test_db._person.fake.first_name", lambda: next(first_names))
+    monkeypatch.setattr("test_db._person.fake.last_name", lambda: next(last_names))
+    monkeypatch.setattr(
+        Person,
+        "selectBy",
+        lambda *args, **kwargs: pytest.fail("bulk generation queried selectBy"),
+    )
+    select = Mock(wraps=Person.select)
+    monkeypatch.setattr(Person, "select", select)
+
+    try:
+        person = Person(connection=temporary_db.connection)
+    finally:
+        options.bulkAdd = False
+        options.bulkUniqueValues.clear()
+
+    assert (person.firstName, person.lastName) == ("Fresh", "Name")
+    assert select.call_count == 1
 
 
 @pytest.mark.parametrize(

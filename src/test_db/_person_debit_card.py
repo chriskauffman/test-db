@@ -14,6 +14,7 @@ from sqlobject import (
     events,
 )
 
+from test_db._bulk import bulk_unique
 from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._type_id_col import TypeIDCol
@@ -84,15 +85,24 @@ class PersonDebitCard(GIDMixin, SQLObject):
 def handlePersonDebitCardRowCreateSignal(instance, kwargs, post_funcs):
     handleRowCreateSignal(instance, kwargs, post_funcs)
     if kwargs.get("cardNumber") is None:
-        while True:
-            kwargs["cardNumber"] = fake.credit_card_number()
-            try:
-                PersonDebitCard.selectBy(
-                    cardNumber=kwargs["cardNumber"],
-                    connection=kwargs.get("connection"),
-                ).getOne()
-            except SQLObjectNotFound:
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"),
+            PersonDebitCard,
+            ("cardNumber",),
+            fake.credit_card_number,
+        )
+        if generated is not None:
+            kwargs["cardNumber"] = generated
+        else:
+            while True:
+                kwargs["cardNumber"] = fake.credit_card_number()
+                try:
+                    PersonDebitCard.selectBy(
+                        cardNumber=kwargs["cardNumber"],
+                        connection=kwargs.get("connection"),
+                    ).getOne()
+                except SQLObjectNotFound:
+                    break
 
 
 events.listen(

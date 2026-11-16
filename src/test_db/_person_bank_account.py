@@ -15,6 +15,7 @@ from sqlobject import (
     events,
 )
 
+from test_db._bulk import bulk_unique
 from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._type_id_col import TypeIDCol
@@ -110,16 +111,25 @@ def handlePersonBankAccountRowCreateSignal(instance, kwargs, post_funcs):
     if kwargs.get("routingNumber") is None:
         kwargs["routingNumber"] = fake.aba()
     if kwargs.get("accountNumber") is None:
-        while True:
-            kwargs["accountNumber"] = fake.bank_account_number()
-            try:
-                PersonBankAccount.selectBy(
-                    routingNumber=kwargs["routingNumber"],
-                    accountNumber=kwargs["accountNumber"],
-                    connection=kwargs.get("connection"),
-                ).getOne()
-            except SQLObjectNotFound:
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"),
+            PersonBankAccount,
+            ("routingNumber", "accountNumber"),
+            lambda: (kwargs["routingNumber"], fake.bank_account_number()),
+        )
+        if generated is not None:
+            kwargs["routingNumber"], kwargs["accountNumber"] = generated
+        else:
+            while True:
+                kwargs["accountNumber"] = fake.bank_account_number()
+                try:
+                    PersonBankAccount.selectBy(
+                        routingNumber=kwargs["routingNumber"],
+                        accountNumber=kwargs["accountNumber"],
+                        connection=kwargs.get("connection"),
+                    ).getOne()
+                except SQLObjectNotFound:
+                    break
 
 
 events.listen(

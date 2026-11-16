@@ -28,14 +28,9 @@ def organization_bulk_add(count: int = 100):
         "Current organization count: %d", test_db.Organization.select().count()
     )
     conn = sqlobject.sqlhub.processConnection
-    trans = conn.transaction()
-    try:
+    with cli.bulk_transaction(conn) as trans:
         for i in track(range(count), description=f"Creating {count} organizations..."):
             test_db.Organization(connection=trans)
-        trans.commit(close=True)
-    except Exception:
-        trans.rollback()
-        raise
     logger.debug("New organization count: %d", test_db.Organization.select().count())
 
 
