@@ -11,6 +11,7 @@ from sqlobject import (
     events,
 )
 
+from test_db._bulk import bulk_unique
 from test_db._gid import GIDMixin
 from test_db._listeners import handleRowCreateSignal, handleRowUpdateSignal
 from test_db._organization_address import OrganizationAddress
@@ -76,22 +77,39 @@ class Organization(GIDMixin, SQLObject):
 def handleOrganizationRowCreateSignal(instance, kwargs, post_funcs):
     handleRowCreateSignal(instance, kwargs, post_funcs)
     if kwargs.get("name") is None:
-        while True:
-            kwargs["name"] = fake.company()
-            try:
-                Organization.byName(kwargs["name"], connection=kwargs.get("connection"))
-            except SQLObjectNotFound:
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"), Organization, ("name",), fake.company
+        )
+        if generated is not None:
+            kwargs["name"] = generated
+        else:
+            while True:
+                kwargs["name"] = fake.company()
+                try:
+                    Organization.byName(
+                        kwargs["name"], connection=kwargs.get("connection")
+                    )
+                except SQLObjectNotFound:
+                    break
     if kwargs.get("employerIdentificationNumber") is None:
-        while True:
-            kwargs["employerIdentificationNumber"] = fake.ein()
-            try:
-                Organization.byEmployerIdentificationNumber(
-                    kwargs["employerIdentificationNumber"],
-                    connection=kwargs.get("connection"),
-                )
-            except SQLObjectNotFound:
-                break
+        generated = bulk_unique(
+            kwargs.get("connection"),
+            Organization,
+            ("employerIdentificationNumber",),
+            fake.ein,
+        )
+        if generated is not None:
+            kwargs["employerIdentificationNumber"] = generated
+        else:
+            while True:
+                kwargs["employerIdentificationNumber"] = fake.ein()
+                try:
+                    Organization.byEmployerIdentificationNumber(
+                        kwargs["employerIdentificationNumber"],
+                        connection=kwargs.get("connection"),
+                    )
+                except SQLObjectNotFound:
+                    break
 
 
 events.listen(handleOrganizationRowCreateSignal, Organization, events.RowCreateSignal)

@@ -38,14 +38,9 @@ def job_bulk_add(count: int = 100, organization_gid: str | None = None):
         organization = validate_organization(organization_gid)
     logger.debug("Current job count: %d", test_db.Job.select().count())
     conn = sqlobject.sqlhub.processConnection
-    trans = conn.transaction()
-    try:
+    with cli.bulk_transaction(conn) as trans:
         for i in track(range(count), description=f"Creating {count} jobs..."):
             test_db.Job(organization=organization, connection=trans)
-        trans.commit(close=True)
-    except Exception:
-        trans.rollback()
-        raise
     logger.debug("New job count: %d", test_db.Job.select().count())
 
 

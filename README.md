@@ -37,6 +37,11 @@ tdb person list
 tdb-console
 ```
 
+Bulk-add commands assume a single writer for the target database while they
+run. They keep generated values unique within the operation and against the
+values visible when it starts; concurrent writers can still create duplicates
+for fields without database uniqueness constraints.
+
 ### Interactive Console Command Names
 
 Interactive console commands no longer include the `tdb_` prefix. For example,

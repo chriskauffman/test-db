@@ -26,14 +26,9 @@ def person_add():
 def person_bulk_add(count: int = 100):
     logger.debug("Current person count: %d", test_db.Person.select().count())
     conn = sqlobject.sqlhub.processConnection
-    trans = conn.transaction()
-    try:
+    with cli.bulk_transaction(conn) as trans:
         for i in track(range(count), description=f"Creating {count} people..."):
             test_db.Person(connection=trans)
-        trans.commit(close=True)
-    except Exception:
-        trans.rollback()
-        raise
     logger.debug("New person count: %d", test_db.Person.select().count())
 
 
